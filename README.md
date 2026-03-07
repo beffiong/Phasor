@@ -13,19 +13,6 @@ Official website for **Project Phasor** — an open-source collaborative initiat
 - GitHub Actions for automatic deployment to GitHub Pages
 
 ---
-
-## Local Development
-
-Just open `index.html` in your browser — no server needed.
-
-```bash
-# Or use a simple local server (recommended to avoid CORS):
-npx serve .
-# or
-python3 -m http.server 3000
-```
-
----
 ## File Structure
 
 ```
