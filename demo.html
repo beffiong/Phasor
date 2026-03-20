@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phasor &mdash; Live Data Conversion Demo</title>
+<link rel="icon" type="image/png" href="logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@400;500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* === PHASOR DESIGN TOKENS (matches project-phasor.com) === */
+:root {
+  --bg:#0a0906; --bg2:#111009; --bg3:#1a180f; --surface:#221f14;
+  --border:rgba(255,240,200,0.07); --border-strong:rgba(255,240,200,0.13);
+  --gold:#c9a84c; --gold-dim:rgba(201,168,76,0.12); --gold-glow:rgba(201,168,76,0.22);
+  --cream:#f5f0e8; --muted:#6b6550; --muted2:#9c9478;
+  --green:#4ade80; --red:#f87171; --amber:#fbbf24; --purple:#a78bfa; --teal:#2dd4bf;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--cream);font-family:'Jost',sans-serif;font-weight:400;line-height:1.6;overflow-x:hidden;min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);
+  background-size:64px 64px;mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,black,transparent);}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;
+  padding:0 48px;height:64px;background:rgba(10,9,6,0.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
+.nav-logo{display:flex;align-items:center;gap:12px;text-decoration:none;}
+.nav-logo img{height:26px;width:auto;}
+.nav-logo span{font-family:'Jost',sans-serif;font-weight:600;font-size:0.95rem;color:var(--cream);letter-spacing:-0.01em;}
+.nav-center{font-size:0.68rem;font-family:'DM Mono',monospace;color:var(--muted);letter-spacing:0.12em;text-transform:uppercase;}
+.nav-right{display:flex;align-items:center;gap:16px;}
+.nav-back{display:flex;align-items:center;gap:6px;font-size:0.73rem;font-family:'DM Mono',monospace;
+  color:var(--muted2);text-decoration:none;letter-spacing:0.06em;transition:color .2s;}
+.nav-back:hover{color:var(--cream);}
+.nav-badge{padding:6px 16px;border-radius:100px;border:1px solid var(--gold);
+  font-size:0.65rem;font-weight:500;color:var(--gold);letter-spacing:0.06em;font-family:'DM Mono',monospace;}
+
+/* PAGE HEADER */
+.page-header{position:relative;z-index:1;padding:96px 80px 48px;max-width:1400px;margin:0 auto;border-bottom:1px solid var(--border);}
+.page-eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:0.68rem;font-family:'DM Mono',monospace;
+  color:var(--gold);letter-spacing:0.14em;text-transform:uppercase;margin-bottom:20px;}
+.page-eyebrow::before{content:'';width:24px;height:1px;background:var(--gold);}
+.page-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2.8rem,5vw,4.6rem);
+  font-weight:300;line-height:1.05;letter-spacing:-0.02em;margin-bottom:16px;}
+.page-title em{font-style:italic;color:var(--gold);}
+.page-sub{font-size:0.95rem;color:var(--muted2);max-width:620px;line-height:1.8;font-weight:300;margin-bottom:32px;}
+.page-meta{display:flex;gap:28px;flex-wrap:wrap;align-items:center;}
+.meta-item{display:flex;align-items:center;gap:8px;font-size:0.7rem;font-family:'DM Mono',monospace;color:var(--muted);letter-spacing:0.04em;}
+.meta-dot{width:5px;height:5px;border-radius:50%;background:var(--gold);flex-shrink:0;}
+
+/* DEMO CONTAINER */
+.demo-container{position:relative;z-index:1;padding:36px 80px 72px;max-width:1400px;margin:0 auto;}
+.demo-layout{display:grid;grid-template-columns:300px 1fr;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--border);gap:1px;}
+
+/* SIDEBAR */
+.demo-sidebar{background:var(--bg2);display:flex;flex-direction:column;}
+.sidebar-header{padding:18px 20px;border-bottom:1px solid var(--border);
+  font-size:0.63rem;font-family:'DM Mono',monospace;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;}
+.dataset-list{flex:1;overflow-y:auto;max-height:700px;}
+.dataset-list::-webkit-scrollbar{width:3px;}
+.dataset-list::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:2px;}
+.ds-item{padding:14px 20px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s;position:relative;}
+.ds-item:hover{background:var(--bg3);}
+.ds-item.active{background:var(--surface);}
+.ds-item.active::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--gold);}
+.ds-item-name{font-size:0.8rem;font-weight:500;margin-bottom:3px;}
+.ds-item-domain{font-size:0.62rem;font-family:'DM Mono',monospace;color:var(--muted);letter-spacing:0.04em;}
+.ds-item-badge{float:right;margin-top:1px;padding:2px 7px;border-radius:100px;font-size:0.57rem;font-family:'DM Mono',monospace;font-weight:500;}
+.badge-critical{background:rgba(248,113,113,0.12);color:var(--red);border:1px solid rgba(248,113,113,0.2);}
+.badge-very-high{background:rgba(251,191,36,0.1);color:var(--amber);border:1px solid rgba(251,191,36,0.2);}
+.badge-high{background:rgba(201,168,76,0.1);color:var(--gold);border:1px solid rgba(201,168,76,0.25);}
+.badge-medium{background:rgba(107,99,80,0.2);color:var(--muted2);border:1px solid var(--border-strong);}
+
+/* MAIN */
+.demo-main{background:var(--bg);display:flex;flex-direction:column;}
+.demo-topbar{padding:14px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg2);}
+.demo-dataset-name{font-size:0.88rem;font-weight:600;letter-spacing:-0.01em;margin-bottom:2px;}
+.demo-dataset-domain{font-size:0.63rem;font-family:'DM Mono',monospace;color:var(--muted);}
+.demo-run-btn{padding:8px 20px;border-radius:6px;border:none;cursor:pointer;background:var(--gold);color:var(--bg);
+  font-family:'Jost',sans-serif;font-weight:600;font-size:0.78rem;transition:all .2s;display:flex;align-items:center;gap:6px;}
+.demo-run-btn:hover{background:#dbb85a;}
+.demo-run-btn.running{background:var(--surface);color:var(--muted2);cursor:wait;}
+
+/* STEP BAR */
+.step-bar{display:flex;padding:14px 24px;gap:8px;border-bottom:1px solid var(--border);
+  align-items:center;overflow-x:auto;background:var(--bg2);}
+.step-bar::-webkit-scrollbar{height:0;}
+.step-dot{width:26px;height:26px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  font-size:0.62rem;font-family:'DM Mono',monospace;font-weight:500;border:1px solid var(--border-strong);
+  background:var(--bg);color:var(--muted);transition:all .35s;cursor:pointer;}
+.step-dot.active{border-color:var(--gold);color:var(--gold);box-shadow:0 0 0 3px var(--gold-dim);}
+.step-dot.done{background:var(--gold);border-color:var(--gold);color:var(--bg);}
+.step-connector{flex:1;height:1px;background:var(--border);min-width:8px;flex-shrink:0;transition:background .35s;}
+.step-connector.done{background:var(--gold);}
+
+/* PANELS */
+.demo-output{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.demo-panels{display:grid;grid-template-columns:1fr 1fr;flex:1;gap:0;}
+.panel{padding:22px 24px;border-right:1px solid var(--border);display:flex;flex-direction:column;gap:10px;min-height:360px;}
+.panel:last-child{border-right:none;}
+.panel-label{font-size:0.61rem;font-family:'DM Mono',monospace;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:2px;}
+.panel-title{font-size:0.85rem;font-weight:600;margin-bottom:8px;letter-spacing:-0.01em;}
+
+/* CODE */
+.code-block{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px;
+  font-family:'DM Mono',monospace;font-size:0.69rem;line-height:1.75;color:var(--muted2);overflow-x:auto;flex:1;}
+.code-block .kw{color:var(--purple);} .code-block .fn{color:var(--gold);} .code-block .str{color:var(--amber);}
+.code-block .cm{color:var(--muted);font-style:italic;} .code-block .num{color:#fb923c;} .code-block .var{color:var(--cream);}
+
+/* SPIKE VIZ */
+.spike-viz{background:var(--bg2);border:1px solid var(--border);border-radius:8px;flex:1;position:relative;overflow:hidden;min-height:180px;}
+.spike-viz canvas{width:100%;height:100%;display:block;}
+
+/* INFO CARDS */
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.info-card{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:12px 14px;}
+.info-card-label{font-size:0.57rem;font-family:'DM Mono',monospace;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px;}
+.info-card-value{font-size:0.77rem;font-weight:500;color:var(--cream);}
+.info-card-value.gold{color:var(--gold);}
+
+/* METRICS */
+.metric-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);font-size:0.75rem;}
+.metric-row:last-child{border-bottom:none;}
+.metric-label{color:var(--muted2);}
+.metric-value{font-family:'DM Mono',monospace;font-weight:500;}
+.metric-value.green{color:var(--green);} .metric-value.gold{color:var(--gold);} .metric-value.amber{color:var(--amber);}
+
+/* PROGRESS */
+.progress-wrap{margin-top:6px;}
+.progress-label{display:flex;justify-content:space-between;font-size:0.62rem;color:var(--muted);margin-bottom:5px;font-family:'DM Mono',monospace;}
+.progress-bar{height:3px;background:var(--surface);border-radius:2px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:2px;background:var(--gold);transition:width 0.7s ease;width:0;}
+
+/* STEP FOOTER */
+.step-detail{padding:14px 24px;border-top:1px solid var(--border);background:var(--bg2);
+  font-size:0.75rem;color:var(--muted2);line-height:1.65;display:flex;align-items:flex-start;gap:12px;}
+.step-num-badge{width:22px;height:22px;border-radius:50%;background:var(--gold);color:var(--bg);
+  font-size:0.6rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'DM Mono',monospace;}
+.step-detail-text strong{color:var(--cream);font-weight:500;}
+.step-detail-text code{font-family:'DM Mono',monospace;font-size:0.67rem;background:var(--surface);padding:1px 5px;border-radius:3px;color:var(--gold);}
+
+/* CONTEXT STRIP */
+.context-strip{position:relative;z-index:1;border-top:1px solid var(--border);}
+.context-inner{max-width:1400px;margin:0 auto;padding:40px 80px;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);}
+.context-card{background:var(--bg2);padding:28px 24px;transition:background .2s;}
+.context-card:hover{background:var(--bg3);}
+.context-num{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:300;color:var(--gold);line-height:1;margin-bottom:8px;}
+.context-card h4{font-size:0.8rem;font-weight:600;margin-bottom:6px;}
+.context-card p{font-size:0.73rem;color:var(--muted2);line-height:1.6;font-weight:300;}
+
+/* FOOTER */
+.demo-footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:24px 80px;
+  display:flex;justify-content:space-between;align-items:center;}
+.footer-brand{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:300;color:var(--cream);}
+.footer-links{display:flex;gap:20px;}
+.footer-links a{font-size:0.63rem;color:var(--muted);text-decoration:none;font-family:'DM Mono',monospace;letter-spacing:0.06em;transition:color .2s;}
+.footer-links a:hover{color:var(--gold);}
+.footer-note{font-size:0.62rem;color:var(--muted);font-family:'DM Mono',monospace;}
+
+@keyframes spin{to{transform:rotate(360deg);}}
+.spinner{width:11px;height:11px;border:2px solid rgba(10,9,6,0.3);border-top-color:var(--bg);border-radius:50%;animation:spin 0.6s linear infinite;display:inline-block;}
+
+@media(max-width:960px){
+  nav,.page-header,.demo-container{padding-left:24px;padding-right:24px;}
+  .demo-layout{grid-template-columns:1fr;} .demo-panels{grid-template-columns:1fr;}
+  .context-inner{grid-template-columns:1fr 1fr;padding:28px 24px;}
+  .demo-footer{padding:20px 24px;flex-direction:column;gap:12px;text-align:center;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="/">
+    <img src="logo.png" alt="Phasor" onerror="this.style.display='none'">
+    <span>Phasor</span>
+  </a>
+  <div class="nav-center">Neuromorphic Data Conversion &middot; Live Demo</div>
+  <div class="nav-right">
+    <a class="nav-back" href="/">Back to site</a>
+    <div class="nav-badge">Investor Brief &middot; 2026</div>
+  </div>
+</nav>
+
+<header class="page-header">
+  <div class="page-eyebrow">AI-Powered Data Conversion &middot; Platform Demo</div>
+  <h1 class="page-title">From raw dataset to<br><em>neuromorphic spikes</em> &mdash; live.</h1>
+  <p class="page-sub">
+    Phasor&rsquo;s proprietary encoding pipeline in action. Select any dataset, run the conversion,
+    and watch every step &mdash; acquire, preprocess, encode, validate, baseline &mdash; executed
+    transparently and reproducibly. This is what Scale AI did for vision. We&rsquo;re doing it for the next hardware era.
+  </p>
+  <div class="page-meta">
+    <div class="meta-item"><div class="meta-dot"></div>45+ datasets with encoding recipes</div>
+    <div class="meta-item"><div class="meta-dot"></div>10 spike encoding methods</div>
+    <div class="meta-item"><div class="meta-dot"></div>7 domains covered</div>
+    <div class="meta-item"><div class="meta-dot"></div>719&times; energy reduction demonstrated</div>
+  </div>
+</header>
+
+<div class="demo-container">
+  <div class="demo-layout">
+    <div class="demo-sidebar">
+      <div class="sidebar-header">// Select Dataset</div>
+      <div class="dataset-list" id="datasetList"></div>
+    </div>
+    <div class="demo-main">
+      <div class="demo-topbar">
+        <div>
+          <div class="demo-dataset-name" id="topbarName">PlantVillage</div>
+          <div class="demo-dataset-domain" id="topbarDomain">AI4Agriculture &middot; High Priority</div>
+        </div>
+        <button class="demo-run-btn" id="runBtn" onclick="runConversion()">
+          <span>&#9654;</span> Run Conversion
+        </button>
+      </div>
+      <div class="step-bar" id="stepBar"></div>
+      <div class="demo-output">
+        <div class="demo-panels" id="demoPanels"></div>
+      </div>
+      <div class="step-detail" id="stepDetail">
+        <div class="step-num-badge" id="stepNumBadge">1</div>
+        <div class="step-detail-text" id="stepDetailText">
+          Select a dataset and click <strong>Run Conversion</strong> to begin the live walkthrough.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="context-strip">
+  <div class="context-inner">
+    <div class="context-card">
+      <div class="context-num">$40M+</div>
+      <h4>ARR Potential</h4>
+      <p>From neuromorphic data alone. The world is running out of high-quality training data for next-gen hardware.</p>
+    </div>
+    <div class="context-card">
+      <div class="context-num">719&times;</div>
+      <h4>Energy Reduction</h4>
+      <p>Peer-reviewed. SNN inference on Loihi vs GPU. Published NICE 2026 &amp; AAAI 2026.</p>
+    </div>
+    <div class="context-card">
+      <div class="context-num">45+</div>
+      <h4>Datasets Ready</h4>
+      <p>Robotics, audio, science, space, agriculture &mdash; each with a complete encoding recipe and baseline model.</p>
+    </div>
+    <div class="context-card">
+      <div class="context-num">10</div>
+      <h4>Encoding Methods</h4>
+      <p>Rate, temporal, population, delta modulation, cochlear models &mdash; codified and reproducible.</p>
+    </div>
+  </div>
+</div>
+
+<footer class="demo-footer">
+  <div class="footer-brand">Phasor &mdash; Training Infrastructure for Lean AI</div>
+  <div class="footer-links">
+    <a href="/">Home</a>
+    <a href="/#product">Platform</a>
+    <a href="/#contact">Request Deck</a>
+    <a href="https://discord.com/invite/jh9VQaNUdW" target="_blank">Discord</a>
+    <a href="https://www.project-phasor.org" target="_blank">Community</a>
+  </div>
+  <div class="footer-note">projectphasor.com &mdash; Confidential</div>
+</footer>
+
+<script>
+// ── DATA ──
+const DATASETS = [
+  {
+    name: 'PlantVillage', domain: 'AI4Agriculture', priority: 'High',
+    encoding: 'Rate-Based Poisson Encoding',
+    note: '54,306 images · 14 crop species · 38 disease classes. RGB → grayscale → Poisson spike trains over 100ms window.',
+    tools: ['SpikingJelly', 'Norse', 'snnTorch', 'Brian2'],
+    steps: [
+      {
+        title: 'Acquire', viz: 'acquire',
+        detail: 'Download from <strong>github.com/spMohanty/PlantVillage-Dataset</strong>. 54,306 high-resolution images of plant leaves across 14 crop species and 38 classes (26 disease + 12 healthy). License: CC0. Verify checksums, document licensing, and create a local backup before proceeding — this is step 1 of PHASOR\'s 10-step pipeline.',
+        code: `<span class="cm"># Step 1 · Acquire PlantVillage</span>\n<span class="cm"># github.com/spMohanty/PlantVillage-Dataset</span>\n\n<span class="kw">from</span> <span class="var">torchvision</span> <span class="kw">import</span> <span class="var">datasets</span>, <span class="var">transforms</span>\n\n<span class="var">dataset</span> = <span class="fn">datasets.ImageFolder</span>(\n  <span class="str">"./PlantVillage"</span>,\n  <span class="var">transform</span>=<span class="fn">transforms.Compose</span>([\n    <span class="fn">transforms.Resize</span>((<span class="num">256</span>, <span class="num">256</span>)),\n    <span class="fn">transforms.CenterCrop</span>(<span class="num">224</span>),\n    <span class="fn">transforms.ToTensor</span>()\n  ])\n)\n<span class="fn">print</span>(<span class="str">f"Classes : {len(dataset.classes)}"</span>)  <span class="cm"># 38</span>\n<span class="fn">print</span>(<span class="str">f"Images  : {len(dataset):,}"</span>)         <span class="cm"># 54,306</span>`,
+        metric: null
+      },
+      {
+        title: 'Preprocess', viz: 'preprocess',
+        detail: 'Apply <strong>temporal jitter</strong> (±5px translation, ±3° rotation) to create variation that the rate encoder can exploit over time. Convert RGB to grayscale using perceptual weighting <code>0.299R + 0.587G + 0.114B</code>. Normalize pixel intensities to [0, 1]. This scalar intensity value directly becomes the Poisson firing rate in the next step.',
+        code: `<span class="cm"># Step 2 · Preprocess for rate encoding</span>\n<span class="kw">import</span> <span class="var">torchvision.transforms.functional</span> <span class="kw">as</span> <span class="var">TF</span>\n<span class="kw">import</span> <span class="var">random</span>\n\n<span class="kw">def</span> <span class="fn">preprocess</span>(<span class="var">img_rgb</span>):\n  <span class="cm"># Perceptual RGB → Grayscale</span>\n  <span class="var">gray</span> = <span class="fn">TF.rgb_to_grayscale</span>(<span class="var">img_rgb</span>)\n  <span class="cm"># Temporal jitter for variation</span>\n  <span class="var">gray</span> = <span class="fn">TF.affine</span>(\n    <span class="var">gray</span>,\n    <span class="var">angle</span>=<span class="fn">random.uniform</span>(-<span class="num">3</span>, <span class="num">3</span>),\n    <span class="var">translate</span>=(<span class="fn">random.randint</span>(-<span class="num">5</span>,<span class="num">5</span>),\n               <span class="fn">random.randint</span>(-<span class="num">5</span>,<span class="num">5</span>)),\n    <span class="var">scale</span>=<span class="num">1.0</span>, <span class="var">shear</span>=<span class="num">0</span>\n  )\n  <span class="kw">return</span> <span class="var">gray</span>.<span class="fn">float</span>() / <span class="num">255.0</span>  <span class="cm"># → [0,1]</span>`,
+        metric: null
+      },
+      {
+        title: 'Encode', viz: 'encode',
+        detail: '<strong>Rate-Based Poisson Encoding</strong>: each pixel intensity I ∈ [0,1] becomes a Poisson spike train with rate r = I × 100 Hz over a 100ms window (100 timesteps). Background pixels fire at 10–30 Hz; healthy green leaf tissue at 40–60 Hz; disease lesion pixels fire at 50–100 Hz — the contrast between regions is exactly what the SNN learns to detect. Alternative: apply temporal jitter directly to create event-like spike trains.',
+        code: `<span class="cm"># Step 3 · Poisson Rate Encoding</span>\n<span class="kw">from</span> <span class="var">spikingjelly.activation_based</span> <span class="kw">import</span> <span class="var">encoding</span>\n<span class="kw">import</span> <span class="var">torch</span>\n\n<span class="var">encoder</span>  = <span class="fn">encoding.PoissonEncoder</span>()\n<span class="var">T</span>        = <span class="num">100</span>  <span class="cm"># 100ms window = 100 steps</span>\n<span class="var">max_rate</span> = <span class="num">100</span>  <span class="cm"># Hz — biological ceiling</span>\n\n<span class="cm"># P(spike|t) = intensity × max_rate × dt</span>\n<span class="var">spike_seq</span> = <span class="fn">torch.stack</span>([\n  <span class="fn">encoder</span>(<span class="var">img_norm</span>)   <span class="cm"># binary {0,1}</span>\n  <span class="kw">for</span> <span class="var">_</span> <span class="kw">in</span> <span class="fn">range</span>(<span class="var">T</span>)\n])  <span class="cm"># → [100, 1, 224, 224]</span>\n<span class="cm"># Lesion:  ~70–100 Hz  (high contrast)</span>\n<span class="cm"># Healthy: ~40–60 Hz  (mid intensity)</span>\n<span class="cm"># BG:      ~10–30 Hz  (near zero)</span>`,
+        metric: null
+      },
+      {
+        title: 'Validate', viz: 'validate',
+        detail: 'Verify spike statistics match biological plausibility: mean firing rate 10–100 Hz, sparsity >90% per timestep. Critically, <strong>disease lesions produce detectable high-rate clusters</strong> in the spike density map — a hot zone the SNN\'s convolutional layers learn to identify. ISI distribution should follow Poisson statistics (exponential histogram). This step catches broken encoding before wasting training compute.',
+        code: `<span class="cm"># Step 4 · Validate encoding quality</span>\n<span class="var">mean_rate</span> = <span class="var">spike_seq</span>.<span class="fn">float</span>().<span class="fn">mean</span>() * <span class="var">T</span>\n<span class="var">sparsity</span>  = <span class="num">1.0</span> - <span class="var">spike_seq</span>.<span class="fn">float</span>().<span class="fn">mean</span>()\n\n<span class="fn">assert</span> <span class="num">10</span> &lt;= <span class="var">mean_rate</span> &lt;= <span class="num">100</span>, <span class="str">"Rate OOB"</span>\n<span class="fn">assert</span> <span class="var">sparsity</span> &gt; <span class="num">0.90</span>,          <span class="str">"Not sparse"</span>\n\n<span class="cm"># Measure lesion vs background separability</span>\n<span class="var">lesion_rate</span> = <span class="var">spike_seq</span>[:, <span class="var">lesion_mask</span>].<span class="fn">mean</span>() * <span class="var">T</span>\n<span class="var">bg_rate</span>     = <span class="var">spike_seq</span>[:, ~<span class="var">lesion_mask</span>].<span class="fn">mean</span>() * <span class="var">T</span>\n<span class="fn">print</span>(<span class="str">f"Lesion {lesion_rate:.0f}Hz | BG {bg_rate:.0f}Hz"</span>)`,
+        metric: { 'Avg Firing Rate': '47 Hz', 'Lesion Rate': '78 Hz', 'Healthy Leaf Rate': '42 Hz', 'Sparsity': '95.3%' }
+      },
+      {
+        title: 'Baseline', viz: 'baseline',
+        detail: 'Train <strong>SpikeVGG-11</strong> using STBP (Spatio-Temporal Backpropagation) with fast-sigmoid surrogate gradients. Rate coding: 94.8%; adding temporal coding: 97.2%. Deployed on Intel Loihi or SpiNNaker, inference draws <strong>~2.1 mW</strong> — enabling solar-powered field sensors that classify crop disease 24/7 with no data connection. 88× lower power than the GPU equivalent.',
+        code: `<span class="cm"># Step 5 · SNN Baseline — SpikeVGG-11</span>\n<span class="kw">import</span> <span class="var">snntorch</span> <span class="kw">as</span> <span class="var">snn</span>\n<span class="kw">from</span> <span class="var">snntorch</span> <span class="kw">import</span> <span class="var">surrogate</span>\n\n<span class="var">spike_grad</span> = <span class="fn">surrogate.fast_sigmoid</span>(<span class="var">slope</span>=<span class="num">25</span>)\n<span class="var">net</span> = <span class="fn">SpikeVGG11</span>(\n  <span class="var">num_classes</span>=<span class="num">38</span>,\n  <span class="var">spike_grad</span>=<span class="var">spike_grad</span>, <span class="var">T</span>=<span class="num">100</span>\n)\n<span class="cm"># Rate coding:     94.8% acc</span>\n<span class="cm"># + Temporal code: 97.2% acc</span>\n<span class="cm"># ANN (ResNet-50): 99.1% acc</span>\n<span class="cm"># Loihi power:     2.1 mW  ← 88× &lt; GPU</span>`,
+        metric: { 'SNN Accuracy': '94.8%', 'SNN + Temporal': '97.2%', 'ANN (ResNet-50)': '99.1%', 'Edge Power': '2.1 mW' }
+      },
+    ]
+  },
+  {
+    name: 'DVS/DAVIS Event Datasets', domain: 'AI4Robotics', priority: 'Critical',
+    encoding: 'Native Event-Based',
+    note: 'Already event-based. Standardize to .aedat4 or HDF5. Native neuromorphic.',
+    tools: ['Expelliarmus', 'Tonic', 'AEStream'],
+    steps: [
+      { title: 'Acquire', detail: 'Download from rpg.ifi.uzh.ch/davis_data.html. Verify integrity. These are native .aedat files from DAVIS cameras — no simulation needed.', code: `<span class="cm"># Step 1: Acquire DVS/DAVIS data</span>\n<span class="kw">import</span> <span class="var">expelliarmus</span> <span class="kw">as</span> <span class="var">ep</span>\n\n<span class="cm"># Verify file integrity</span>\n<span class="var">reader</span> = <span class="fn">ep.Reader</span>(<span class="str">"davis346_outdoor.aedat4"</span>)\n<span class="fn">print</span>(<span class="fn">reader.get_info</span>())`, metric: null },
+      { title: 'Preprocess', detail: 'DVS/DAVIS data is already event-based — no frame conversion needed. Normalize timestamps to microsecond resolution. Create train/val/test splits.', code: `<span class="kw">import</span> <span class="var">tonic</span>\n\n<span class="cm"># Load native event data</span>\n<span class="var">dataset</span> = <span class="fn">tonic.datasets.DAVIS</span>(<span class="str">"./data"</span>, <span class="var">download</span>=<span class="kw">True</span>)\n<span class="cm"># Events: (x, y, t, polarity)</span>\n<span class="var">events</span>, <span class="var">label</span> = <span class="var">dataset</span>[<span class="num">0</span>]\n<span class="fn">print</span>(<span class="var">events</span>.<span class="fn">shape</span>)  <span class="cm"># (N, 4)</span>`, metric: null },
+      { title: 'Encoding', detail: 'No encoding required — data is already in address-event representation (AER). Verify (x, y, t, polarity) format. This demonstrates native neuromorphic advantage.', code: `<span class="cm"># Already AER format — verify structure</span>\n<span class="var">transform</span> = <span class="fn">tonic.transforms.Compose</span>([\n  <span class="fn">tonic.transforms.ToTimesurface</span>(\n    <span class="var">surface_dimensions</span>=(<span class="num">32</span>,<span class="num">32</span>),\n    <span class="var">tau</span>=<span class="num">5000</span>  <span class="cm"># 5ms time constant</span>\n  )\n])\n<span class="cm"># Events remain sparse — no densification</span>`, metric: null },
+      { title: 'Validate', detail: 'Check event statistics: firing rates, inter-spike intervals, polarity balance. DVS cameras should show ON/OFF event parity near 50/50.', code: `<span class="cm"># Validate spike statistics</span>\n<span class="var">on_events</span> = <span class="var">events</span>[<span class="var">events</span>[<span class="str">'p'</span>] == <span class="num">1</span>]\n<span class="var">off_events</span> = <span class="var">events</span>[<span class="var">events</span>[<span class="str">'p'</span>] == <span class="num">0</span>]\n<span class="fn">print</span>(<span class="str">f"ON:  {len(on_events):,} events ({len(on_events)/len(events):.1%})"</span>)\n<span class="fn">print</span>(<span class="str">f"OFF: {len(off_events):,} events"</span>)\n<span class="cm"># Expected: ~50/50 for natural scenes</span>`, metric: { 'Avg Firing Rate': '2.3 kHz', 'ON/OFF Ratio': '51 / 49%', 'Temporal Res.': '1 µs', 'Sparsity': '99.2%' } },
+      { title: 'Baseline', detail: 'Train a simple SNN classifier. DVS data is perfect for demonstrating native neuromorphic advantage over frame-based ANNs.', code: `<span class="kw">import</span> <span class="var">spikingjelly.activation_based</span> <span class="kw">as</span> <span class="var">sj</span>\n\n<span class="var">net</span> = <span class="fn">sj.model.SpikingVGG</span>(\n  <span class="var">num_classes</span>=<span class="num">10</span>,\n  <span class="var">T</span>=<span class="num">16</span>  <span class="cm"># 16 time steps</span>\n)\n<span class="cm"># Energy: 0.3 mJ/inference vs 215 mJ GPU</span>\n<span class="cm"># Accuracy: 99.1% on N-MNIST</span>`, metric: { 'SNN Accuracy': '99.1%', 'ANN Baseline': '99.3%', 'Energy (SNN)': '0.3 mJ', 'Energy Reduction': '719×' } },
+    ]
+  },
+  {
+    name: 'Speech Commands', domain: 'AI4Audio', priority: 'Very High',
+    encoding: 'Mel-Frequency Spike Encoding',
+    note: 'Google Speech Commands — 35 words, 1-second clips. First-order mel-freq → spikes.',
+    tools: ['SpikingJelly', 'Brian Hears', 'Tonic'],
+    steps: [
+      { title: 'Acquire', detail: 'Download from Google Speech Commands v0.02. 105,829 clips of 35 spoken words at 16kHz. License: CC BY 4.0.', code: `<span class="kw">import</span> <span class="var">torchaudio</span>\n\n<span class="var">dataset</span> = <span class="fn">torchaudio.datasets.SPEECHCOMMANDS</span>(\n  <span class="str">"./data"</span>, <span class="var">download</span>=<span class="kw">True</span>\n)\n<span class="cm"># 105,829 × 1-second clips @ 16kHz</span>\n<span class="var">waveform</span>, <span class="var">sr</span>, <span class="var">label</span> = <span class="var">dataset</span>[<span class="num">0</span>]\n<span class="fn">print</span>(<span class="var">waveform</span>.<span class="fn">shape</span>)  <span class="cm"># torch.Size([1, 16000])</span>`, metric: null },
+      { title: 'Preprocess', detail: 'Apply pre-emphasis filter (α=0.97). Normalize amplitude. Frame into 25ms windows with 10ms hop. This conditions the signal for Mel filterbank extraction.', code: `<span class="kw">import</span> <span class="var">torch</span>, <span class="var">torchaudio.transforms</span> <span class="kw">as</span> <span class="var">T</span>\n\n<span class="cm"># Pre-emphasis + MFSC</span>\n<span class="var">mel_spec</span> = <span class="fn">T.MelSpectrogram</span>(\n  <span class="var">sample_rate</span>=<span class="num">16000</span>,\n  <span class="var">n_mels</span>=<span class="num">40</span>,\n  <span class="var">hop_length</span>=<span class="num">160</span>,  <span class="cm"># 10ms</span>\n  <span class="var">win_length</span>=<span class="num">400</span>   <span class="cm"># 25ms</span>\n)(<span class="var">waveform</span>)  <span class="cm"># → [40, 101]</span>`, metric: null },
+      { title: 'Encoding', detail: 'Apply first-order temporal difference to 40 mel bins → positive differences become ON spikes, negatives become OFF spikes. Threshold θ=0.15. Creates auditory nerve-like representation.', code: `<span class="kw">import</span> <span class="var">numpy</span> <span class="kw">as</span> <span class="var">np</span>\n\n<span class="cm"># Mel-frequency → spike trains</span>\n<span class="var">mel_db</span> = <span class="num">10</span> * <span class="fn">np.log10</span>(<span class="var">mel_spec</span> + <span class="num">1e-9</span>)\n<span class="var">diff</span> = <span class="var">mel_db</span>[:, <span class="num">1</span>:] - <span class="var">mel_db</span>[:, :-<span class="num">1</span>]\n\n<span class="var">theta</span> = <span class="num">0.15</span>  <span class="cm"># threshold</span>\n<span class="var">on_spikes</span>  = (<span class="var">diff</span> > <span class="var">theta</span>).<span class="fn">float</span>()\n<span class="var">off_spikes</span> = (<span class="var">diff</span> < -<span class="var">theta</span>).<span class="fn">float</span>()\n<span class="cm"># Shape: [40, 100] × 2 polarities</span>`, metric: null },
+      { title: 'Validate', detail: 'Check spike statistics across the 35-class dataset. Expected average firing rate: 15–40 Hz per mel channel. Verify spike density and temporal coverage.', code: `<span class="cm"># Measure encoding quality</span>\n<span class="var">spike_rate</span> = (<span class="var">on_spikes</span> + <span class="var">off_spikes</span>).<span class="fn">mean</span>() * <span class="num">100</span>\n<span class="var">coverage</span> = (<span class="var">on_spikes</span> + <span class="var">off_spikes</span> > <span class="num">0</span>).<span class="fn">float</span>().<span class="fn">mean</span>()\n<span class="fn">print</span>(<span class="str">f"Mean firing rate: {spike_rate:.1f} Hz"</span>)\n<span class="fn">print</span>(<span class="str">f"Temporal coverage: {coverage:.1%}"</span>)\n<span class="cm"># Validate biological plausibility</span>`, metric: { 'Avg Firing Rate': '23 Hz', 'Channels': '40 mel bins', 'Time Steps': '100 (10ms)', 'Sparsity': '94.8%' } },
+      { title: 'Baseline', detail: 'Train SNN on encoded speech. SNN-based keyword spotting approaches human-level accuracy at 50× lower power — ideal for always-on edge devices.', code: `<span class="kw">import</span> <span class="var">snntorch</span> <span class="kw">as</span> <span class="var">snn</span>\n<span class="kw">from</span> <span class="var">snntorch</span> <span class="kw">import</span> <span class="var">surrogate</span>\n\n<span class="var">spike_grad</span> = <span class="fn">surrogate.fast_sigmoid</span>(<span class="var">slope</span>=<span class="num">25</span>)\n<span class="cm"># CSNN: Conv-SNN for keyword spotting</span>\n<span class="cm"># Target: >95% accuracy @ &lt;1mW</span>\n<span class="cm"># vs standard DNN: 97.4% @ 50mW</span>`, metric: { 'SNN Accuracy': '95.8%', 'ANN Baseline': '97.4%', 'Power (SNN)': '0.8 mW', 'Use Case': 'Always-on KWS' } },
+    ]
+  },
+  {
+    name: 'KITTI Vision Benchmark', domain: 'AI4Robotics', priority: 'Very High',
+    encoding: 'Event Camera Simulation (v2e)',
+    note: 'Autonomous driving standard. v2e simulation on stereo sequences. LiDAR as 3D event clouds.',
+    tools: ['v2e', 'SpikingJelly', 'Expelliarmus'],
+    steps: [
+      { title: 'Acquire', detail: 'Download from cvlibs.net/datasets/kitti. Stereo + LiDAR sequences. ~200GB total. Subset: 22 training sequences for event simulation.', code: `<span class="cm"># Download KITTI raw sequences</span>\n<span class="cm"># Stereo: 1242×375 @ 10Hz</span>\n<span class="cm"># LiDAR: 64-beam Velodyne @ 10Hz</span>\n\n<span class="kw">import</span> <span class="var">pykitti</span>\n<span class="var">data</span> = <span class="fn">pykitti.raw</span>(<span class="str">"./kitti"</span>, <span class="str">"2011_09_26"</span>, <span class="str">"0001"</span>)\n<span class="fn">print</span>(<span class="str">f"Frames: {len(data.cam2_files)}"</span>)`, metric: null },
+      { title: 'Preprocess', detail: 'Extract stereo image sequences. Compute optical flow for motion priors. v2e needs consecutive frames to simulate DVS contrast events realistically.', code: `<span class="kw">import</span> <span class="var">cv2</span>, <span class="var">numpy</span> <span class="kw">as</span> <span class="var">np</span>\n\n<span class="cm"># Prepare frame sequence for v2e</span>\n<span class="var">frames</span> = <span class="fn">extract_grayscale_sequence</span>(<span class="var">data</span>)\n<span class="cm"># Compute optical flow (for realism)</span>\n<span class="var">flow</span> = <span class="fn">cv2.calcOpticalFlowFarneback</span>(\n  <span class="var">frames</span>[<span class="var">i</span>], <span class="var">frames</span>[<span class="var">i</span>+<span class="num">1</span>], <span class="kw">None</span>,\n  <span class="num">0.5</span>, <span class="num">3</span>, <span class="num">15</span>, <span class="num">3</span>, <span class="num">5</span>, <span class="num">1.2</span>, <span class="num">0</span>\n)`, metric: null },
+      { title: 'Encoding', detail: 'Run v2e (Video-to-Events) simulator. Contrast threshold C=0.2, refractory period 0.5ms, noise model enabled. Upsample from 10Hz to 1kHz synthetic frame rate before event generation.', code: `<span class="cm"># v2e: Video to Events simulation</span>\n<span class="cm"># python -m v2e \</span>\n<span class="cm">#   --input kitti_seq.avi \</span>\n<span class="cm">#   --output_folder ./events \</span>\n<span class="cm">#   --dvs_params standard \</span>\n<span class="cm">#   --pos_thres 0.2 \</span>\n<span class="cm">#   --neg_thres 0.2 \</span>\n<span class="cm">#   --refractory_period 0.5e-3 \</span>\n<span class="cm">#   --auto_timestamp_resolution True</span>\n<span class="cm"># Output: (x, y, t_µs, polarity)</span>`, metric: null },
+      { title: 'Validate', detail: 'Verify event density matches expected motion. KITTI driving sequences at 30mph produce ~500k–2M events/sec. Check edge density matches ground truth object boundaries.', code: `<span class="kw">import</span> <span class="var">expelliarmus</span> <span class="kw">as</span> <span class="var">ep</span>\n\n<span class="var">reader</span> = <span class="fn">ep.Reader</span>(<span class="str">"./events/kitti_events.aedat4"</span>)\n<span class="var">events</span> = <span class="fn">reader.load</span>()\n<span class="var">rate</span> = <span class="fn">len</span>(<span class="var">events</span>) / <span class="var">duration_s</span>\n<span class="fn">print</span>(<span class="str">f"Event rate: {rate/1e6:.2f}M events/s"</span>)\n<span class="cm"># Validate: 0.5–2M events/s for driving</span>`, metric: { 'Event Rate': '1.2M ev/s', 'Resolution': '1242 × 375', 'Timestamp Res.': '1 µs', 'LiDAR': '3D event clouds' } },
+      { title: 'Baseline', detail: 'SNN-based object detection on event streams. Temporal sparsity enables 10× lower latency than frame-based detection — critical for autonomous driving safety margins.', code: `<span class="cm"># Event-based SNN detector</span>\n<span class="cm"># Input: (x,y,t,p) event stream</span>\n<span class="cm"># Architecture: Spiking YOLO variant</span>\n\n<span class="cm"># Key metrics vs frame-based:</span>\n<span class="cm"># Latency: 1ms vs 33ms (10Hz frame)</span>\n<span class="cm"># Dynamic range: 120dB vs 60dB</span>\n<span class="cm"># Motion blur: eliminated</span>\n<span class="cm"># Power: ~5mW vs ~15W GPU</span>`, metric: { 'Detection Latency': '1.2 ms', 'Frame Latency': '33 ms', 'Dynamic Range': '120 dB', 'Blur Immunity': '✓ Yes' } },
+    ]
+  },
+  {
+    name: 'MNIST / Fashion-MNIST', domain: 'Infrastructure', priority: 'Critical',
+    encoding: 'Multi-Method Benchmark Suite',
+    note: '4 encoding methods compared: Rate, Latency, Burst, Temporal Contrast. Full baseline.',
+    tools: ['SpikingJelly', 'Norse', 'snnTorch'],
+    steps: [
+      { title: 'Acquire', detail: 'Download MNIST and Fashion-MNIST. 60k train + 10k test images. 28×28 grayscale. Standard ML benchmark — fast iteration for testing encoding methods.', code: `<span class="kw">from</span> <span class="var">torchvision</span> <span class="kw">import</span> <span class="var">datasets</span>, <span class="var">transforms</span>\n\n<span class="var">mnist</span> = <span class="fn">datasets.MNIST</span>(\n  <span class="str">"./data"</span>, <span class="var">train</span>=<span class="kw">True</span>, <span class="var">download</span>=<span class="kw">True</span>,\n  <span class="var">transform</span>=<span class="fn">transforms.ToTensor</span>()\n)\n<span class="cm"># 60,000 × (28×28) grayscale images</span>\n<span class="cm"># Labels: 10 digit classes 0–9</span>`, metric: null },
+      { title: 'Preprocess', detail: 'Normalize pixel intensities to [0,1]. This directly maps to firing rates in rate coding, or to spike latencies in temporal coding. No domain-specific preprocessing needed.', code: `<span class="cm"># Normalize to firing rate range</span>\n<span class="var">img</span> = <span class="var">img</span>.<span class="fn">float</span>() / <span class="num">255.0</span>  <span class="cm"># → [0, 1]</span>\n\n<span class="cm"># For latency coding: invert</span>\n<span class="cm"># (brighter → earlier spike)</span>\n<span class="var">latency</span> = <span class="num">1.0</span> - <span class="var">img</span>  <span class="cm"># → earlier = brighter</span>\n\n<span class="cm"># Reshape: [784] → [28, 28]</span>`, metric: null },
+      { title: 'Encoding', detail: 'PHASOR benchmarks all 4 methods: (1) Rate coding at 100Hz max, (2) Latency — darker=later spike, (3) Burst — intensity → burst length, (4) Temporal Contrast — edge detection via differences.', code: `<span class="kw">from</span> <span class="var">spikingjelly.activation_based</span> <span class="kw">import</span> <span class="var">encoding</span>\n\n<span class="cm"># Method 1: Poisson Rate Coding</span>\n<span class="var">rate_enc</span> = <span class="fn">encoding.PoissonEncoder</span>()\n<span class="var">spikes_rate</span> = <span class="fn">rate_enc</span>(<span class="var">img</span>, <span class="var">T</span>=<span class="num">100</span>)\n\n<span class="cm"># Method 2: Latency Coding</span>\n<span class="var">lat_enc</span> = <span class="fn">encoding.LatencyEncoder</span>(<span class="var">T</span>=<span class="num">100</span>)\n<span class="var">spikes_lat</span> = <span class="fn">lat_enc</span>(<span class="var">img</span>)\n\n<span class="cm"># → Compare all 4 in final benchmark</span>`, metric: null },
+      { title: 'Validate', detail: 'Compare encoding methods on information preservation. Rate coding: high information, high energy. Latency coding: sparse, efficient but fragile. Burst: moderate. Choose based on downstream task.', code: `<span class="cm"># Compare spike statistics per method</span>\n<span class="kw">for</span> <span class="var">method</span>, <span class="var">spikes</span> <span class="kw">in</span> <span class="var">encodings</span>.<span class="fn">items</span>():\n  <span class="var">density</span> = <span class="var">spikes</span>.<span class="fn">mean</span>()\n  <span class="var">total</span>   = <span class="var">spikes</span>.<span class="fn">sum</span>()\n  <span class="fn">print</span>(<span class="str">f"{method}: {density:.3f} density, {total} spikes"</span>)\n<span class="cm"># Rate: 0.45, Latency: 0.01, Burst: 0.12</span>`, metric: { 'Rate Sparsity': '55%', 'Latency Sparsity': '99%', 'Burst Sparsity': '88%', 'Winner': 'Task-dependent' } },
+      { title: 'Baseline', detail: 'SNN baseline achieves 99.2% on MNIST with latency coding. This establishes the competition baseline for the NeuromorphKaggle launch. All 4 encodings submitted for comparison.', code: `<span class="kw">import</span> <span class="var">snntorch</span> <span class="kw">as</span> <span class="var">snn</span>\n\n<span class="cm"># 2-layer SNN — competitive baseline</span>\n<span class="cm"># Training: BPTT + surrogate gradients</span>\n<span class="cm"># Rate coding:    99.2% accuracy</span>\n<span class="cm"># Latency coding: 98.8% accuracy</span>\n<span class="cm"># Burst coding:   99.0% accuracy</span>\n<span class="cm"># ANN baseline:   99.3% accuracy</span>\n<span class="cm"># → SNN gap &lt; 0.1% at 5× lower power</span>`, metric: { 'Best SNN Acc.': '99.2%', 'ANN Baseline': '99.3%', 'Energy Delta': '5× lower', 'Kaggle Ready': '✓ Yes' } },
+    ]
+  },
+  {
+    name: 'CERN LHC Open Data', domain: 'AI4Science', priority: 'Very High',
+    encoding: 'Direct Event Mapping (AER)',
+    note: 'Particle detector hits are already event-based. Map to AER. Preserve timestamps.',
+    tools: ['Custom AER mapping', 'Brian2', 'PyNN'],
+    steps: [
+      { title: 'Acquire', detail: 'Download from opendata.cern.ch. Proton-proton collision data from CMS detector. Already in structured event format — hit coordinates, timing, energy deposits.', code: `<span class="cm"># CERN CMS Open Data — ROOT format</span>\n<span class="kw">import</span> <span class="var">uproot</span>, <span class="var">awkward</span> <span class="kw">as</span> <span class="var">ak</span>\n\n<span class="var">file</span> = <span class="fn">uproot.open</span>(<span class="str">"CMS_Run2011A.root"</span>)\n<span class="var">events</span> = <span class="var">file</span>[<span class="str">"Events"</span>]\n<span class="cm"># Fields: DetId, Time_ns, Energy_GeV</span>\n<span class="fn">print</span>(<span class="fn">len</span>(<span class="var">events</span>), <span class="str">"collision events"</span>)`, metric: null },
+      { title: 'Preprocess', detail: 'Filter to minimum ionizing particles. Normalize detector coordinates to (row, col) address space. Remove noise hits below energy threshold (0.5 MeV).', code: `<span class="cm"># Filter + coordinate normalize</span>\n<span class="var">mask</span> = <span class="var">hits</span>[<span class="str">'energy'</span>] > <span class="num">0.5e-3</span>  <span class="cm"># 0.5 MeV threshold</span>\n<span class="var">filtered</span> = <span class="var">hits</span>[<span class="var">mask</span>]\n\n<span class="cm"># Map detector coords → (x, y) address</span>\n<span class="var">x</span> = (<span class="var">filtered</span>[<span class="str">'detId'</span>] >> <span class="num">16</span>) & <span class="num">0xFF</span>\n<span class="var">y</span> = (<span class="var">filtered</span>[<span class="str">'detId'</span>]) & <span class="num">0xFF</span>`, metric: null },
+      { title: 'Encoding', detail: 'Direct Address-Event Representation (AER) mapping. Particle hits → (x, y, t, polarity). Polarity encodes particle charge (positive/negative). No artificial encoding needed — nature already encoded it.', code: `<span class="cm"># Direct AER mapping — no simulation!</span>\n<span class="var">aer_events</span> = <span class="fn">np.column_stack</span>([\n  <span class="var">x</span>,        <span class="cm"># detector column</span>\n  <span class="var">y</span>,        <span class="cm"># detector row</span>\n  <span class="var">t_ns</span>,     <span class="cm"># nanosecond timestamp</span>\n  <span class="var">polarity</span>  <span class="cm"># particle charge sign</span>\n])\n<span class="fn">np.save</span>(<span class="str">"lhc_events.npy"</span>, <span class="var">aer_events</span>)\n<span class="cm"># CERN data is natively neuromorphic!</span>`, metric: null },
+      { title: 'Validate', detail: 'Verify spatial clustering matches known particle jet patterns. Check timestamp resolution (nanosecond-scale physics requires precision). Validate polarity balance matches physics expectations.', code: `<span class="cm"># Physics-aware validation</span>\n<span class="var">jet_events</span> = <span class="fn">cluster_jets</span>(<span class="var">aer_events</span>)\n<span class="fn">print</span>(<span class="str">f"Jets found: {len(jet_events)}"</span>)\n<span class="cm"># Verify: jets form spatial clusters</span>\n<span class="cm"># in the (x,y) event space</span>\n<span class="fn">assert</span> <span class="fn">validate_jet_topology</span>(<span class="var">jet_events</span>)`, metric: { 'Timestamp Res.': '1 ns', 'Spatial Res.': '72 × 72', 'Event Rate': '40M ev/s (peak)', 'ML Task': 'Jet classification' } },
+      { title: 'Baseline', detail: 'SNN-based particle jet classification. High-energy physics is a natural fit — the data is already event-based. Demonstrates SNNs on real scientific data at the frontier of physics.', code: `<span class="cm"># SNN jet classifier</span>\n<span class="cm"># Same architecture as particle physics GNN</span>\n<span class="cm"># but with spiking neurons + AER input</span>\n<span class="cm"># Benchmark: ROC-AUC for quark/gluon jets</span>\n<span class="cm"># SNN: 0.83 AUC vs ANN: 0.85 AUC</span>\n<span class="cm"># Energy: 0.1% of GPU equivalent</span>\n<span class="cm"># — enabling deployment at detector edge</span>`, metric: { 'SNN AUC': '0.83', 'ANN AUC': '0.85', 'Energy Ratio': '0.1%', 'Application': 'Real-time trigger' } },
+    ]
+  },
+  {
+    name: 'PlantVillage', domain: 'AI4Agriculture', priority: 'High',
+    encoding: 'Rate-Based Poisson Encoding',
+    note: '54K+ images, 38 disease classes. RGB → grayscale → Poisson spike trains over 100ms.',
+    tools: ['SpikingJelly', 'Norse', 'snnTorch'],
+    steps: [
+      { title: 'Acquire', detail: 'Download from github.com/spMohanty/PlantVillage-Dataset. 54,306 images of healthy and diseased plant leaves. 38 classes across 14 crop species.', code: `<span class="kw">from</span> <span class="var">torchvision</span> <span class="kw">import</span> <span class="var">datasets</span>\n\n<span class="var">dataset</span> = <span class="fn">datasets.ImageFolder</span>(\n  <span class="str">"./PlantVillage"</span>,\n  <span class="var">transform</span>=<span class="fn">transforms.Compose</span>([\n    <span class="fn">transforms.Resize</span>((<span class="num">224</span>, <span class="num">224</span>)),\n    <span class="fn">transforms.ToTensor</span>()\n  ])\n)\n<span class="cm"># 54,306 images · 38 disease classes</span>`, metric: null },
+      { title: 'Preprocess', detail: 'Convert RGB to grayscale. Apply center crop to remove background. Normalize to [0,1] intensity range. This intensity directly maps to Poisson spike rate.', code: `<span class="kw">import</span> <span class="var">torchvision.transforms.functional</span> <span class="kw">as</span> <span class="var">F</span>\n\n<span class="cm"># RGB → grayscale → normalize</span>\n<span class="var">img_gray</span> = <span class="fn">F.rgb_to_grayscale</span>(<span class="var">img_rgb</span>)\n<span class="var">img_norm</span> = (<span class="var">img_gray</span> - <span class="var">img_gray</span>.<span class="fn">min</span>()) / (\n            <span class="var">img_gray</span>.<span class="fn">max</span>() - <span class="var">img_gray</span>.<span class="fn">min</span>())\n<span class="cm"># → [0, 1] intensity range</span>`, metric: null },
+      { title: 'Encoding', detail: 'Poisson rate encoding: pixel intensity → spike probability per timestep. Max rate = 100Hz over 100ms window (100 timesteps). Diseased regions often show higher contrast → higher rates.', code: `<span class="kw">from</span> <span class="var">spikingjelly.activation_based</span> <span class="kw">import</span> <span class="var">encoding</span>\n\n<span class="var">encoder</span> = <span class="fn">encoding.PoissonEncoder</span>()\n<span class="var">T</span> = <span class="num">100</span>  <span class="cm"># 100ms window, 100 timesteps</span>\n<span class="var">max_rate</span> = <span class="num">100</span>  <span class="cm"># Hz</span>\n\n<span class="cm"># Each pixel → Poisson spike train</span>\n<span class="var">spikes</span> = <span class="fn">torch.stack</span>([\n  <span class="fn">encoder</span>(<span class="var">img_norm</span> * <span class="var">max_rate</span>/<span class="num">1000</span>)\n  <span class="kw">for</span> <span class="var">_</span> <span class="kw">in</span> <span class="fn">range</span>(<span class="var">T</span>)\n])  <span class="cm"># → [100, 224, 224]</span>`, metric: null },
+      { title: 'Validate', detail: 'Verify firing rate distribution. Healthy leaves: 40–60 Hz (even, green). Diseased: bimodal distribution with high-rate (70–100Hz) lesion regions and low-rate (10–20Hz) necrotic tissue.', code: `<span class="cm"># Check biologically plausible rates</span>\n<span class="var">mean_rate</span> = <span class="var">spikes</span>.<span class="fn">float</span>().<span class="fn">mean</span>() * <span class="num">1000</span>  <span class="cm"># Hz</span>\n<span class="fn">assert</span> <span class="num">10</span> <= <span class="var">mean_rate</span> <= <span class="num">100</span>, <span class="str">"Rate out of range"</span>\n\n<span class="cm"># Visualize spike density map</span>\n<span class="fn">plot_spike_heatmap</span>(<span class="var">spikes</span>.<span class="fn">mean</span>(<span class="num">0</span>))\n<span class="cm"># Disease lesions → high-rate hotspots</span>`, metric: { 'Avg Firing Rate': '47 Hz', 'Lesion Rate': '78 Hz', 'Healthy Rate': '42 Hz', 'Separability': 'High' } },
+      { title: 'Baseline', detail: 'SNN disease classifier achieves 94.8% accuracy. Particularly compelling: disease-specific spike patterns visible in temporal dimension — SNNs "see" disease through time, not just space.', code: `<span class="cm"># SNN Plant Disease Classifier</span>\n<span class="cm"># Architecture: SpikeVGG-11 (spikingjelly)</span>\n<span class="cm"># Training: STBP surrogate gradient</span>\n<span class="cm"># Accuracy: 94.8% (38 classes)</span>\n<span class="cm"># ANN (ResNet50): 99.1%</span>\n<span class="cm"># Gap explained by rate coding loss</span>\n<span class="cm"># → temporal coding test: 97.2%</span>`, metric: { 'SNN Accuracy': '94.8%', 'SNN+Temporal': '97.2%', 'ANN (ResNet50)': '99.1%', 'Deployment': 'Edge (IoT)' } },
+    ]
+  },
+];
+
+// ── STATE ──
+let currentDs = 0;
+let currentStep = 0;
+let isRunning = false;
+let stepTimer = null;
+let spikeAnim = null;
+
+// ── BUILD SIDEBAR ──
+function buildSidebar() {
+  const list = document.getElementById('datasetList');
+  list.innerHTML = '';
+  DATASETS.forEach((ds, i) => {
+    const p = ds.priority.toLowerCase().replace(' ','-');
+    const badgeClass = p === 'critical' ? 'badge-critical' : p === 'very-high' ? 'badge-very-high' : p === 'high' ? 'badge-high' : 'badge-medium';
+    const item = document.createElement('div');
+    item.className = 'ds-item' + (i === 0 ? ' active' : '');
+    item.innerHTML = `
+      <span class="ds-item-badge ${badgeClass}">${ds.priority}</span>
+      <div class="ds-item-name">${ds.name}</div>
+      <div class="ds-item-domain">${ds.domain} · ${ds.encoding}</div>`;
+    item.onclick = () => selectDataset(i);
+    list.appendChild(item);
+  });
+}
+
+// ── SELECT DATASET ──
+function selectDataset(idx) {
+  if (isRunning) return;
+  clearTimeout(stepTimer);
+  if (spikeAnim) { cancelAnimationFrame(spikeAnim); spikeAnim = null; }
+
+  currentDs = idx;
+  currentStep = 0;
+
+  document.querySelectorAll('.ds-item').forEach((el, i) => {
+    el.classList.toggle('active', i === idx);
+  });
+
+  const ds = DATASETS[idx];
+  document.getElementById('topbarName').textContent = ds.name;
+  document.getElementById('topbarDomain').textContent = ds.domain + ' · ' + ds.priority + ' Priority';
+
+  buildStepBar(ds);
+  renderStep(ds, 0, false);
+  document.getElementById('runBtn').className = 'demo-run-btn';
+  document.getElementById('runBtn').innerHTML = '<span>▶</span> Run Conversion';
+}
+
+// ── BUILD STEP BAR ──
+function buildStepBar(ds) {
+  const bar = document.getElementById('stepBar');
+  bar.innerHTML = '';
+  ds.steps.forEach((s, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'step-dot' + (i === 0 ? ' active' : '');
+    dot.textContent = i + 1;
+    dot.title = s.title;
+    dot.onclick = () => { if(!isRunning) goToStep(i); };
+    bar.appendChild(dot);
+    if (i < ds.steps.length - 1) {
+      const conn = document.createElement('div');
+      conn.className = 'step-connector';
+      bar.appendChild(conn);
+    }
+  });
+}
+
+function goToStep(idx) {
+  currentStep = idx;
+  renderStep(DATASETS[currentDs], idx, false);
+  updateStepBar(idx, false);
+}
+
+// ── UPDATE STEP BAR ──
+function updateStepBar(activeStep, animate) {
+  const dots = document.querySelectorAll('.step-dot');
+  const conns = document.querySelectorAll('.step-connector');
+  dots.forEach((d, i) => {
+    d.classList.remove('active','done');
+    if (i < activeStep) d.classList.add('done');
+    else if (i === activeStep) d.classList.add('active');
+  });
+  conns.forEach((c, i) => {
+    c.classList.toggle('done', i < activeStep);
+  });
+}
+
+// ── RENDER STEP ──
+function renderStep(ds, stepIdx, animate) {
+  const step = ds.steps[stepIdx];
+  const panels = document.getElementById('demoPanels');
+  const hasMetric = step.metric && Object.keys(step.metric).length > 0;
+
+  const metricHTML = hasMetric ? `
+    <div class="panel">
+      <div class="panel-label">// Metrics & Validation</div>
+      <div class="panel-title">${step.title} Results</div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:8px;">
+        ${Object.entries(step.metric).map(([k,v]) => `
+          <div class="metric-row">
+            <span class="metric-label">${k}</span>
+            <span class="metric-value ${typeof v === 'string' && v.includes('✓') ? 'green' : typeof v === 'string' && v.includes('%') ? 'teal' : ''}">${v}</span>
+          </div>`).join('')}
+        <div class="spike-viz" id="spikeVizPanel" style="margin-top:auto;">
+          <canvas id="miniSpike"></canvas>
+        </div>
+      </div>
+    </div>` : `
+    <div class="panel">
+      <div class="panel-label">// Spike Visualization</div>
+      <div class="panel-title">Event Stream Preview</div>
+      <div class="spike-viz" style="flex:1;" id="spikeVizPanel">
+        <canvas id="miniSpike"></canvas>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label"><span>Processing ${ds.name}</span><span id="progPct">0%</span></div>
+        <div class="progress-bar"><div class="progress-fill" id="progFill"></div></div>
+      </div>
+    </div>`;
+
+  panels.innerHTML = `
+    <div class="panel">
+      <div class="panel-label">// Encoding Pipeline · Step ${stepIdx+1}/${ds.steps.length}</div>
+      <div class="panel-title">${step.title}</div>
+      <div class="code-block">${step.code}</div>
+      <div class="info-grid" style="margin-top:4px;">
+        <div class="info-card"><div class="info-card-label">Encoding</div><div class="info-card-value teal" style="font-size:0.73rem;">${ds.encoding}</div></div>
+        <div class="info-card"><div class="info-card-label">Tools</div><div class="info-card-value" style="font-size:0.7rem;">${ds.tools.join(', ')}</div></div>
+      </div>
+    </div>
+    ${metricHTML}`;
+
+  // spike detail footer
+  document.getElementById('stepNumBadge').textContent = stepIdx + 1;
+  document.getElementById('stepDetailText').innerHTML = step.detail;
+
+  // launch mini spike animation
+  if (spikeAnim) { cancelAnimationFrame(spikeAnim); spikeAnim = null; }
+  setTimeout(() => launchMiniSpike(stepIdx, ds), 100);
+
+  // animate progress bar if present
+  if (!hasMetric) {
+    setTimeout(() => {
+      const fill = document.getElementById('progFill');
+      const pct = document.getElementById('progPct');
+      if (fill && pct) {
+        const target = animate ? Math.round((stepIdx+1)/ds.steps.length*100) : Math.round(stepIdx/ds.steps.length*100);
+        fill.style.width = target + '%';
+        pct.textContent = target + '%';
+      }
+    }, 200);
+  }
+}
+
+// ── VISUALIZATION ENGINE ──
+function launchMiniSpike(stepIdx, ds) {
+  const canvas = document.getElementById('miniSpike');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width  = canvas.offsetWidth  || 300;
+  canvas.height = canvas.offsetHeight || 150;
+
+  const W = canvas.width, H = canvas.height;
+
+  // PlantVillage gets a special leaf heatmap — others get raster plot
+  if (ds.name === 'PlantVillage') {
+    drawLeafViz(ctx, W, H, stepIdx);
+    return;
+  }
+
+  // Generic spike raster
+  const ROWS = 12;
+  const colors = ['#c9a84c','#a78bfa','#fbbf24','#4ade80','#f87171'];
+  const neurons = Array.from({length:ROWS}, (_, i) => ({
+    y: 12 + (i / (ROWS-1)) * (H - 24),
+    spikes: [],
+    rate: 0.012 + Math.random() * 0.03,
+    color: colors[i % colors.length],
+  }));
+
+  function draw() {
+    if (!document.getElementById('miniSpike')) return;
+    ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle = 'rgba(255,255,255,0.04)'; ctx.lineWidth = 1;
+    neurons.forEach(n => { ctx.beginPath(); ctx.moveTo(0,n.y); ctx.lineTo(W,n.y); ctx.stroke(); });
+    neurons.forEach(n => {
+      if (Math.random() < n.rate) n.spikes.push({x:W, age:0});
+    });
+    neurons.forEach(n => {
+      n.spikes = n.spikes.filter(s => s.x > 0);
+      n.spikes.forEach(s => {
+        s.x -= 1.4; s.age++;
+        const alpha = Math.max(0, 1 - s.age/180);
+        const h = 8 + Math.random() * 6;
+        ctx.save(); ctx.globalAlpha = alpha; ctx.strokeStyle = n.color;
+        ctx.lineWidth = 1.5; ctx.shadowColor = n.color; ctx.shadowBlur = 8;
+        ctx.beginPath(); ctx.moveTo(s.x,n.y); ctx.lineTo(s.x,n.y-h); ctx.stroke();
+        ctx.restore();
+      });
+    });
+    spikeAnim = requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// ── PLANT VILLAGE LEAF HEATMAP ──
+function drawLeafViz(ctx, W, H, stepIdx) {
+  const COLS = 36, ROWS = 28;
+  const cw = W / COLS, ch = H / ROWS;
+
+  // Build a synthetic leaf shape with disease spots
+  const leafMap = buildLeafMap(COLS, ROWS);
+  // firing rate grid — evolves with step
+  let rates = buildRates(leafMap, stepIdx, COLS, ROWS);
+  // spike accumulator per cell
+  const spikeCounts = rates.map(r => 0);
+  let tick = 0;
+  const T = 100;
+
+  function frame() {
+    if (!document.getElementById('miniSpike')) return;
+    ctx.clearRect(0, 0, W, H);
+
+    tick++;
+    // Update Poisson spikes
+    for (let i = 0; i < rates.length; i++) {
+      if (Math.random() < rates[i] / 1000) spikeCounts[i]++;
+    }
+
+    // Draw heatmap cells
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        const idx = r * COLS + c;
+        const cell = leafMap[idx];
+        if (cell === 0) continue; // outside leaf
+
+        // Color by type + accumulated spikes
+        const spikeNorm = Math.min(spikeCounts[idx] / Math.max(1, tick * rates[idx]/1000 * 1.5), 1);
+        let color;
+        if (cell === 3) {
+          // Disease lesion — amber/red
+          const t = 0.5 + 0.5 * Math.sin(tick * 0.08 + idx * 0.3);
+          color = lerpColor('#78350f', '#fbbf24', spikeNorm * 0.7 + t * 0.3);
+        } else if (cell === 2) {
+          // Vein — teal
+          color = lerpColor('#0f3d38', '#c9a84c', spikeNorm * 0.8);
+        } else {
+          // Healthy leaf tissue — green
+          color = lerpColor('#052e16', '#4ade80', spikeNorm * 0.65);
+        }
+
+        ctx.fillStyle = color;
+        ctx.fillRect(c * cw + 0.5, r * ch + 0.5, cw - 1, ch - 1);
+
+        // Flash spike on fire
+        if (Math.random() < rates[idx] / 1000 * 1.5) {
+          ctx.fillStyle = 'rgba(255,255,255,0.55)';
+          ctx.fillRect(c * cw + 1, r * ch + 1, cw - 2, ch - 2);
+        }
+      }
+    }
+
+    // Overlay rate legend
+    ctx.font = `${Math.min(9, cw * 0.8)}px DM Mono, monospace`;
+    if (stepIdx >= 2) {
+      drawLegend(ctx, W, H, stepIdx);
+    }
+
+    spikeAnim = requestAnimationFrame(frame);
+  }
+  frame();
+}
+
+function buildLeafMap(COLS, ROWS) {
+  // 0=outside, 1=leaf, 2=vein, 3=lesion
+  const map = new Array(COLS * ROWS).fill(0);
+  const cx = COLS / 2, cy = ROWS / 2;
+  const rx = COLS * 0.42, ry = ROWS * 0.44;
+
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const dx = (c - cx) / rx, dy = (r - cy) / ry;
+      // Ellipse + pointed tip taper
+      const taper = 1 - Math.abs(dy) * 0.35;
+      if (dx * dx / (taper * taper) + dy * dy < 1) {
+        map[r * COLS + c] = 1;
+      }
+    }
+  }
+
+  // Central vein
+  for (let r = 2; r < ROWS - 2; r++) {
+    const c = Math.round(cx);
+    for (let dc = -1; dc <= 1; dc++) {
+      if (c + dc >= 0 && c + dc < COLS) map[r * COLS + c + dc] = 2;
+    }
+  }
+  // Side veins
+  for (let side = -1; side <= 1; side += 2) {
+    for (let i = 0; i < 4; i++) {
+      const startR = Math.round(cy - ry * 0.6 + i * ry * 0.33);
+      for (let j = 0; j < Math.round(rx * 0.55); j++) {
+        const vr = startR + Math.round(j * 0.35 * side);
+        const vc = Math.round(cx + side * j);
+        if (vr >= 0 && vr < ROWS && vc >= 0 && vc < COLS && map[vr * COLS + vc] === 1) {
+          map[vr * COLS + vc] = 2;
+        }
+      }
+    }
+  }
+
+  // Disease spots (3 clusters)
+  const spots = [
+    {cr: Math.round(cy - ry*0.25), cc: Math.round(cx + rx*0.35), r: 3.2},
+    {cr: Math.round(cy + ry*0.3),  cc: Math.round(cx - rx*0.3),  r: 2.4},
+    {cr: Math.round(cy + ry*0.05), cc: Math.round(cx + rx*0.1),  r: 2.0},
+  ];
+  spots.forEach(spot => {
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        const d = Math.sqrt((r-spot.cr)**2 + (c-spot.cc)**2);
+        if (d < spot.r && map[r * COLS + c] === 1) {
+          map[r * COLS + c] = 3;
+        }
+      }
+    }
+  });
+
+  return map;
+}
+
+function buildRates(leafMap, stepIdx, COLS, ROWS) {
+  return leafMap.map(cell => {
+    if (cell === 0) return 0;
+    const base = cell === 3 ? 78 : cell === 2 ? 55 : 42;
+    // Earlier steps = lower rates (not yet encoded)
+    const scale = stepIdx < 2 ? 0.15 + stepIdx * 0.2 : 1.0;
+    return base * scale + (Math.random() * 8 - 4);
+  });
+}
+
+function lerpColor(hex1, hex2, t) {
+  t = Math.max(0, Math.min(1, t));
+  const r1 = parseInt(hex1.slice(1,3),16), g1 = parseInt(hex1.slice(3,5),16), b1 = parseInt(hex1.slice(5,7),16);
+  const r2 = parseInt(hex2.slice(1,3),16), g2 = parseInt(hex2.slice(3,5),16), b2 = parseInt(hex2.slice(5,7),16);
+  const r = Math.round(r1 + (r2-r1)*t).toString(16).padStart(2,'0');
+  const g = Math.round(g1 + (g2-g1)*t).toString(16).padStart(2,'0');
+  const b = Math.round(b1 + (b2-b1)*t).toString(16).padStart(2,'0');
+  return `#${r}${g}${b}`;
+}
+
+function drawLegend(ctx, W, H, stepIdx) {
+  const items = [
+    {color:'#4ade80', label:`Healthy ~42 Hz`},
+    {color:'#c9a84c', label:`Vein ~55 Hz`},
+    {color:'#fbbf24', label:`Lesion ~78 Hz`},
+  ];
+  items.forEach((item, i) => {
+    ctx.fillStyle = 'rgba(8,8,14,0.7)';
+    ctx.fillRect(W - 110, 6 + i * 18, 104, 15);
+    ctx.fillStyle = item.color;
+    ctx.fillRect(W - 107, 9 + i * 18, 8, 8);
+    ctx.fillStyle = 'rgba(255,255,255,0.55)';
+    ctx.font = '8px DM Mono, monospace';
+    ctx.fillText(item.label, W - 95, 18 + i * 18);
+  });
+}
+
+// ── RUN CONVERSION ──
+function runConversion() {
+  if (isRunning) return;
+  isRunning = true;
+  currentStep = 0;
+
+  const btn = document.getElementById('runBtn');
+  btn.className = 'demo-run-btn running';
+  btn.innerHTML = '<span class="spinner"></span> Converting...';
+
+  const ds = DATASETS[currentDs];
+  updateStepBar(0, true);
+  renderStep(ds, 0, true);
+
+  function advance() {
+    if (currentStep < ds.steps.length - 1) {
+      currentStep++;
+      updateStepBar(currentStep, true);
+      renderStep(ds, currentStep, true);
+      stepTimer = setTimeout(advance, 2200);
+    } else {
+      isRunning = false;
+      btn.className = 'demo-run-btn';
+      btn.innerHTML = '<span>✓</span> Complete — Run Again';
+    }
+  }
+
+  stepTimer = setTimeout(advance, 2000);
+}
+
+// ── INIT ──
+buildSidebar();
+selectDataset(0);
+</script>
+</body>
+</html>
