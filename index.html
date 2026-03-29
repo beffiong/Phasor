@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Phasor — Training Infrastructure for Lean AI</title>
+<title>Phasor — Episodes: Training Data for Lean AI</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Mono:wght@300;400;500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="style.css"/>
 </head>
@@ -16,192 +16,129 @@
     <span class="nav-wm">Phasor</span>
   </a>
   <ul class="nav-links">
-    <li><a href="#opportunity">Opportunity</a></li>
-    <li><a href="#product">Platform</a></li>
-    <li><a href="#traction">Traction</a></li>
-    <li><a href="#market">Business</a></li>
+    <li><a href="#episodes">Episodes</a></li>
+    <li><a href="#phagle">Phagle</a></li>
     <li><a href="#team">Team</a></li>
-    <li><a href="#community">Community</a></li>
-    <li><a href="#contact">Contact</a></li>
   </ul>
-  <a href="#contact" class="nav-cta">Request Deck →</a>
+  <a href="/demo" class="nav-cta">Explore Episodes &rarr;</a>
   <button class="nav-burger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
 </nav>
 <div class="mob" id="mob">
-  <a href="#opportunity" onclick="closeMob()">Opportunity</a>
-  <a href="#product" onclick="closeMob()">Platform</a>
-  <a href="#traction" onclick="closeMob()">Traction</a>
-  <a href="#market" onclick="closeMob()">Business</a>
+  <a href="#episodes" onclick="closeMob()">Episodes</a>
+  <a href="#phagle" onclick="closeMob()">Phagle</a>
   <a href="#team" onclick="closeMob()">Team</a>
-  <a href="#community" onclick="closeMob()">Community</a>
-  <a href="#contact" onclick="closeMob()">Contact</a>
 </div>
 
 <!-- HERO -->
 <section id="hero" class="hero">
-  <div class="hero-bg"></div>
+  <video class="hero-video" autoplay muted loop playsinline>
+    <source src="aurora_background.mp4" type="video/mp4"/>
+  </video>
+  <div class="hero-overlay"></div>
   <div class="container">
     <div class="hero-in">
-      <div class="hero-left">
-        <div class="eyebrow"><span class="eyebrow-line"></span>Investment Opportunity · projectphasor.com</div>
-        <h1>Training AI to stand<br/>under the <em>Sistine Chapel.</em></h1>
-        <p class="hdesc">The next generation of AI runs lean — on neuromorphic, analog, and asynchronous chips. Phasor builds the training infrastructure connecting data-efficient model developers with the hardware they can't find anywhere else.</p>
-        <div class="hact">
-          <a href="#contact" class="btn-p">Request Investment Deck</a>
-          <a href="#product" class="btn-g">See the Platform ↓</a>
-        </div>
-        <div class="hproof">
-          <div><div class="hpv">6,200<span>+</span></div><div class="hpl">Community Members</div></div>
-          <div class="hpsep"></div>
-          <div><div class="hpv">4<span>+</span></div><div class="hpl">Hardware Partners</div></div>
-          <div class="hpsep"></div>
-          <div><div class="hpv">$42K</div><div class="hpl">MRR Signed</div></div>
-          <div class="hpsep"></div>
-          <div><div class="hpv">2</div><div class="hpl">Published Papers</div></div>
-        </div>
-      </div>
-      <div class="hero-right">
-        <div class="hcard">
-          <div class="hcey">Market Opportunity</div>
-          <div class="hcbig">$150<span>B</span></div>
-          <div class="hcsub">AI accelerator market by 2030</div>
-          <div class="hcdiv"></div>
-          <div class="hcmet">
-            <div class="hcm"><div class="hcmv">10<span>–</span>20<span>%</span></div><div class="hcml">Infra layer capture</div></div>
-            <div class="hcm"><div class="hcmv">$15<span>–</span>30<span>B</span></div><div class="hcml">Phasor TAM</div></div>
-            <div class="hcm"><div class="hcmv">2000<span>%</span></div><div class="hcml">Revenue growth by June</div></div>
-          </div>
-          <div class="hcdiv"></div>
-          <div><div class="hcrl">Current Round</div><div class="hcrv">Seed — <span>$[X]M</span></div><div class="hcrs"><span class="pulse"></span>Open for commitments</div></div>
-        </div>
+      <div class="eyebrow hero-eyebrow"><span class="eyebrow-line"></span>Phasor &middot; Episodes &middot; Public release</div>
+      <h1>The training data for AI that works in the <em>real world.</em></h1>
+      <p class="hdesc">The models that will plow fields, repair infrastructure, and navigate Mars won't be trained on the internet. They need real-world, event-based data &mdash; collected and structured for machines that must act with limited compute and limited information. That's what Episodes is.</p>
+      <div class="hact">
+        <a href="/demo" class="btn-p">Explore the dataset &rarr;</a>
+        <a href="https://form.typeform.com/to/FcLvA8XN" class="btn-g hero-btn-g" target="_blank">Phagle Competition &rarr;</a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- VISION -->
-<div class="vision">
+<!-- STATS -->
+<section class="sec-stats">
   <div class="container">
-    <div class="vision-in">
-      <p class="vq">"The AIs built during the massive data center build-outs of the 2020s are now confined to a niche. It is the newer, more agile <strong>Lean AI</strong> models — trained in data scarcity, limited compute, and heterogeneous local reactance — that are plowing fields and helping humanity settle on Mars."</p>
-      <div class="vs">Phasor Vision — The Sistine Chapel Thesis · 2025</div>
-    </div>
-  </div>
-</div>
-
-<!-- OPPORTUNITY -->
-<section id="opportunity" class="sec-opp">
-  <div class="container">
-    <div class="stag">01 — The Opportunity</div>
-    <h2>AI is hitting a wall.<br/><em>We're building the door.</em></h2>
-    <p class="olead reveal">AI today is trained on data abundance and energy gluttony. The next frontier — embodied AI, edge AI, robotics — demands models that thrive in data scarcity, limited compute, and heterogeneous hardware. The infrastructure for this transition doesn't exist. That's Phasor's opening.</p>
-    <div class="opp-g">
-      <div class="opp-c reveal"><div class="onum">1000×</div><h3>Energy efficiency gap</h3><p>Neuromorphic and analog chips deliver orders-of-magnitude better energy efficiency than GPUs for sparse, event-driven workloads. Without shared training infrastructure, this advantage stays locked inside research labs.</p></div>
-      <div class="opp-c reveal"><div class="onum">$0</div><h3>Shared training infrastructure</h3><p>Every developer, every chip maker, every research lab builds from scratch. No standardized datasets. No shared benchmarks. No way to find each other. Intel just closed research access to Loihi2 — the alarm bells are ringing.</p></div>
-      <div class="opp-c reveal"><div class="onum">90%</div><h3>Of developers cite hardware access</h3><p>After 130+ customer interviews — 90% of conversations come back to the same problem: no access to the right hardware or the right dataset. Not because of budget.</p></div>
-    </div>
-    <div class="ibox reveal">
-      <div>
-        <div class="il">The Insight</div>
-        <p class="it">"The winner of the next computing era isn't a single chip company. It's whoever builds the <strong>abstraction layer above the hardware</strong>. We don't pick winners — we enable the market."</p>
+    <div class="stats-g">
+      <div class="stat-card reveal">
+        <div class="stat-val">27<span>+</span></div>
+        <div class="stat-label">Neuromorphic chip companies &mdash; less than 5% deployed commercially</div>
       </div>
-      <div class="iright">
-        <div class="istat"><div class="isv">130+</div><div class="isl">Customer interviews — developers, hardware makers, researchers at NeurIPS, Caltech, MIT, ETH Zurich, Google, NVIDIA, Tesla, AMD, Mercedes</div></div>
-        <div class="istat"><div class="isv">$150B</div><div class="isl">AI accelerator market by 2030. Infrastructure layers historically capture 10–20% of underlying markets.</div></div>
+      <div class="stat-card reveal">
+        <div class="stat-val">5,700<span>+</span></div>
+        <div class="stat-label">Developers in the Phasor community, ready to build</div>
+      </div>
+      <div class="stat-card reveal">
+        <div class="stat-val">2026<span>&ndash;</span>28</div>
+        <div class="stat-label">Window when high-quality LLM training data is fully exhausted</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- PRODUCT -->
-<section id="product" class="sec-prod">
+<!-- THE CONTEXT -->
+<section id="context" class="sec-context">
   <div class="container">
-    <div class="stag">02 — The Platform</div>
-    <div class="ph">
-      <h2>The training gym for<br/><em>Lean AI.</em></h2>
-      <p>Phasor connects data-efficient model developers with neuromorphic, analog, and asynchronous chip makers — providing proprietary training data and pipelines for developers, and benchmark diagnostics for hardware makers.</p>
-    </div>
-    <div class="pg">
-      <div class="pc reveal"><div class="pci">🧠</div><h3>Neuromorphic Data Platform</h3><p>The largest database of neuromorphic data — and growing. Proprietary event-based data converted from visual sources, with audio and gesture pipelines next. A Mag 7 company and a European car manufacturer in confirmation for their neuromorphic units.</p><div class="ptag">$40M ARR Potential</div></div>
-      <div class="pc reveal"><div class="pci">🔗</div><h3>Phasor Cargo — The Bridge</h3><p>Training and job submission pipeline connecting model developers to hardware partners. Developers get on-demand access to neuromorphic compute. Hardware makers get real-world diagnostics and benchmarking against competing chips. Nobody else is doing this.</p><div class="ptag">$2K–$14K/mo per partner</div></div>
-      <div class="pc reveal"><div class="pci">🏆</div><h3>Phaggle — Developer Competition</h3><p>A hackathon-style pipeline to get developers fluent on the platform and submitting jobs to hardware partners. Launching to stress-test Cargo with 8 hardware partners simultaneously and grow the developer community.</p><div class="ptag">Community Flywheel</div></div>
-      <div class="pc reveal"><div class="pci">⚙️</div><h3>AI-Powered Data Conversion</h3><p>Proprietary encoding pipeline converting visual data into event-based neuromorphic frames. The strategic advantage is our encoding — not just the data. Scaling AI to neuromorphic is Scale AI for the next hardware era.</p><div class="ptag">Proprietary Pipeline</div></div>
-    </div>
-    <div class="bridge reveal">
-      <h3>How Phasor Works</h3>
-      <p>Phasor sits at the center of the neuromorphic ecosystem — the connective tissue between chip makers and model developers.</p>
-      <div style="margin-top:32px">
-        <div class="brow">
-          <div class="bside">
-            <div class="blabel">Chip Makers</div>
-            <div class="bitem"><span class="bicon">🔬</span>Neuromorphic startups</div>
-            <div class="bitem"><span class="bicon">🏭</span>Analog chip fabs</div>
-            <div class="bitem"><span class="bicon">⚡</span>Asynchronous processors</div>
-            <div class="bitem"><span class="bicon">🔩</span>4+ signed hardware partners</div>
-          </div>
-          <div class="bctr">
-            <div class="blogo"><img src="logo.png" alt="Phasor"/></div>
-            <div class="barrow">data · jobs · benchmarks</div>
-          </div>
-          <div class="bside r">
-            <div class="blabel" style="text-align:right">Model Developers</div>
-            <div class="bitem"><span class="bicon">👩‍💻</span>Lean AI researchers</div>
-            <div class="bitem"><span class="bicon">🤖</span>Robotics AI teams</div>
-            <div class="bitem"><span class="bicon">🌱</span>Edge AI startups</div>
-            <div class="bitem"><span class="bicon">🔭</span>6,200+ community members</div>
-          </div>
-        </div>
+    <div class="context-grid">
+      <div class="context-text">
+        <div class="stag">01 &mdash; The Context</div>
+        <h2>The AI data wall is real.<br/><em>The next paradigm is already here.</em></h2>
+        <p class="olead reveal">High-quality training data for large language models is running out. Energy costs are unsustainable. The models that dominated the last decade were built on assumptions &mdash; infinite data, cheap compute &mdash; that are collapsing. The AI systems being built now are different: leaner, faster, designed to operate at the edge on novel neuromorphic and analog hardware. They don't need more of the internet. They need the right real-world data &mdash; and that data has, until now, barely existed.</p>
+      </div>
+      <div class="context-viz reveal">
+        <canvas id="neuralCanvas" width="480" height="480"></canvas>
       </div>
     </div>
   </div>
 </section>
 
-<!-- TRACTION -->
-<section id="traction" class="sec-tr">
+<!-- WHAT EPISODES IS -->
+<section id="episodes" class="sec-episodes">
   <div class="container">
-    <div class="stag">03 — Traction</div>
-    <h2>Real signals.<br/><em>Real momentum.</em></h2>
-    <div class="tg reveal">
-      <div class="ts"><div class="tsv">6,200<span>+</span></div><div class="tsl">Community Members</div><div class="tss">Model developers around Phasor</div></div>
-      <div class="ts"><div class="tsv">$42K</div><div class="tsl">MRR Signed</div><div class="tss">3 data research partnerships</div></div>
-      <div class="ts"><div class="tsv">130<span>+</span></div><div class="tsl">Customer Interviews</div><div class="tss">Developers, hardware, researchers</div></div>
-      <div class="ts"><div class="tsv">4<span>+</span></div><div class="tsl">Hardware Partners</div><div class="tss">Signed pilot agreements</div></div>
+    <div class="stag">02 &mdash; Episodes</div>
+    <h2>Event-based datasets for<br/><em>data-efficient models.</em></h2>
+    <p class="olead reveal">Episodes is a collection of real-world, event-based datasets designed to train Lean AI &mdash; models that learn to act from sparse, structured signals rather than massive text corpora. Each domain captures the kind of dynamic, time-sensitive data that embodied AI systems actually encounter: sensory events, physical interactions, environmental signals. This is training data built for models that need to do things, not just say things.</p>
+    <div class="pull-quote reveal">
+      <p>&ldquo;We're not trying to build bigger training sets. We're building the right ones &mdash; for the models that will actually run the world.&rdquo;</p>
     </div>
-    <div class="mg">
-      <div class="mc reveal"><div class="mi done">✅</div><div><div class="mt">2 Peer-Reviewed Research Papers</div><div class="md">TCP-SNN architecture and Memory-Augmented Spiking Networks — both peer-reviewed and published. Research foundation is validated and production-ready.</div><span class="mbadge done">Published</span></div></div>
-      <div class="mc reveal"><div class="mi done">✅</div><div><div class="mt">Largest Neuromorphic Dataset</div><div class="md">Proprietary event-based data generation pipeline. Visual-to-neuromorphic conversion built and live. Audio and gesture pipelines next. $40M ARR potential.</div><span class="mbadge done">Live</span></div></div>
-      <div class="mc reveal"><div class="mi done">✅</div><div><div class="mt">$42K MRR — Data Partnerships Signed</div><div class="md">3 research groups signed after last week's data platform push. Mag 7 company and European car manufacturer in confirmation for neuromorphic unit access.</div><span class="mbadge done">Signed</span></div></div>
-      <div class="mc reveal"><div class="mi prog">🔄</div><div><div class="mt">Phaggle Competition Launch</div><div class="md">Hackathon-style pipeline to onboard developers and stress-test Cargo with 8 hardware partners. Community flywheel begins.</div><span class="mbadge acc">In Progress</span></div></div>
-    </div>
-    <div class="qr">
-      <div class="qc reveal"><span class="qm">"</span><p>Please make it and let me know when you do!</p><div class="qa"><div class="qn">Model Developer</div><div class="qro">ETH Delft — NeurIPS 2025</div></div></div>
-      <div class="qc reveal"><span class="qm">"</span><p>You are going to save so much of my time. This would literally have needed us to create a whole other BD Team.</p><div class="qa"><div class="qn">Senior Leader</div><div class="qro">Leading UK Asynchronous Chip Manufacturer</div></div></div>
-      <div class="qc reveal"><span class="qm">"</span><p>The feedback will be so crucial. Can I pay you to help us build it?</p><div class="qa"><div class="qn">Head of Applications</div><div class="qro">Neuromorphic Hardware Startup</div></div></div>
+    <div class="reveal" style="margin-top:40px">
+      <a href="/demo" class="btn-p">Explore the dataset &rarr;</a>
     </div>
   </div>
 </section>
 
-<!-- MARKET -->
-<section id="market" class="sec-mkt">
+<!-- THE 8 DOMAINS -->
+<section id="domains" class="sec-domains">
   <div class="container">
-    <div class="stag">04 — Business Model</div>
-    <h2>Monetizing both sides<br/>of the <em>bridge.</em></h2>
-    <div class="mktg">
-      <div class="mktc reveal"><h3>Total Addressable Market</h3><div class="mktb">$150<span>B</span></div><p>AI accelerator market by 2030. Infrastructure layers historically capture 10–20% of underlying markets. When Phasor becomes the standard routing layer for next-gen AI compute, the TAM for the infrastructure layer alone is <strong>$15–30B</strong>.</p></div>
-      <div class="mktc reveal"><h3>The Robotics Data Opportunity</h3><div class="mktb">$40M<span>+</span></div><p>ARR potential from neuromorphic data alone. The world is running out of high-quality training data. Phasor generates real-world event-based data for perception and actuation — exactly what Boston Dynamics, Figure, and Unitree need.</p></div>
+    <div class="stag">03 &mdash; The 8 Domains</div>
+    <h2>A teaser across the full scope<br/>of <em>what we collect.</em></h2>
+    <p class="olead reveal">Each domain here is a proof point &mdash; evidence of our ability to find, structure, and deliver data that doesn't exist anywhere else. These 8 represent a fraction of what's coming.</p>
+    <div class="domain-g">
+      <div class="domain-c reveal"><div class="domain-num">01</div><div class="domain-pct">17.6%</div><h3>Foundational</h3><p>Core event-based signals for general Lean AI training</p></div>
+      <div class="domain-c reveal"><div class="domain-num">02</div><div class="domain-pct">15.7%</div><h3>Space</h3><p>Sensor and environmental data for extreme-condition deployment</p></div>
+      <div class="domain-c reveal"><div class="domain-num">03</div><div class="domain-pct">13.7%</div><h3>Robotics</h3><p>Physical interaction and motion data for embodied systems</p></div>
+      <div class="domain-c reveal"><div class="domain-num">04</div><div class="domain-pct">11.8%</div><h3>Automotive</h3><p>Real-world driving and perception event streams</p></div>
+      <div class="domain-c reveal"><div class="domain-num">05</div><div class="domain-pct">11.8%</div><h3>Molecular</h3><p>Biological and chemical event data for scientific AI</p></div>
+      <div class="domain-c reveal"><div class="domain-num">06</div><div class="domain-pct">11.8%</div><h3>Audio</h3><p>Temporal audio signals for edge inference and sensing</p></div>
+      <div class="domain-c reveal"><div class="domain-num">07</div><div class="domain-pct">9.8%</div><h3>Developmental</h3><p>Sequential learning data modelled on adaptive development</p></div>
+      <div class="domain-c reveal"><div class="domain-num">08</div><div class="domain-pct">7.8%</div><h3>Agriculture</h3><p>Field-level sensing and environmental response data</p></div>
     </div>
-    <div class="revg">
-      <div class="revc reveal"><div class="revph">Now</div><div class="revi">📊</div><h3>Data Subscriptions</h3><p>Research groups and AI labs pay for access to proprietary neuromorphic datasets. Scaling with demand.</p><div class="reva">$6K/mo per group · $42K MRR signed</div></div>
-      <div class="revc reveal"><div class="revph">Now → Scale</div><div class="revi">🔗</div><h3>Hardware Bridge Access</h3><p>Chip makers pay for access to the Cargo bridge — backend infrastructure to host jobs, receive diagnostics, and benchmark against competition.</p><div class="reva">$2K–$14K/mo · 4 signed partners</div></div>
-      <div class="revc reveal"><div class="revph">Scale</div><div class="revi">⚙️</div><h3>Compute Transaction Fees</h3><p>As developer volume scales, Phasor takes transaction fees on compute jobs submitted through the bridge. Dynamic pricing based on usage.</p><div class="reva">% of compute · scales with volume</div></div>
+  </div>
+</section>
+
+<!-- WHO THIS IS FOR -->
+<section id="audience" class="sec-audience">
+  <div class="container">
+    <div class="stag">04 &mdash; Who This Is For</div>
+    <h2>Built for developers who are<br/>building for <em>what's next.</em></h2>
+    <p class="olead reveal">If you're training models that need to run on neuromorphic, analog, or asynchronous chips &mdash; or that need to operate in the real world with limited data and limited power &mdash; Episodes gives you something to start with. And Phasor gives you the pipeline to go further. We're the bridge between the hardware that's emerging and the models that will use it.</p>
+    <div class="reveal" style="margin-top:40px">
+      <a href="/demo" class="btn-p">Explore Episodes &rarr;</a>
     </div>
-    <div class="compb reveal">
-      <h3>Why Phasor Wins</h3>
-      <div class="compg">
-        <div class="compc"><div class="compn">Neuromorphic Commons THOR</div><div class="compd">NSF-funded academic platform. Enough for a handful of research projects. Not commercial scale.</div><div class="compx">→ Research-only. Not a marketplace.</div></div>
-        <div class="compc"><div class="compn">Hyperscalers (AWS, Azure, Oracle)</div><div class="compd">No incentive to switch gears — margins depend on ROIC of existing GPU data center build-outs.</div><div class="compx">→ Wrong incentives. Wrong hardware.</div></div>
-        <div class="compc"><div class="compn">Groq, Cerebras, SambaNova</div><div class="compd">Hardware startups selling directly. Competing against each other instead of building shared infrastructure.</div><div class="compx">→ Vertical players, not infrastructure.</div></div>
-        <div class="compc"><div class="compn">MLCommons / NeuroBench</div><div class="compd">Provide standards but don't enable training. NeuroBench's limited data is already surpassed by Phasor's dataset.</div><div class="compx">→ Standards, not a platform.</div></div>
+  </div>
+</section>
+
+<!-- PHAGLE COMPETITION -->
+<section id="phagle" class="sec-phagle">
+  <div class="container">
+    <div class="phagle-in">
+      <div class="stag stag-dark">April 2026</div>
+      <h2>Phagle: our competition for the<br/>builders of <em>Lean AI.</em></h2>
+      <p class="phagle-desc reveal">Phagle is Phasor's answer to Kaggle &mdash; built for neuromorphic and data-efficient AI developers. Episodes is the official benchmark dataset. Teams will train and test models on real neuromorphic hardware for the first time, competing to show what Lean AI can do when it has the right data. If you're a developer, researcher, or ML engineer working at this frontier &mdash; this is your competition.</p>
+      <div class="reveal" style="margin-top:40px">
+        <a href="https://form.typeform.com/to/FcLvA8XN" class="btn-p" target="_blank">Register for Phagle &rarr;</a>
       </div>
     </div>
   </div>
@@ -210,105 +147,16 @@
 <!-- TEAM -->
 <section id="team" class="sec-team">
   <div class="container">
-    <div class="stag">05 — Team</div>
+    <div class="stag">06 &mdash; Team</div>
     <h2>The right team<br/><em>at the right moment.</em></h2>
-    <p class="tsub reveal">We needed what Phasor is building ourselves. After a year of exhaustive research and 130+ interviews, we didn't find an alternative — so we built it.</p>
+    <p class="tsub reveal">We needed what Phasor is building ourselves. After a year of exhaustive research and 130+ interviews, we didn't find an alternative &mdash; so we built it.</p>
     <div class="teamg">
-      <div class="teamc reveal"><div class="tav">BE</div><div class="tn">Blessing Effiong</div><div class="tt">Co-CEO — Technical</div><div class="tb">PhD Neuromorphic Researcher. Can knock out a full-stack implementation before breakfast. Built a crypto platform for her mother in Nigeria. Built the neuromorphic data generation pipeline for her department. Presented at NeurIPS. Briefed Congress on Brain-Inspired AI. Former full-stack developer and data scientist. The technical genius behind Phasor.</div><div class="chips"><span class="chip">PhD Researcher</span><span class="chip">NeurIPS</span><span class="chip">Congress Briefing</span><span class="chip">Full-Stack</span><span class="chip">SNN Expert</span></div></div>
-      <div class="teamc reveal"><div class="tav">VT</div><div class="tn">Veric Tan</div><div class="tt">Co-CEO — Applications</div><div class="tb">Has an eye for turning frontier science into business. Previously launched 2 startups. ML Engineer and Biotech Investment Analyst at a $5B AUM hedge fund — youngest analyst to direct investments that returned many folds over. Developed ML models predicting enthalpy stabilities of novel materials at Johns Hopkins. Contributor to the open-source neuromorphic framework SpikeJelly.</div><div class="chips"><span class="chip">Johns Hopkins</span><span class="chip">$5B AUM Hedge Fund</span><span class="chip">SpikeJelly</span><span class="chip">2 Prior Startups</span></div></div>
+      <div class="teamc reveal"><div class="tav">BE</div><div class="tn">Blessing Effiong</div><div class="tt">Co-CEO &mdash; Technical</div><div class="tb">PhD Neuromorphic Researcher. Can knock out a full-stack implementation before breakfast. Built a crypto platform for her mother in Nigeria. Built the neuromorphic data generation pipeline for her department. Presented at NeurIPS. Briefed Congress on Brain-Inspired AI. Former full-stack developer and data scientist. The technical genius behind Phasor.</div><div class="chips"><span class="chip">PhD Researcher</span><span class="chip">NeurIPS</span><span class="chip">Congress Briefing</span><span class="chip">Full-Stack</span><span class="chip">SNN Expert</span></div></div>
+      <div class="teamc reveal"><div class="tav">VT</div><div class="tn">Veric Tan</div><div class="tt">Co-CEO &mdash; Applications</div><div class="tb">Has an eye for turning frontier science into business. Previously launched 2 startups. ML Engineer and Biotech Investment Analyst at a $5B AUM hedge fund &mdash; youngest analyst to direct investments that returned many folds over. Developed ML models predicting enthalpy stabilities of novel materials at Johns Hopkins. Contributor to the open-source neuromorphic framework SpikeJelly.</div><div class="chips"><span class="chip">Johns Hopkins</span><span class="chip">$5B AUM Hedge Fund</span><span class="chip">SpikeJelly</span><span class="chip">2 Prior Startups</span></div></div>
     </div>
-    <div class="advb reveal">
-      <div class="advl">Network &amp; Partners</div>
-      <div class="advg">
-        <div class="advi"><strong>Caltech</strong><span>Research Partner</span></div>
-        <div class="advi"><strong>MIT</strong><span>Research Network</span></div>
-        <div class="advi"><strong>ETH Zurich</strong><span>Research Network</span></div>
-        <div class="advi"><strong>Johns Hopkins</strong><span>Research Network</span></div>
-        <div class="advi"><strong>AMD</strong><span>Industry Partner</span></div>
-        <div class="advi"><strong>Mercedes</strong><span>Industry Partner</span></div>
-        <div class="advi"><strong>TU Delft</strong><span>Hardware Partner</span></div>
-        <div class="advi"><strong>Boston Dynamics</strong><span>In Conversation</span></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- COMMUNITY -->
-<section id="community" class="sec-comm">
-  <div class="container">
-    <div class="stag">06 — Working Groups</div>
-    <h2>Built by a global<br/><em>community of builders.</em></h2>
-    <p class="csub reveal">Phasor is not a two-person startup. It's a movement. Our community of 6,200+ contributors is organized into technical working groups and application teams — each pushing the frontier of Lean AI in their domain.</p>
-
-    <div class="wgblock">
-      <div class="wghdr reveal">
-        <div class="wgtag">Technical Working Groups</div>
-        <p class="wghdesc">Core infrastructure tracks building the compiler, VM, datasets, and hardware integrations that power the Phasor platform.</p>
-      </div>
-      <div class="wgg">
-        <div class="wgc reveal"><div class="wgi">⚙️</div><div class="wgn">SG Compiler</div><div class="wgd">Open-source compiler framework for cross-platform neuromorphic deployment. LLVM-inspired, hardware-agnostic.</div><div class="wgt">#sg-compiler</div></div>
-        <div class="wgc reveal"><div class="wgi">🖥️</div><div class="wgn">SG Virtual Machine</div><div class="wgd">Cycle-accurate reference models for neuromorphic cores — enabling development without physical silicon.</div><div class="wgt">#sg-virtual-machine</div></div>
-        <div class="wgc reveal"><div class="wgi">🔀</div><div class="wgn">SG Heterogeneous Systems</div><div class="wgd">Cross-architecture integration across neuromorphic, analog, and asynchronous chips.</div><div class="wgt">#sg-heterogeneous</div></div>
-        <div class="wgc reveal"><div class="wgi">🏭</div><div class="wgn">SG Data Center</div><div class="wgd">Scaling neuromorphic infrastructure to data-center environments. Edge to cloud-scale compute.</div><div class="wgt">#sg-datacenter</div></div>
-        <div class="wgc reveal"><div class="wgi">🔴</div><div class="wgn">SG AMD</div><div class="wgd">Dedicated integration track optimizing Phasor tooling for AMD's neuromorphic and edge AI chip roadmap.</div><div class="wgt">#sg-amd</div></div>
-        <div class="wgc reveal"><div class="wgi">🗄️</div><div class="wgn">SG Datasets</div><div class="wgd">Generating the world's largest neuromorphic dataset. Event-based visual data today — audio and gesture next.</div><div class="wgt">#sg-datasets</div></div>
-        <div class="wgc reveal"><div class="wgi">💰</div><div class="wgn">SG Joint Fund</div><div class="wgd">Coordinating joint research funding, grants, and partnership opportunities across the Phasor ecosystem.</div><div class="wgt">#sg-joint-fund</div></div>
-      </div>
-    </div>
-
-    <div class="wgblock">
-      <div class="wghdr reveal">
-        <div class="wgtag app">Application Teams</div>
-        <p class="wghdesc">Domain-specific teams applying Lean AI and neuromorphic models to real-world use cases.</p>
-      </div>
-      <div class="wgg">
-        <div class="wgc app reveal"><div class="wgi">🤖</div><div class="wgn">AI for Robotics</div><div class="wgd">Training embodied AI on neuromorphic hardware for physical world interaction. The models that will plow fields and settle Mars.</div><div class="wgt">#team-ai4robotics</div></div>
-        <div class="wgc app reveal"><div class="wgi">🚀</div><div class="wgn">AI for Space</div><div class="wgd">Ultra-low power, radiation-tolerant neuromorphic AI for spacecraft. Autonomous onboard inference — no Earth-dependent communication required.</div><div class="wgt">#team-ai4space</div></div>
-        <div class="wgc app reveal"><div class="wgi">🌾</div><div class="wgn">AI for Agriculture</div><div class="wgd">Resource-constrained edge AI for farming in low-connectivity, limited-power environments.</div><div class="wgt">#team-ai4agriculture</div></div>
-        <div class="wgc app reveal"><div class="wgi">🎵</div><div class="wgn">AI for Audio</div><div class="wgd">Event-driven audio processing using spiking neural networks. Ultra-low-latency, energy-efficient sound recognition.</div><div class="wgt">#team-ai4audio</div></div>
-        <div class="wgc app reveal"><div class="wgi">🔬</div><div class="wgn">AI for Science</div><div class="wgd">Applying Lean AI to scientific computing — from materials discovery to climate modeling.</div><div class="wgt">#team-ai4science</div></div>
-      </div>
-    </div>
-
-    <div class="comm-cta reveal">
-      <div class="comm-cta-in">
-        <div><div class="ccval">6,200<span>+</span></div><div class="cclbl">members and growing</div></div>
-        <div class="cctxt"><p>Every working group is open. If you're a researcher, developer, or hardware maker who wants to be part of building the infrastructure for Lean AI — the door is open.</p></div>
-        <a href="https://discord.com/invite/jh9VQaNUdW" class="btn-p" target="_blank">Join the Community →</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CONTACT -->
-<section id="contact" class="sec-contact">
-  <div class="container">
-    <div class="cg">
-      <div class="reveal">
-        <div class="eyebrow"><span class="eyebrow-line"></span>07 — Get In Touch</div>
-        <h2>Ready to back<br/><em>the infrastructure?</em></h2>
-        <p class="cldesc">We're raising our seed round and building a select group of investors and strategic partners who understand that the next AI era runs lean. Request our deck and let's talk.</p>
-        <div class="cds">
-          <div><div class="cdl">Email</div><div class="cdv"><a href="mailto:veric@projectphasor.com">veric@projectphasor.com</a></div></div>
-          <div><div class="cdl">Website</div><div class="cdv"><a href="https://projectphasor.com">projectphasor.com</a></div></div>
-          <div><div class="cdl">Community</div><div class="cdv"><a href="https://project-phasor.org">project-phasor.org</a></div></div>
-        </div>
-      </div>
-      <form class="cform reveal" onsubmit="handleSubmit(event)">
-        <h3>Request Investment Deck</h3>
-        <div class="fr">
-          <div class="fg"><label>First Name</label><input type="text" placeholder="First name"/></div>
-          <div class="fg"><label>Last Name</label><input type="text" placeholder="Last name"/></div>
-        </div>
-        <div class="fg"><label>Email</label><input type="email" placeholder="you@fund.com"/></div>
-        <div class="fg"><label>Organization</label><input type="text" placeholder="Fund / Family Office / Strategic Partner"/></div>
-        <div class="fg"><label>Type of Interest</label>
-          <select><option value="">Select...</option><option>Institutional Investor / VC</option><option>Family Office</option><option>Strategic Partner / Corporation</option><option>Angel Investor</option><option>Government / Grant Funder</option></select>
-        </div>
-        <div class="fg"><label>Message</label><textarea placeholder="Tell us about your interest in Lean AI or Phasor..."></textarea></div>
-        <button type="submit" class="fsub">Send Request →</button>
-        <p class="fnote">We respond within 48 hours. Deck shared under NDA upon request.</p>
-      </form>
+    <div class="team-extra reveal">
+      <div class="team-mini"><div class="tav-sm">EZ</div><div><div class="tn-sm">Eric Zhang</div></div></div>
+      <div class="team-mini"><div class="tav-sm">MA</div><div><div class="tn-sm">Micha&#322; Antropik</div></div></div>
     </div>
   </div>
 </section>
@@ -317,52 +165,144 @@
   <div class="fin">
     <div>
       <img src="logo.png" class="flogo" alt="Phasor"/>
-      <p class="fdisc">This site is for informational purposes only and does not constitute an offer to sell or solicitation of an offer to buy any securities. Investment information is available to qualified investors only. © 2025 Phasor</p>
+      <p class="fdisc">Episodes is a lean machine intelligence data platform by Phasor. The percentages shown reflect the domain composition of the current dataset. Full dataset access and custom domain delivery available on request. Phagle Competition opens end April 2026.</p>
     </div>
     <div class="fr2">
-      <div class="flinks">
-        <a href="https://www.project-phasor.org">Community ↗</a>
-        <a href="https://discord.com/invite/jh9VQaNUdW">Discord ↗</a>
-        <a href="https://www.linkedin.com/company/project-phasor">LinkedIn ↗</a>
-        <a href="https://v0-ai-training-dashboard-kappa.vercel.app/">Platform ↗</a>
+      <div class="fcontact">
+        <span>v eric at projectphasor dot com</span>
+        <span>b lessing at projectphasor dot com</span>
       </div>
-      <div class="fcopy">projectphasor.com — Confidential</div>
+      <div class="fcopy">&copy; 2026 Phasor</div>
     </div>
   </div>
 </footer>
 
+<script src="main.js"></script>
 <script>
-const obs = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      const siblings = Array.from(e.target.parentElement.querySelectorAll('.reveal:not(.visible)'));
-      const delay = Math.min(siblings.indexOf(e.target) * 0.08, 0.42);
-      e.target.style.transitionDelay = delay + 's';
-      e.target.classList.add('visible');
-      obs.unobserve(e.target);
+(() => {
+  const canvas = document.getElementById('neuralCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const W = 480, H = 480;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  ctx.scale(dpr, dpr);
+
+  const nodes = [];
+  const edges = [];
+  const spikes = [];
+
+  // Create layered node positions (neuromorphic network)
+  const layers = [3, 5, 7, 5, 3];
+  const layerX = layers.map((_, i) => 60 + (i / (layers.length - 1)) * (W - 120));
+  layers.forEach((count, li) => {
+    for (let i = 0; i < count; i++) {
+      const spacing = H / (count + 1);
+      nodes.push({
+        x: layerX[li] + (Math.random() - 0.5) * 20,
+        y: spacing * (i + 1) + (Math.random() - 0.5) * 15,
+        r: 3 + Math.random() * 3,
+        layer: li,
+        phase: Math.random() * Math.PI * 2,
+        energy: 0
+      });
     }
   });
-}, { threshold: 0.07, rootMargin: '0px 0px -32px 0px' });
-document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
-window.addEventListener('scroll', () => {
-  document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 20);
-}, { passive: true });
-function toggleMenu() { document.getElementById('mob').classList.toggle('open'); }
-function closeMob() { document.getElementById('mob').classList.remove('open'); }
-document.addEventListener('click', e => {
-  const m = document.getElementById('mob');
-  if (m.classList.contains('open') && !m.contains(e.target) && !document.querySelector('.nav-burger').contains(e.target)) m.classList.remove('open');
-});
-function handleSubmit(e) {
-  e.preventDefault();
-  const btn = e.target.querySelector('.fsub');
-  btn.textContent = 'Request Sent ✓';
-  btn.disabled = true;
-  btn.style.cssText = 'background:rgba(217,79,43,.1);color:#d94f2b;border:1px solid rgba(217,79,43,.3);';
-  e.target.querySelectorAll('input,select,textarea').forEach(i => i.disabled = true);
-}
-</script>
 
-<script src="main.js"></script>
+  // Connect adjacent layers
+  nodes.forEach((a, ai) => {
+    nodes.forEach((b, bi) => {
+      if (b.layer === a.layer + 1 && Math.random() < 0.55) {
+        edges.push({ from: ai, to: bi, strength: 0.3 + Math.random() * 0.5 });
+      }
+    });
+  });
+
+  function fireSpike() {
+    const edge = edges[Math.floor(Math.random() * edges.length)];
+    spikes.push({ edge, t: 0, speed: 0.008 + Math.random() * 0.012 });
+  }
+
+  let time = 0;
+  function draw() {
+    time += 0.016;
+    ctx.clearRect(0, 0, W, H);
+
+    // Edges
+    edges.forEach(e => {
+      const a = nodes[e.from], b = nodes[e.to];
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(b.x, b.y);
+      ctx.strokeStyle = `rgba(217,79,43,${0.06 + e.strength * 0.06})`;
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+    });
+
+    // Spikes (traveling pulses)
+    for (let i = spikes.length - 1; i >= 0; i--) {
+      const s = spikes[i];
+      s.t += s.speed;
+      if (s.t > 1) {
+        nodes[s.edge.to].energy = 1;
+        spikes.splice(i, 1);
+        continue;
+      }
+      const a = nodes[s.edge.from], b = nodes[s.edge.to];
+      const x = a.x + (b.x - a.x) * s.t;
+      const y = a.y + (b.y - a.y) * s.t;
+      const glow = ctx.createRadialGradient(x, y, 0, x, y, 12);
+      glow.addColorStop(0, 'rgba(232,120,42,0.7)');
+      glow.addColorStop(1, 'rgba(232,120,42,0)');
+      ctx.fillStyle = glow;
+      ctx.fillRect(x - 12, y - 12, 24, 24);
+      ctx.beginPath();
+      ctx.arc(x, y, 2.5, 0, Math.PI * 2);
+      ctx.fillStyle = '#e8782a';
+      ctx.fill();
+    }
+
+    // Nodes
+    nodes.forEach(n => {
+      n.energy *= 0.94;
+      const pulse = Math.sin(time * 1.5 + n.phase) * 0.15 + 0.85;
+      const r = n.r * pulse;
+      const alpha = 0.25 + n.energy * 0.6;
+
+      // Glow
+      if (n.energy > 0.1) {
+        const g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, r * 5);
+        g.addColorStop(0, `rgba(217,79,43,${n.energy * 0.3})`);
+        g.addColorStop(1, 'rgba(217,79,43,0)');
+        ctx.fillStyle = g;
+        ctx.fillRect(n.x - r * 5, n.y - r * 5, r * 10, r * 10);
+      }
+
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(156,136,120,${alpha})`;
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, r * 0.5, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(217,79,43,${0.3 + n.energy * 0.7})`;
+      ctx.fill();
+    });
+
+    // Fire spikes periodically
+    if (Math.random() < 0.12) fireSpike();
+
+    requestAnimationFrame(draw);
+  }
+
+  // Only animate when visible
+  const vizObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { draw(); vizObs.unobserve(canvas); }
+    });
+  }, { threshold: 0.1 });
+  vizObs.observe(canvas);
+})();
+</script>
 </body>
 </html>
