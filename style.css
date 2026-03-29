@@ -127,6 +127,12 @@ h3{font-family:var(--fn);font-size:1rem;font-weight:600;color:var(--tx);margin-b
 .tav-sm{width:42px;height:42px;border-radius:50%;background:var(--bg2);border:1px solid var(--bm);display:flex;align-items:center;justify-content:center;font-family:var(--fs);font-size:.9rem;font-weight:700;color:var(--wb);flex-shrink:0}
 .tn-sm{font-size:.92rem;font-weight:600;color:var(--tx)}
 
+/* COMMUNITY */
+.sec-community{background:var(--bg);text-align:center}
+.community-in{max-width:560px;margin:0 auto}
+.community-desc{font-size:1.05rem;color:var(--txm);line-height:1.8;margin-bottom:36px}
+.community-links{display:flex;gap:20px;align-items:center;justify-content:center;flex-wrap:wrap}
+
 /* FOOTER */
 footer{padding:36px 48px;background:var(--bgdd);border-top:1px solid rgba(255,255,255,.05)}
 .fin{display:flex;justify-content:space-between;align-items:flex-start;gap:40px}
