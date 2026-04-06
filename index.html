@@ -19,7 +19,9 @@
   <ul class="nav-links">
     <li><a href="#episodes">Episodes</a></li>
     <li><a href="#phagle">Phagle</a></li>
+    <li><a href="#videos">Videos</a></li>
     <li><a href="#team">Team</a></li>
+    <li><a href="https://projectphasor.blogspot.com" target="_blank">Blog</a></li>
   </ul>
   <a href="/demo" class="nav-cta">Explore Episodes &rarr;</a>
   <button class="nav-burger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
@@ -27,7 +29,9 @@
 <div class="mob" id="mob">
   <a href="#episodes" onclick="closeMob()">Episodes</a>
   <a href="#phagle" onclick="closeMob()">Phagle</a>
+  <a href="#videos" onclick="closeMob()">Videos</a>
   <a href="#team" onclick="closeMob()">Team</a>
+  <a href="https://projectphasor.blogspot.com" target="_blank" onclick="closeMob()">Blog</a>
 </div>
 
 <!-- HERO -->
@@ -103,7 +107,7 @@
       </div>
 
       <div class="ep-side">
-<div class="audience-callout reveal">
+        <div class="audience-callout reveal">
           <div class="callout-label">A note from us</div>
           <p>We know that if you're doing research right now, you need data. We literally want you to tell us what data you need and we will get it to you.</p>
           <p class="callout-action">Email us your name, institution, and request to <strong>v eric at projectphasor dot com</strong> or  fill up this <strong><a href="https://forms.gle/1LyWTbGqs5ukFEgt9" class="btn-g hero-btn-g" target="_blank">form</a></strong></p>
@@ -129,6 +133,37 @@
   </div>
 </section>
 
+<!-- VIDEOS -->
+<section id="videos" class="sec-videos">
+  <div class="container">
+    <div class="stag">04 &mdash; Watch</div>
+    <h2>Phasor in motion.<br/><em>See what we're building.</em></h2>
+    <div class="videos-grid">
+      <div class="video-wrap reveal">
+        <iframe
+          src="https://www.youtube.com/embed/cXKOdgu0huE"
+          title="Phasor Video 1"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen>
+        </iframe>
+      </div>
+      <div class="video-wrap reveal">
+        <iframe
+          src="https://www.youtube.com/embed/vZ0mlHpSeD0"
+          title="Phasor Video 2"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen>
+        </iframe>
+      </div>
+    </div>
+    <div class="videos-more reveal">
+      <a href="https://www.youtube.com/@ProjectPhasor" class="btn-g" target="_blank">More on YouTube &rarr;</a>
+    </div>
+  </div>
+</section>
+
 <!-- TEAM -->
 <section id="team" class="sec-team">
   <div class="container">
@@ -146,7 +181,7 @@
           <div class="team-toggle"><span></span></div>
         </div>
         <div class="chips"><span class="chip">PhD Researcher</span><span class="chip">NeurIPS</span><span class="chip">Congress Briefing</span><span class="chip">Full-Stack</span><span class="chip">SNN Expert</span></div>
-        <div class="team-expand"><div class="tb">PhD Neuromorphic Researcher. Can knock out a full-stack implementation before breakfast. Built a crypto platform for her mother in Nigeria. Built the neuromorphic data generation pipeline for her department. Presented at NeurIPS. Briefed Congress on Brain-Inspired AI. Former full-stack developer and data scientist. The technical genius behind Phasor.</div></div>
+        <div class="team-expand"><div class="tb">PhD researcher in neuromorphic computing. Full-stack developer and data scientist. Presented at NeurIPS. Briefed Congress on Brain-Inspired AI.</div></div>
       </div>
       <div class="teamc reveal" onclick="this.classList.toggle('expanded')">
         <div class="team-header">
@@ -214,7 +249,6 @@
   const edges = [];
   const spikes = [];
 
-  // Create layered node positions (neuromorphic network)
   const layers = [3, 5, 7, 5, 3];
   const layerX = layers.map((_, i) => 60 + (i / (layers.length - 1)) * (W - 120));
   layers.forEach((count, li) => {
@@ -231,7 +265,6 @@
     }
   });
 
-  // Connect adjacent layers
   nodes.forEach((a, ai) => {
     nodes.forEach((b, bi) => {
       if (b.layer === a.layer + 1 && Math.random() < 0.55) {
@@ -250,7 +283,6 @@
     time += 0.016;
     ctx.clearRect(0, 0, W, H);
 
-    // Edges
     edges.forEach(e => {
       const a = nodes[e.from], b = nodes[e.to];
       ctx.beginPath();
@@ -261,7 +293,6 @@
       ctx.stroke();
     });
 
-    // Spikes (traveling pulses)
     for (let i = spikes.length - 1; i >= 0; i--) {
       const s = spikes[i];
       s.t += s.speed;
@@ -284,14 +315,12 @@
       ctx.fill();
     }
 
-    // Nodes
     nodes.forEach(n => {
       n.energy *= 0.94;
       const pulse = Math.sin(time * 1.5 + n.phase) * 0.15 + 0.85;
       const r = n.r * pulse;
       const alpha = 0.25 + n.energy * 0.6;
 
-      // Glow
       if (n.energy > 0.1) {
         const g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, r * 5);
         g.addColorStop(0, `rgba(217,79,43,${n.energy * 0.3})`);
@@ -310,13 +339,11 @@
       ctx.fill();
     });
 
-    // Fire spikes periodically
     if (Math.random() < 0.12) fireSpike();
 
     requestAnimationFrame(draw);
   }
 
-  // Only animate when visible
   const vizObs = new IntersectionObserver(entries => {
     entries.forEach(e => {
       if (e.isIntersecting) { draw(); vizObs.unobserve(canvas); }
@@ -325,5 +352,44 @@
   vizObs.observe(canvas);
 })();
 </script>
+
+<style>
+/* Videos Section */
+.sec-videos {
+  padding: 100px 0;
+  background: var(--bg, #faf7f2);
+}
+.sec-videos h2 {
+  margin-bottom: 48px;
+}
+.videos-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  margin-bottom: 40px;
+}
+.video-wrap {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #111;
+}
+.video-wrap iframe {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  border: none;
+}
+.videos-more {
+  text-align: center;
+}
+@media (max-width: 768px) {
+  .videos-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
 </body>
 </html>
