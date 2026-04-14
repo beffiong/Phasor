@@ -1,6 +1,6 @@
 # Project Phasor Website
 
-Official website for **Project Phasor** — an open-source collaborative initiative building shared neuromorphic computing infrastructure (compilers, virtual machines, and governance standards).
+Official website for **Project Phasor** — an initiative building shared neuromorphic computing infrastructure (compilers, virtual machines, and governance standards).
 
 🌐 **Live site:** [project-phasor.com](https://www.project-phasor.com)
 
