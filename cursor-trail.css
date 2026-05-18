@@ -1,0 +1,35 @@
+/* Cursor trail — pixel-square trail that follows the mouse and fades out.
+   Click-through layer above content; disabled on touch/reduced-motion. */
+.cursor-trail-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 350;
+  overflow: hidden;
+}
+.cursor-trail-px {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: #ff8e6b;
+  border-radius: 1px;
+  transform: translate(-50%, -50%);
+  animation: cursorTrailFade 700ms ease-out forwards;
+  will-change: opacity, transform;
+  box-shadow: 0 0 8px rgba(255, 142, 107, 0.35);
+}
+@keyframes cursorTrailFade {
+  0%   { opacity: 0.85; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0;    transform: translate(-50%, -50%) scale(0.7); }
+}
+
+/* Disable on touch-only devices (no fine pointer = no cursor to trail). */
+@media (hover: none), (pointer: coarse) {
+  .cursor-trail-layer { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cursor-trail-layer { display: none; }
+}
+
+/* Hide in MACHINE mode */
+body[data-mode="machine"] .cursor-trail-layer { display: none; }

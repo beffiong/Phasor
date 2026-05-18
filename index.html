@@ -3,10 +3,13 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Phasor — Episodes: Training Data for Lean AI</title>
+<title>Phasor — NeuroAI for autonomous machines</title>
+<meta name="description" content="Bio-inspired perception and navigation for spacecraft, defense aircraft, and self-driving cars. Built to run on watts where conventional AI burns kilowatts."/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Mono:wght@300;400;500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <link rel="icon" type="image/png" href="logo.png"/>
 <link rel="stylesheet" href="style.css"/>
+<link rel="stylesheet" href="cursor-trail.css"/>
+<link rel="stylesheet" href="machine.css"/>
 </head>
 <body>
 
@@ -17,19 +20,19 @@
     <span class="nav-wm">Phasor</span>
   </a>
   <ul class="nav-links">
+    <li><a href="#thesis">Thesis</a></li>
+    <li><a href="#markets">Markets</a></li>
     <li><a href="#episodes">Episodes</a></li>
-    <li><a href="#phagle">Phagle</a></li>
-    <li><a href="#videos">Videos</a></li>
-    <li><a href="#team">Team</a></li>
+    <li><a href="#community">Community</a></li>
   </ul>
-  <a href="/demo" class="nav-cta">Explore Episodes &rarr;</a>
+  <a href="/demo" class="nav-cta">See the demo &rarr;</a>
   <button class="nav-burger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
 </nav>
 <div class="mob" id="mob">
+  <a href="#thesis" onclick="closeMob()">Thesis</a>
+  <a href="#markets" onclick="closeMob()">Markets</a>
   <a href="#episodes" onclick="closeMob()">Episodes</a>
-  <a href="#phagle" onclick="closeMob()">Phagle</a>
-  <a href="#videos" onclick="closeMob()">Videos</a>
-  <a href="#team" onclick="closeMob()">Team</a>
+  <a href="#community" onclick="closeMob()">Community</a>
   <a href="https://projectphasor.blogspot.com" target="_blank" onclick="closeMob()">Blog</a>
 </div>
 
@@ -38,105 +41,128 @@
   <video class="hero-video" autoplay muted loop playsinline>
     <source src="aurora_background.mp4" type="video/mp4"/>
   </video>
+  <div class="hero-bg-dither"></div>
   <div class="hero-overlay"></div>
   <div class="container">
     <div class="hero-in">
-      <div class="eyebrow hero-eyebrow"><span class="eyebrow-line"></span>Phasor &middot; Episodes &middot; Public release</div>
-      <h1>The training data for AI that works in the <em>real world.</em></h1>
-      <p class="hdesc">The models that will plow fields, repair infrastructure, and navigate Mars won't be trained on the internet. They need real-world, event-based data &mdash; collected and structured for machines that must act with limited compute and limited information. That's what Phasor & Episodes are.</p>
+      <div class="eyebrow hero-eyebrow"><span class="eyebrow-line"></span>Phasor &middot; NeuroAI for autonomous machines</div>
+      <h1>AI uses too much energy. <em>Nature has already solved it.</em></h1>
+      <p class="hdesc">We're building the brain version &mdash; bio-inspired perception and navigation for spacecraft, defense aircraft, and self-driving cars. Built to run on watts where conventional AI burns kilowatts.</p>
       <div class="hact">
-        <a href="https://forms.gle/1LyWTbGqs5ukFEgt9" class="btn-p">Send data request &rarr;</a>
-        <a href="https://form.typeform.com/to/FcLvA8XN" class="btn-g hero-btn-g" target="_blank">Phagle Competition &rarr;</a>
+        <a href="/demo" class="btn-p">See the demo &rarr;</a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- STATS -->
-<section class="sec-stats">
+<!-- BACKED BY -->
+<section class="sec-backed">
   <div class="container">
-    <div class="stats-g">
-      <div class="stat-card reveal">
-        <div class="stat-val">27<span>+</span></div>
-        <div class="stat-label">Neuromorphic chip companies &mdash; less than 5% deployed commercially</div>
+    <div class="backed-label reveal">Backed by</div>
+    <div class="backed-row reveal">
+      <div class="backed-item">
+        <div class="backed-mark">NVIDIA</div>
+        <div class="backed-cap">Inception</div>
       </div>
-      <div class="stat-card reveal">
-        <div class="stat-val">5,700<span>+</span></div>
-        <div class="stat-label">Developers in the Phasor community, ready to build</div>
+      <div class="backed-item">
+        <div class="backed-mark">IBM</div>
+        <div class="backed-cap">for startups</div>
       </div>
-      <div class="stat-card reveal">
-        <div class="stat-val">2026<span>&ndash;</span>28</div>
-        <div class="stat-label">Window when high-quality LLM training data is fully exhausted</div>
+      <div class="backed-item">
+        <div class="backed-mark">Founder&rsquo;s Inc</div>
+        <div class="backed-cap">Canopy 2026</div>
+      </div>
+      <div class="backed-item">
+        <div class="backed-mark">Anthropic</div>
+        <div class="backed-cap">for startups</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- THE CONTEXT -->
-<section id="context" class="sec-context">
+<!-- 01 — THESIS -->
+<section id="thesis" class="sec-thesis">
   <div class="container">
-    <div class="context-grid">
-      <div class="context-text">
-        <div class="stag">01 &mdash; The Context</div>
-        <h2>The AI data wall is real.<br/><em>The next paradigm is already here.</em></h2>
-        <p class="olead reveal">High-quality training data for large language models is running out. The models that dominated the last decade were built on assumptions &mdash; infinite data, cheap compute &mdash; that are collapsing. The AI systems being built now need the right real-world data &mdash; and that data has, until now, barely existed.</p>
-      </div>
-      <div class="context-viz reveal">
-        <canvas id="neuralCanvas" width="480" height="480"></canvas>
-      </div>
-    </div>
+    <div class="stag">01 &mdash; Thesis</div>
+    <h2>Building autonomy for machines,<br/><em>the way nature built it.</em></h2>
+    <p class="olead reveal">A dragonfly catches prey mid-flight on a brain smaller than a grain of rice. A human reasons about the world on twenty watts. Today&rsquo;s AI systems burn 2,500 &mdash; and still can&rsquo;t see through a midnight blizzard, a brownout, or a lunar shadow.</p>
+    <p class="olead reveal">The problem isn&rsquo;t more compute. It&rsquo;s the wrong primitive. Today&rsquo;s AI samples the world on a clock and brute-forces pattern recognition with GPUs. Biology reacts to change, spikes when it matters, and ignores the rest.</p>
+    <p class="olead reveal">We build NeuroAI &mdash; spiking neural networks trained on event-based data. Watts instead of kilowatts. Microseconds instead of milliseconds. The brain version of perception and navigation, for the next generation of embodied machines.</p>
   </div>
 </section>
 
-<!-- EPISODES & WHO THIS IS FOR -->
+<!-- 02 — WHAT WE BUILD -->
+<section id="build" class="sec-build">
+  <div class="container">
+    <div class="stag">02 &mdash; What we build</div>
+    <h2>We build the brain.<br/><em>Any chip will do.</em></h2>
+    <p class="olead reveal">Phasor is the model layer for embodied intelligence &mdash; perception and navigation, trained on event-based data, running on whichever neuromorphic chip wins. Spiking neural networks doing the work GPU-trained CNNs cannot: real-time perception in degraded conditions, on a watts-scale power budget, with reflex-class latency.</p>
+  </div>
+</section>
+
+<!-- 03 — MARKETS -->
+<section id="markets" class="sec-markets">
+  <div class="container">
+    <div class="stag">03 &mdash; Markets</div>
+    <h2>Same brain.<br/><em>Three frontiers.</em></h2>
+
+    <div class="markets-grid">
+      <div class="market-block reveal">
+        <div class="market-eyebrow">SPACE</div>
+        <div class="market-phrase"><em>Lunar lighting conditions.</em></div>
+        <p class="market-receipt">NASA explicitly lists neuromorphic cameras as a need. Shortfall ID 1601.</p>
+      </div>
+      <div class="market-block reveal">
+        <div class="market-eyebrow">DEFENSE</div>
+        <div class="market-phrase"><em>Degraded Visual Environment.</em></div>
+        <p class="market-receipt">The Pentagon&rsquo;s term. 75% of arid-theater helicopter mishaps.</p>
+      </div>
+      <div class="market-block reveal">
+        <div class="market-eyebrow">AUTOMOTIVE</div>
+        <div class="market-phrase"><em>Low-visibility events.</em></div>
+        <p class="market-receipt">NHTSA EA26002, October 2024. Tesla FSD collisions in sun glare, fog, and dust.</p>
+      </div>
+    </div>
+
+    <p class="markets-close reveal">Same model across all three. Bolts on as a co-processor to whatever certified compute the platform already flies &mdash; RAD750, INTEGRITY-178, NVIDIA Drive, Mobileye EyeQ. Months to integrate, not years to re-certify.</p>
+  </div>
+</section>
+
+<!-- 04 — EPISODES -->
 <section id="episodes" class="sec-episodes">
   <video class="sec-video" autoplay muted loop playsinline>
     <source src="aurora_episodes.mp4" type="video/mp4"/>
   </video>
   <div class="sec-video-overlay"></div>
   <div class="container">
-    <div class="stag">02 &mdash; Episodes</div>
-    <h2>Event-based datasets for<br/><em>data-efficient models.</em></h2>
+    <div class="stag">04 &mdash; Episodes</div>
+    <h2>The world&rsquo;s largest event-based dataset.<br/><em>And we share it.</em></h2>
 
     <div class="ep-grid">
       <div class="ep-main reveal">
-        <p class="ep-body">Episodes is a collection of real-world, event-based datasets designed to train Lean AI &mdash; models that learn to act from sparse, structured signals rather than massive text corpora.</p>
-        <p class="ep-body">Whether you're training lean AI models in Academia or privately, we have the data you need. We know the pain of trying to find and prepare your own dataset. Leave that to us &mdash; Episodes gives you something to start with. And Phasor gives you the pipeline to go further.</p>
+        <p class="ep-body">Episodes is the data layer underneath Phasor &mdash; 652 event-based datasets, collected and structured for models that learn from change instead of frames. It&rsquo;s how we train NeuroAI.</p>
+        <p class="ep-body">It&rsquo;s also a live research surface. Used by one frontier research lab and four academic groups, all training their own models on it. If you&rsquo;re researching neuromorphic perception, navigation, or sensorimotor control, this is the data you&rsquo;ve been looking for.</p>
         <a href="/demo" class="btn-p" style="margin-top:32px">Explore the dataset &rarr;</a>
       </div>
 
       <div class="ep-side">
         <div class="audience-callout reveal">
           <div class="callout-label">A note from us</div>
-          <p>We know that if you're doing research right now, you need data. We literally want you to tell us what data you need and we will get it to you.</p>
-          <p class="callout-action">Email us your name, institution, and request to <strong>v eric at projectphasor dot com</strong> or  fill up this <strong><a href="https://forms.gle/1LyWTbGqs5ukFEgt9" class="btn-g hero-btn-g" target="_blank">form</a></strong></p>
+          <p>If you&rsquo;re researching neuromorphic perception or navigation, tell us what data you need. We&rsquo;ll get it to you.</p>
+          <p class="callout-action">Email <strong>v eric at projectphasor dot com</strong>, or <strong><a href="https://forms.gle/1LyWTbGqs5ukFEgt9" target="_blank">drop a request</a></strong>.</p>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- PHAGLE COMPETITION -->
-<section id="phagle" class="sec-phagle">
+<!-- 05 — COMMUNITY -->
+<section id="community" class="sec-community">
   <div class="container">
-    <div class="phagle-card reveal">
-      <div class="phagle-in">
-        <div class="stag stag-dark">April 2026</div>
-        <h2>Phagle: our competition for the<br/>builders of <em>Lean AI.</em></h2>
-        <p class="phagle-desc">Phagle is Phasor's answer to a Neuromorphic AI open competition &mdash; built for neuromorphic and data-efficient AI developers. Episodes is the official benchmark dataset. If you're a developer, researcher, or ML engineer working at this frontier &mdash; this is your competition.</p>
-        <div style="margin-top:40px">
-          <a href="https://form.typeform.com/to/FcLvA8XN" class="btn-p" target="_blank">Register for Phagle &rarr;</a>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+    <div class="stag">05 &mdash; Community</div>
+    <h2>Building in the open.<br/><em>Come along.</em></h2>
+    <p class="community-desc reveal">Watch what we&rsquo;re building. Join the conversation. Whether you&rsquo;re a researcher, an engineer, or just curious about what&rsquo;s next for AI &mdash; we&rsquo;d love to have you.</p>
 
-<!-- VIDEOS -->
-<section id="videos" class="sec-videos">
-  <div class="container">
-    <div class="stag">04 &mdash; Watch</div>
-    <h2>Phasor in motion.<br/><em>See what we're building.</em></h2>
     <div class="videos-grid">
       <div class="video-wrap reveal">
         <iframe
@@ -157,61 +183,10 @@
         </iframe>
       </div>
     </div>
-    <div class="videos-more reveal">
-      <a href="https://www.youtube.com/@ProjectPhasor" class="btn-g" target="_blank">More on YouTube &rarr;</a>
-    </div>
-  </div>
-</section>
 
-<!-- TEAM -->
-<section id="team" class="sec-team">
-  <div class="container">
-    <div class="stag">03 &mdash; Team</div>
-    <h2>The right team<br/><em>at the right moment.</em></h2>
-    <p class="tsub reveal">We needed what Phasor is building ourselves. After a year of exhaustive research and 130+ interviews, we didn't find an alternative &mdash; so we built it.</p>
-    <div class="teamg">
-      <div class="teamc reveal" onclick="this.classList.toggle('expanded')">
-        <div class="team-header">
-          <div class="tav">BE</div>
-          <div class="team-intro">
-            <div class="tn">Blessing Effiong</div>
-            <div class="tt">Co-CEO &mdash; Technical</div>
-          </div>
-          <div class="team-toggle"><span></span></div>
-        </div>
-        <div class="chips"><span class="chip">PhD Researcher</span><span class="chip">NeurIPS</span><span class="chip">Congress Briefing</span><span class="chip">Full-Stack</span></div>
-        <div class="team-expand"><div class="tb">PhD researcher in neuromorphic computing. Full-stack developer and data scientist. Presented at NeurIPS. Briefed Congress on Brain-Inspired AI.</div></div>
-      </div>
-      <div class="teamc reveal" onclick="this.classList.toggle('expanded')">
-        <div class="team-header">
-          <div class="tav">VT</div>
-          <div class="team-intro">
-            <div class="tn">Veric Tan</div>
-            <div class="tt">Applications</div>
-          </div>
-          <div class="team-toggle"><span></span></div>
-        </div>
-        <div class="chips"><span class="chip">Johns Hopkins</span><span class="chip">$5B AUM Hedge Fund</span><span class="chip">SpikeJelly</span><span class="chip">2 Prior Startups</span></div>
-        <div class="team-expand"><div class="tb">Has an eye for turning frontier science into business. Previously launched 2 startups. ML Engineer and Biotech Investment Analyst at a $5B AUM hedge fund &mdash; youngest analyst to direct investments that returned many folds over. Developed ML models predicting enthalpy stabilities of novel materials at Johns Hopkins. Contributor to the open-source neuromorphic framework SpikeJelly.</div></div>
-      </div>
-    </div>
-    <div class="team-extra reveal">
-      <div class="team-mini"><div class="tav-sm">EZ</div><div><div class="tn-sm">Eric Zhang</div></div></div>
-      <div class="team-mini"><div class="tav-sm">MA</div><div><div class="tn-sm">Micha&#322; Antropik</div></div></div>
-    </div>
-  </div>
-</section>
-
-<!-- COMMUNITY -->
-<section id="community" class="sec-community">
-  <div class="container">
-    <div class="community-in reveal">
-      <h2>Come build with us.</h2>
-      <p class="community-desc">Whether you're a researcher, developer, or just curious about what's next for AI &mdash; there's a seat at the table. We're building in the open and we'd love to have you along for the ride.</p>
-      <div class="community-links">
-        <a href="https://discord.gg/c27WCtCWA" class="btn-p" target="_blank">Join us on Discord &rarr;</a>
-        <a href="https://www.linkedin.com/company/project-phasor" class="btn-g" target="_blank">Follow on LinkedIn &rarr;</a>
-      </div>
+    <div class="community-links reveal">
+      <a href="https://discord.gg/c27WCtCWA" class="btn-p" target="_blank">Join us on Discord &rarr;</a>
+      <a href="https://www.linkedin.com/company/project-phasor" class="btn-g" target="_blank">Follow on LinkedIn &rarr;</a>
     </div>
   </div>
 </section>
@@ -220,7 +195,7 @@
   <div class="fin">
     <div>
       <img src="logo.png" class="flogo" alt="Phasor"/>
-      <p class="fdisc">Episodes is a lean machine intelligence data platform by Phasor. The percentages shown reflect the domain composition of the current dataset. Full dataset access and custom domain delivery available on request. Phagle Competition opens end April 2026.</p>
+      <p class="fvision"><em>Every machine &mdash; the car driving you home through a midnight blizzard, the satellite making first contact with a new planet &mdash; should think with the efficiency of a brain.</em></p>
     </div>
     <div class="fr2">
       <div class="fcontact">
@@ -233,162 +208,89 @@
 </footer>
 
 <script src="main.js"></script>
-<script>
-(() => {
-  const canvas = document.getElementById('neuralCanvas');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const dpr = window.devicePixelRatio || 1;
-  const W = 480, H = 480;
-  canvas.width = W * dpr;
-  canvas.height = H * dpr;
-  ctx.scale(dpr, dpr);
 
-  const nodes = [];
-  const edges = [];
-  const spikes = [];
+<!-- ===== HUMAN / MACHINE TOGGLE ===== -->
+<div class="mode-toggle" role="group" aria-label="Display mode">
+  <button type="button" data-mode="human" aria-pressed="true">
+    <span class="dot" aria-hidden="true"></span>HUMAN
+  </button>
+  <button type="button" data-mode="machine" aria-pressed="false">
+    <span class="dot" aria-hidden="true"></span>MACHINE
+  </button>
+</div>
+<div class="machine-overlay" aria-hidden="false">
+  <button type="button" class="machine-copy" aria-label="Copy machine-readable content">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+    <span class="label">Copy</span>
+  </button>
+  <article class="machine-doc">
+    <h1>Phasor</h1>
+    <p>NeuroAI for autonomous machines. Bio-inspired perception and navigation for spacecraft, defense aircraft, and self-driving cars. Built to run on watts where conventional AI burns kilowatts.</p>
 
-  const layers = [3, 5, 7, 5, 3];
-  const layerX = layers.map((_, i) => 60 + (i / (layers.length - 1)) * (W - 120));
-  layers.forEach((count, li) => {
-    for (let i = 0; i < count; i++) {
-      const spacing = H / (count + 1);
-      nodes.push({
-        x: layerX[li] + (Math.random() - 0.5) * 20,
-        y: spacing * (i + 1) + (Math.random() - 0.5) * 15,
-        r: 3 + Math.random() * 3,
-        layer: li,
-        phase: Math.random() * Math.PI * 2,
-        energy: 0
-      });
-    }
-  });
+    <h2>Site</h2>
+    <ul>
+      <li><a href="https://projectphasor.com/">Home</a> &mdash; https://projectphasor.com/</li>
+      <li><a href="https://projectphasor.com/demo">Demo</a> &mdash; https://projectphasor.com/demo</li>
+      <li><a href="https://projectphasor.blogspot.com">Blog</a> &mdash; https://projectphasor.blogspot.com</li>
+      <li><a href="https://www.youtube.com/@ProjectPhasor">YouTube</a> &mdash; https://www.youtube.com/@ProjectPhasor</li>
+    </ul>
 
-  nodes.forEach((a, ai) => {
-    nodes.forEach((b, bi) => {
-      if (b.layer === a.layer + 1 && Math.random() < 0.55) {
-        edges.push({ from: ai, to: bi, strength: 0.3 + Math.random() * 0.5 });
-      }
-    });
-  });
+    <h2>Backed by</h2>
+    <ul>
+      <li>NVIDIA &mdash; Inception</li>
+      <li>IBM &mdash; for startups</li>
+      <li>Founder&rsquo;s Inc &mdash; Canopy 2026</li>
+      <li>Anthropic &mdash; for startups</li>
+    </ul>
 
-  function fireSpike() {
-    const edge = edges[Math.floor(Math.random() * edges.length)];
-    spikes.push({ edge, t: 0, speed: 0.008 + Math.random() * 0.012 });
-  }
+    <h2>Thesis</h2>
+    <p>A dragonfly catches prey mid-flight on a brain smaller than a grain of rice. A human reasons about the world on twenty watts. Today&rsquo;s AI systems burn 2,500 &mdash; and still can&rsquo;t see through a midnight blizzard, a brownout, or a lunar shadow.</p>
+    <p>The problem isn&rsquo;t more compute. It&rsquo;s the wrong primitive. Today&rsquo;s AI samples the world on a clock and brute-forces pattern recognition with GPUs. Biology reacts to change, spikes when it matters, and ignores the rest.</p>
+    <p>We build NeuroAI &mdash; spiking neural networks trained on event-based data. Watts instead of kilowatts. Microseconds instead of milliseconds. The brain version of perception and navigation, for the next generation of embodied machines.</p>
 
-  let time = 0;
-  function draw() {
-    time += 0.016;
-    ctx.clearRect(0, 0, W, H);
+    <h2>What we build</h2>
+    <p>Phasor is the model layer for embodied intelligence &mdash; perception and navigation, trained on event-based data, running on whichever neuromorphic chip wins. Spiking neural networks doing the work GPU-trained CNNs cannot: real-time perception in degraded conditions, on a watts-scale power budget, with reflex-class latency.</p>
 
-    edges.forEach(e => {
-      const a = nodes[e.from], b = nodes[e.to];
-      ctx.beginPath();
-      ctx.moveTo(a.x, a.y);
-      ctx.lineTo(b.x, b.y);
-      ctx.strokeStyle = `rgba(217,79,43,${0.06 + e.strength * 0.06})`;
-      ctx.lineWidth = 0.5;
-      ctx.stroke();
-    });
+    <h2>Markets</h2>
+    <h3>Space &mdash; Lunar lighting conditions</h3>
+    <p>NASA explicitly lists neuromorphic cameras as a need. Shortfall ID 1601.</p>
+    <h3>Defense &mdash; Degraded Visual Environment</h3>
+    <p>The Pentagon&rsquo;s term. 75% of arid-theater helicopter mishaps.</p>
+    <h3>Automotive &mdash; Low-visibility events</h3>
+    <p>NHTSA EA26002, October 2024. Tesla FSD collisions in sun glare, fog, and dust.</p>
+    <p>Same model across all three. Bolts on as a co-processor to whatever certified compute the platform already flies &mdash; RAD750, INTEGRITY-178, NVIDIA Drive, Mobileye EyeQ. Months to integrate, not years to re-certify.</p>
 
-    for (let i = spikes.length - 1; i >= 0; i--) {
-      const s = spikes[i];
-      s.t += s.speed;
-      if (s.t > 1) {
-        nodes[s.edge.to].energy = 1;
-        spikes.splice(i, 1);
-        continue;
-      }
-      const a = nodes[s.edge.from], b = nodes[s.edge.to];
-      const x = a.x + (b.x - a.x) * s.t;
-      const y = a.y + (b.y - a.y) * s.t;
-      const glow = ctx.createRadialGradient(x, y, 0, x, y, 12);
-      glow.addColorStop(0, 'rgba(232,120,42,0.7)');
-      glow.addColorStop(1, 'rgba(232,120,42,0)');
-      ctx.fillStyle = glow;
-      ctx.fillRect(x - 12, y - 12, 24, 24);
-      ctx.beginPath();
-      ctx.arc(x, y, 2.5, 0, Math.PI * 2);
-      ctx.fillStyle = '#e8782a';
-      ctx.fill();
-    }
+    <h2>Episodes</h2>
+    <p>Episodes is the data layer underneath Phasor &mdash; 652 event-based datasets, collected and structured for models that learn from change instead of frames. It&rsquo;s how we train NeuroAI.</p>
+    <p>It&rsquo;s also a live research surface. Used by one frontier research lab and four academic groups, all training their own models on it. If you&rsquo;re researching neuromorphic perception, navigation, or sensorimotor control, this is the data you&rsquo;ve been looking for.</p>
+    <ul>
+      <li><a href="https://projectphasor.com/demo">Explore the dataset</a></li>
+      <li><a href="https://forms.gle/1LyWTbGqs5ukFEgt9">Request data (Google Form)</a></li>
+    </ul>
 
-    nodes.forEach(n => {
-      n.energy *= 0.94;
-      const pulse = Math.sin(time * 1.5 + n.phase) * 0.15 + 0.85;
-      const r = n.r * pulse;
-      const alpha = 0.25 + n.energy * 0.6;
+    <h2>Community</h2>
+    <ul>
+      <li>YouTube: <a href="https://www.youtube.com/@ProjectPhasor">youtube.com/@ProjectPhasor</a></li>
+      <li>Discord: <a href="https://discord.gg/c27WCtCWA">discord.gg/c27WCtCWA</a></li>
+      <li>LinkedIn: <a href="https://www.linkedin.com/company/project-phasor">linkedin.com/company/project-phasor</a></li>
+    </ul>
 
-      if (n.energy > 0.1) {
-        const g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, r * 5);
-        g.addColorStop(0, `rgba(217,79,43,${n.energy * 0.3})`);
-        g.addColorStop(1, 'rgba(217,79,43,0)');
-        ctx.fillStyle = g;
-        ctx.fillRect(n.x - r * 5, n.y - r * 5, r * 10, r * 10);
-      }
+    <h2>Contact</h2>
+    <ul>
+      <li>v eric at projectphasor dot com</li>
+      <li>b lessing at projectphasor dot com</li>
+    </ul>
 
-      ctx.beginPath();
-      ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(156,136,120,${alpha})`;
-      ctx.fill();
-      ctx.beginPath();
-      ctx.arc(n.x, n.y, r * 0.5, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(217,79,43,${0.3 + n.energy * 0.7})`;
-      ctx.fill();
-    });
+    <h2>Vision</h2>
+    <p>Every machine &mdash; the car driving you home through a midnight blizzard, the satellite making first contact with a new planet &mdash; should think with the efficiency of a brain.</p>
 
-    if (Math.random() < 0.12) fireSpike();
+    <h2>Meta</h2>
+    <p>Copyright &copy; 2026 Phasor. Press <code>/</code> to toggle MACHINE mode. Press <code>Esc</code> to return to HUMAN.</p>
+  </article>
+</div>
 
-    requestAnimationFrame(draw);
-  }
-
-  const vizObs = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) { draw(); vizObs.unobserve(canvas); }
-    });
-  }, { threshold: 0.1 });
-  vizObs.observe(canvas);
-})();
-</script>
-
-<style>
-/* Videos Section */
-.sec-videos {
-  padding: 100px 0;
-  background: var(--bg, #faf7f2);
-}
-.sec-videos h2 {
-  margin-bottom: 48px;
-}
-.videos-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 32px;
-  margin-bottom: 40px;
-}
-.video-wrap {
-  position: relative;
-  width: 100%;
-  padding-bottom: 56.25%;
-  border-radius: 4px;
-  overflow: hidden;
-  background: #111;
-}
-.video-wrap iframe {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  border: none;
-}
-.videos-more {
-  text-align: center;
-}
-@media (max-width: 768px) {
-  .videos-grid {
-    grid-template-columns: 1fr;
-  }
-}
-</style>
+<script type="module" src="hero-shader.js"></script>
+<script src="cursor-trail.js"></script>
+<script src="machine.js"></script>
 </body>
 </html>

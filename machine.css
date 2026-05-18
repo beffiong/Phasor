@@ -1,0 +1,164 @@
+/* HUMAN/MACHINE toggle pill — fixed to bottom of viewport.
+   When MACHINE is active, .machine-overlay covers the page with a plain-text
+   monospace document for AI scrapers / agents. */
+
+.mode-toggle {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  background: #1a1d3f;
+  border: 1px solid rgba(184,164,212,.18);
+  border-radius: 999px;
+  font-family: 'DM Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.55);
+}
+.mode-toggle button {
+  background: transparent;
+  color: rgba(184,164,212,.7);
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 7px 14px 7px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: color 180ms ease, background-color 180ms ease, border-color 180ms ease;
+  font: inherit;
+  text-transform: uppercase;
+}
+.mode-toggle button:hover { color: #f0ebe0; }
+.mode-toggle button[aria-pressed="true"] {
+  color: #f0ebe0;
+  background: #252952;
+  border-color: #ff8e6b;
+}
+.mode-toggle .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1.5px solid currentColor;
+  flex-shrink: 0;
+  position: relative;
+}
+.mode-toggle button[aria-pressed="true"] .dot::after {
+  content: "";
+  position: absolute;
+  inset: 1.5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* Machine overlay — covers the entire page in a black, monospace document.
+   Hidden until <body data-mode="machine"> is set by the toggle script. */
+.machine-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  background: #070920;
+  color: #d8d8da;
+  overflow-y: auto;
+  display: none;
+  font-family: 'DM Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  padding: 64px 32px 120px;
+}
+body[data-mode="machine"] .machine-overlay { display: block; }
+body[data-mode="machine"] { overflow: hidden; }
+
+.machine-doc {
+  max-width: 880px;
+  margin: 0 auto;
+  word-break: break-word;
+}
+
+/* Copy-to-clipboard button — fixed inside the overlay so it's reachable
+   while scrolling. */
+.machine-copy {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 401;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #1a1d3f;
+  border: 1px solid rgba(184,164,212,.18);
+  border-radius: 8px;
+  color: rgba(184,164,212,.85);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: color 180ms ease, background-color 180ms ease, border-color 180ms ease;
+}
+.machine-copy:hover {
+  color: #f0ebe0;
+  background: #252952;
+  border-color: rgba(184,164,212,.35);
+}
+.machine-copy svg { width: 14px; height: 14px; display: block; }
+.machine-copy[data-state="copied"] {
+  color: #f5dba8;
+  border-color: #ff8e6b;
+}
+
+/* Subtle styling inside the doc — keep it Markdown-like but visually distinct. */
+.machine-doc h1,
+.machine-doc h2,
+.machine-doc h3 {
+  color: #f0ebe0;
+  font-family: inherit;
+  font-weight: 700;
+  letter-spacing: 0;
+  margin: 28px 0 6px;
+}
+.machine-doc h1 { font-size: 17px; }
+.machine-doc h2 { font-size: 15px; color: #d4c8e8; }
+.machine-doc h3 { font-size: 13px; color: #b8a4d4; }
+.machine-doc h1::before { content: "# "; color: #7868a0; }
+.machine-doc h2::before { content: "## "; color: #7868a0; }
+.machine-doc h3::before { content: "### "; color: #7868a0; }
+.machine-doc p { margin: 8px 0; }
+.machine-doc a {
+  color: #ff8e6b;
+  text-decoration: none;
+  border-bottom: 1px dotted #7868a0;
+}
+.machine-doc a:hover { color: #f5dba8; border-color: #f5dba8; }
+.machine-doc ul {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0;
+}
+.machine-doc li { padding-left: 0; }
+.machine-doc li::before { content: "- "; color: #7868a0; }
+.machine-doc hr {
+  border: 0;
+  border-top: 1px dashed #2e2e51;
+  margin: 28px 0;
+}
+.machine-doc code {
+  background: #1a1d3f;
+  border: 1px solid rgba(184,164,212,.18);
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-size: 12px;
+}
+
+@media (max-width: 600px) {
+  .machine-overlay { padding: 48px 18px 120px; font-size: 12.5px; }
+  .mode-toggle { font-size: 11px; }
+  .mode-toggle button { padding: 6px 11px 6px 10px; }
+}
