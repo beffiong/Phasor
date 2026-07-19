@@ -120,9 +120,10 @@ h3{font-family:var(--fn);font-size:1rem;font-weight:600;color:var(--tx);margin-b
 .sec-build{background:var(--bg);padding:96px 0}
 .sec-build .olead{max-width:780px}
 
-/* 03 — MARKETS */
+/* 03 — MARKETS / BEACHHEADS */
 .sec-markets{background:var(--bg2)}
 .markets-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:36px;margin-top:48px;margin-bottom:56px}
+.beachheads-grid{display:grid;grid-template-columns:1fr 1fr;gap:36px;margin-top:48px;margin-bottom:56px}
 .market-block{background:var(--bg3);border:1px solid var(--b);border-radius:14px;padding:30px 26px;transition:border-color .2s,transform .2s,box-shadow .2s}
 .market-block:hover{border-color:var(--bm);transform:translateY(-3px);box-shadow:0 12px 32px -12px rgba(255,142,107,.15)}
 .market-eyebrow{font-family:var(--fm);font-size:.7rem;letter-spacing:.18em;color:var(--red);margin-bottom:14px;font-weight:500}
@@ -180,6 +181,7 @@ body[data-mode="machine"] .hero-bg-dither{display:none}
 @media(max-width:980px){
   .ep-grid{grid-template-columns:1fr}
   .markets-grid{grid-template-columns:1fr;gap:20px}
+  .beachheads-grid{grid-template-columns:1fr;gap:20px}
   .videos-grid{grid-template-columns:1fr}
   .backed-row{gap:40px}
   section{padding:80px 0 72px}
