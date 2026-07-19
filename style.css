@@ -121,9 +121,13 @@ h3{font-family:var(--fn);font-size:1rem;font-weight:600;color:var(--tx);margin-b
 .sec-build .olead{max-width:780px}
 
 /* 03 — MARKETS / BEACHHEADS */
-.sec-markets{background:var(--bg2)}
+.sec-markets{background:var(--bg2);padding:140px 0}
 .markets-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:36px;margin-top:48px;margin-bottom:56px}
-.beachheads-grid{display:grid;grid-template-columns:1fr 1fr;gap:36px;margin-top:48px;margin-bottom:56px}
+.beachheads-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:44px;margin-top:64px;margin-bottom:64px}
+.beachheads-grid .market-block{padding:48px 44px}
+.beachheads-grid .market-eyebrow{margin-bottom:20px}
+.beachheads-grid .market-phrase{font-size:1.75rem;margin-bottom:22px}
+.beachheads-grid .market-receipt{font-size:1rem}
 .market-block{background:var(--bg3);border:1px solid var(--b);border-radius:14px;padding:30px 26px;transition:border-color .2s,transform .2s,box-shadow .2s}
 .market-block:hover{border-color:var(--bm);transform:translateY(-3px);box-shadow:0 12px 32px -12px rgba(255,142,107,.15)}
 .market-eyebrow{font-family:var(--fm);font-size:.7rem;letter-spacing:.18em;color:var(--red);margin-bottom:14px;font-weight:500}
