@@ -111,7 +111,10 @@ h3{font-family:var(--fn);font-size:1rem;font-weight:600;color:var(--tx);margin-b
 .backed-cap{font-family:var(--fm);font-size:.68rem;letter-spacing:.06em;color:var(--txd);text-transform:lowercase}
 
 /* 01 — THESIS */
-.sec-thesis{background:var(--bg2)}
+.sec-thesis{background:var(--bg2);position:relative;padding-bottom:56px;z-index:2}
+.thesis-art{position:absolute;right:48px;top:72px;bottom:-140px;width:44%;display:flex;justify-content:flex-end;pointer-events:none}
+.thesis-art img{height:100%;width:auto}
+.sec-thesis .olead{max-width:56%}
 .sec-thesis .olead+.olead{margin-top:0}
 .olead{font-size:1.1rem;color:var(--txm);line-height:1.8;max-width:780px;margin-bottom:28px}
 .olead:last-child{margin-bottom:0}
@@ -121,7 +124,7 @@ h3{font-family:var(--fn);font-size:1rem;font-weight:600;color:var(--tx);margin-b
 .sec-build .olead{max-width:780px}
 
 /* 03 — MARKETS / BEACHHEADS */
-.sec-markets{background:var(--bg2);padding:140px 0}
+.sec-markets{background:var(--bg2);padding:64px 0 140px}
 .markets-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:36px;margin-top:48px;margin-bottom:56px}
 .beachheads-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:44px;margin-top:64px;margin-bottom:64px}
 .beachheads-grid .market-block{padding:48px 44px}
@@ -183,6 +186,8 @@ footer{padding:56px 48px;background:var(--bgdd);border-top:1px solid rgba(184,16
 body[data-mode="machine"] .hero-bg-dither{display:none}
 /* Push the mode-toggle pill above mobile menu drawer on small screens */
 @media(max-width:980px){
+  .thesis-art{position:static;width:100%;height:340px;justify-content:center;margin-top:40px}
+  .sec-thesis .olead{max-width:780px}
   .ep-grid{grid-template-columns:1fr}
   .markets-grid{grid-template-columns:1fr;gap:20px}
   .beachheads-grid{grid-template-columns:1fr;gap:20px}
