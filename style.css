@@ -112,7 +112,7 @@ h3{font-family:var(--fn);font-size:1rem;font-weight:600;color:var(--tx);margin-b
 
 /* 01 — THESIS */
 .sec-thesis{background:var(--bg2);position:relative;padding-bottom:56px;z-index:2}
-.thesis-art{position:absolute;right:48px;top:72px;bottom:-140px;width:44%;display:flex;justify-content:flex-end;pointer-events:none}
+.thesis-art{position:absolute;right:160px;top:72px;bottom:-140px;width:44%;display:flex;justify-content:flex-end;pointer-events:none}
 .thesis-art img{height:100%;width:auto;aspect-ratio:780/1170;max-width:100%;object-fit:contain;object-position:right top}
 .sec-thesis .olead{max-width:56%}
 .sec-thesis .olead+.olead{margin-top:0}
