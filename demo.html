@@ -429,8 +429,10 @@ scene.fog = new THREE.FogExp2(0x05060f, 0.028);
 
 const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
 camera.position.set(0, 1.1, 8.5);
+camera.lookAt(0, 0, 0);
 
 const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 0, 0);
 controls.enableDamping = true;
 controls.dampingFactor = 0.06;
 controls.autoRotate = true;
@@ -438,14 +440,23 @@ controls.autoRotateSpeed = 0.55;
 controls.enablePan = false;
 controls.minDistance = 5;
 controls.maxDistance = 14;
+controls.update();
 
 function resize(){
   const w = stage.clientWidth, h = stage.clientHeight;
+  if (!w || !h) return;
   renderer.setSize(w, h, false);
   camera.aspect = w / h;
   camera.updateProjectionMatrix();
 }
+// A one-shot window 'resize' listener isn't reliable here: on first paint the
+// stage's height (100svh) can be measured before mobile browser chrome/fonts
+// settle, which locks in a wrong aspect ratio and visually shifts everything
+// off-center. ResizeObserver re-fires whenever the box's real size changes.
+const ro = new ResizeObserver(resize);
+ro.observe(stage);
 window.addEventListener('resize', resize);
+window.addEventListener('orientationchange', resize);
 
 /* ---- glow sprite texture ---- */
 function glowTexture(hex){
