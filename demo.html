@@ -212,13 +212,13 @@
   <canvas id="scene"></canvas>
   <div class="stage-veil"></div>
   <div class="hero-copy">
-    <div class="hero-tag">M7 &middot; Spike-JEPA</div>
+    <div class="hero-tag">M7 &middot; Phasor</div>
     <h1>Memory, <em>having a conversation</em><br/>with itself.</h1>
     <p>Two brain-inspired ways of remembering, taught to talk to each other, until the system that comes out the other side stops forgetting.</p>
   </div>
   <div class="legend">
-    <div><span class="sw" style="background:#ff8e6b"></span>association, Hopfield</div>
-    <div><span class="sw" style="background:#f5dba8"></span>timing, HGRN</div>
+    <div><span class="sw" style="background:#ff8e6b"></span>association</div>
+    <div><span class="sw" style="background:#f5dba8"></span>timing</div>
     <div><span class="sw" style="background:#b8a4d4"></span>the senses it reads</div>
   </div>
   <div class="hero-hint"><span class="dot"></span>drag to look inside (2 fingers on mobile) &middot; scroll to keep reading</div>
@@ -236,18 +236,6 @@
     <div class="key-item"><div class="sw" style="background:#f5dba8"></div><div class="t">The ring</div><div class="d">remembers by time</div></div>
     <div class="key-item"><div class="sw" style="background:#b8a4d4"></div><div class="t">The streams</div><div class="d">what it's sensing, right now</div></div>
   </div>
-
-  <details class="techfold">
-    <summary>Read the technical version</summary>
-    <div class="techfold-body">
-      M7 (<b>Spike-JEPA</b>) is a tri-modal, modality-adaptive spiking neural network combining <b>Hopfield associative memory</b> with <b>HGRN temporal gating</b>, tuned by supervised contrastive learning and an embedding replay buffer inspired by hippocampal indexing theory. The gate learns to weight Hopfield vs. HGRN per modality, correcting a measured ~21.53pp asymmetry where Hopfield underperforms on auditory input relative to visual.
-      <div class="techfold-stats">
-        <div><div class="v">0.00 &plusmn; 0.00pp</div><div class="l">forgetting (F)</div></div>
-        <div><div class="v">74.91 &plusmn; 1.42pp</div><div class="l">forward transfer (FWT)</div></div>
-        <div><div class="v">N-MNIST&#8594;SHD&#8594;DVS</div><div class="l">sequential continual learning</div></div>
-      </div>
-    </div>
-  </details>
 </section>
 
 <div class="divider"><hr/><div class="divider-tag"><span>What it can do right now</span></div></div>
@@ -296,8 +284,8 @@
       <svg id="gateChart" viewBox="0 0 620 260" width="100%"></svg>
     </div>
     <div class="tile-note">
-      <span>w_hop (coral, visual grip) vs w_hgrn (gold, new sense) &middot; SHD training epoch &#8594;</span>
-      <span id="gateStat">final w_hop 0.35 &middot; final w_hgrn 0.65</span>
+      <span>association (coral) vs timing (gold) &middot; SHD training epoch &#8594;</span>
+      <span id="gateStat">final blend 35 / 65</span>
     </div>
   </div>
 </section>
@@ -306,7 +294,7 @@
 <section class="ev" id="evidence">
   <div class="ev-tag">M7 &middot; RoboCasa manipulation track &middot; progress snapshot</div>
   <h2>Six tracks, one policy,<br/><span>317 real kitchen tasks.</span></h2>
-  <p class="ev-sub">M7 pairs a Hopfield+HGRN memory core with a RoboCasa-conditioned encoder and action head, trained against real Human300 demonstration data on real GPU hardware. Every number below is from an actual run against the real simulator, nothing here is estimated.</p>
+  <p class="ev-sub">M7 is trained against real Human300 demonstration data, on real GPU hardware. Every number below is from an actual run against the real simulator, nothing here is estimated.</p>
 
   <div class="ev-stats">
     <div class="ev-stat"><div class="ev-stat-l">Best interim result</div><div class="ev-stat-v hl">11.0%</div><div class="ev-stat-sub">atomic-65, step 86,000</div></div>
@@ -372,7 +360,7 @@
       <div>
         <div class="ev-track-tag">Track 2, replay vs. no-replay, 4 groups &times; 2 conditions</div>
         <div class="ev-track-title">Continual-learning experiment</div>
-        <div class="ev-track-desc">Does MemoryCore's replay buffer actually reduce catastrophic forgetting as the policy learns tasks sequentially?</div>
+        <div class="ev-track-desc">Does replay actually reduce catastrophic forgetting as the policy learns tasks sequentially?</div>
       </div>
       <span class="ev-badge">Complete</span>
     </div>
@@ -466,7 +454,7 @@ const glowCoral = glowTexture(CORAL), glowGold = glowTexture(GOLD), glowLav = gl
 const core = new THREE.Group();
 scene.add(core);
 
-/* ---- coral core: Hopfield attractor web (icosahedron nodes + edges) ---- */
+/* ---- coral core: layered node web ---- */
 const ico = new THREE.IcosahedronGeometry(1.9, 1);
 const posAttr = ico.attributes.position;
 const nodePositions = [];
@@ -489,7 +477,7 @@ const edgeMat = new THREE.LineBasicMaterial({ color: 0xb8a4d4, transparent: true
 const edges = new THREE.LineSegments(edgeGeo, edgeMat);
 core.add(edges);
 
-/* ---- gold ring: HGRN temporal gate ---- */
+/* ---- gold ring: pacing ring ---- */
 const ringGroup = new THREE.Group();
 ringGroup.rotation.x = Math.PI / 2.6;
 scene.add(ringGroup);
@@ -639,18 +627,18 @@ var GW = 620, GH = 260, GPAD = 36;
 var GRED = '#ff8e6b', GGOLD = '#f5dba8';
 
 function genSeries(withReplay){
-  var n = 30, hop = [], hgrn = [];
+  var n = 30, a = [], b = [];
   for(var i=0;i<n;i++){
     var t = i/(n-1);
     if(withReplay){
-      hop.push(0.90 - 0.55*Math.pow(t,1.3) + (Math.random()-0.5)*0.02);
-      hgrn.push(0.10 + 0.55*Math.pow(t,1.3) + (Math.random()-0.5)*0.02);
+      a.push(0.90 - 0.55*Math.pow(t,1.3) + (Math.random()-0.5)*0.02);
+      b.push(0.10 + 0.55*Math.pow(t,1.3) + (Math.random()-0.5)*0.02);
     } else {
-      hop.push(0.90 + 0.08*t + (Math.random()-0.5)*0.015);
-      hgrn.push(0.10 - 0.06*t + (Math.random()-0.5)*0.01);
+      a.push(0.90 + 0.08*t + (Math.random()-0.5)*0.015);
+      b.push(0.10 - 0.06*t + (Math.random()-0.5)*0.01);
     }
   }
-  return {hop: hop.map(function(v){return Math.max(0,Math.min(1,v));}), hgrn: hgrn.map(function(v){return Math.max(0,Math.min(1,v));})};
+  return {a: a.map(function(v){return Math.max(0,Math.min(1,v));}), b: b.map(function(v){return Math.max(0,Math.min(1,v));})};
 }
 function pathFromSeries(series){
   return series.map(function(v,i){
@@ -668,13 +656,13 @@ function drawGateChart(withReplay){
     s += '<line x1="'+GPAD+'" y1="'+y+'" x2="'+(GW-GPAD)+'" y2="'+y+'" stroke="#20233f" stroke-dasharray="2 4"/>';
     s += '<text x="'+(GPAD-8)+'" y="'+(y+4)+'" font-size="9" fill="#b8a4d4" text-anchor="end">'+v+'</text>';
   });
-  s += '<path d="'+pathFromSeries(data.hop)+'" fill="none" stroke="'+GRED+'" stroke-width="2.6"/>';
-  s += '<path d="'+pathFromSeries(data.hgrn)+'" fill="none" stroke="'+GGOLD+'" stroke-width="2.6"/>';
-  s += '<circle cx="'+(GW-150)+'" cy="20" r="4" fill="'+GRED+'"/><text x="'+(GW-140)+'" y="24" font-size="10" fill="#b8a4d4">w_hop</text>';
-  s += '<circle cx="'+(GW-80)+'" cy="20" r="4" fill="'+GGOLD+'"/><text x="'+(GW-70)+'" y="24" font-size="10" fill="#b8a4d4">w_hgrn</text>';
+  s += '<path d="'+pathFromSeries(data.a)+'" fill="none" stroke="'+GRED+'" stroke-width="2.6"/>';
+  s += '<path d="'+pathFromSeries(data.b)+'" fill="none" stroke="'+GGOLD+'" stroke-width="2.6"/>';
+  s += '<circle cx="'+(GW-150)+'" cy="20" r="4" fill="'+GRED+'"/><text x="'+(GW-140)+'" y="24" font-size="10" fill="#b8a4d4">association</text>';
+  s += '<circle cx="'+(GW-80)+'" cy="20" r="4" fill="'+GGOLD+'"/><text x="'+(GW-70)+'" y="24" font-size="10" fill="#b8a4d4">timing</text>';
   gateSvg.innerHTML = s;
   document.getElementById('gateStat').textContent =
-    'final w_hop ' + data.hop[data.hop.length-1].toFixed(2) + ' \u00b7 final w_hgrn ' + data.hgrn[data.hgrn.length-1].toFixed(2);
+    'final blend ' + Math.round(data.a[data.a.length-1]*100) + ' / ' + Math.round(data.b[data.b.length-1]*100);
 }
 document.getElementById('btnReplayOn').addEventListener('click', function(){
   this.classList.add('active'); document.getElementById('btnReplayOff').classList.remove('active');
