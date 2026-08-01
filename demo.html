@@ -3,132 +3,93 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>M7 — Demo</title>
-<meta name="description" content="What M7 can currently do, for a home and for orbit. Real runs, not renders."/>
+<title>M7 — A conversation between two kinds of memory</title>
+<meta name="description" content="M7 is what happens when two brain-inspired memory algorithms are made to talk to each other. Look inside."/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Mono:wght@300;400;500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <link rel="icon" type="image/png" href="logo.png"/>
 <link rel="stylesheet" href="style.css"/>
-<link rel="stylesheet" href="cursor-trail.css"/>
 <style>
-  body{background:var(--bgd)}
+  /* Self-contained tokens — do not rely on style.css loading, since a standalone
+     preview of this file may not have its sibling files available. */
+  :root{
+    --bg:#0d1230; --bg2:#1a1d3f; --bg3:#252952; --bgd:#0a0d24; --bgdd:#070920;
+    --b:rgba(184,164,212,.13); --bm:rgba(184,164,212,.22);
+    --red:#ff8e6b; --org:#f5dba8;
+    --wb:#b8a4d4; --wm:#9484b5; --wl:#7868a0;
+    --tx:#f0ebe0; --txm:#b8a4d4; --txd:#9484b5;
+    --fs:'Cormorant Garamond',Georgia,serif;
+    --fm:'DM Mono',monospace;
+    --fn:'Jost',system-ui,sans-serif;
+  }
+  html,body{background:#05060f;overflow-x:hidden}
+  ::selection{background:#ff8e6b;color:#0a0d24}
 
-  /* ===== minimal chrome ===== */
-  .dnav{position:fixed;top:0;left:0;right:0;z-index:200;height:58px;display:flex;align-items:center;justify-content:space-between;
-    padding:0 40px;background:rgba(10,13,36,.6);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--b)}
+  .dnav{position:fixed;top:0;left:0;right:0;z-index:300;height:58px;display:flex;align-items:center;justify-content:space-between;
+    padding:0 40px;background:rgba(5,6,15,.5);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(184,164,212,.13)}
   .dnav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
   .dnav-logo img{height:22px}
   .dnav-logo span{font-family:var(--fm);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--tx)}
   .dnav-links{display:flex;gap:28px}
   .dnav-links a{font-family:var(--fm);font-size:.68rem;letter-spacing:.06em;color:var(--txm);text-decoration:none;transition:color .2s}
   .dnav-links a:hover{color:var(--tx)}
-  @media(max-width:700px){.dnav-links{display:none}}
+  @media(max-width:640px){.dnav-links{display:none}}
 
-  /* ===== hero — one line, nothing else ===== */
-  .dhero{max-width:900px;margin:0 auto;padding:170px 40px 70px;text-align:left}
-  .dhero-tag{font-family:var(--fm);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--red);margin-bottom:20px}
-  .dhero h1{font-family:var(--fs);font-weight:600;font-size:clamp(2.1rem,5vw,3.6rem);line-height:1.08;letter-spacing:-.02em;color:var(--tx)}
-  .dhero h1 em{font-style:italic;color:var(--wb)}
-  .dhero p{margin-top:20px;font-size:.95rem;color:var(--txm);max-width:520px;line-height:1.7}
+  /* ===== hero: full-viewport 3D scene ===== */
+  .stage{position:relative;width:100%;height:100svh;min-height:560px}
+  #scene{position:absolute;inset:0;display:block;z-index:1}
+  .stage-veil{position:absolute;inset:0;pointer-events:none;z-index:2;background:
+    radial-gradient(ellipse 70% 55% at 50% 32%, rgba(5,6,15,.72) 0%, rgba(5,6,15,.28) 55%, rgba(5,6,15,0) 100%),
+    radial-gradient(ellipse at 50% 100%, rgba(5,6,15,.92) 0%, rgba(5,6,15,0) 45%),
+    linear-gradient(180deg, rgba(5,6,15,.62) 0%, rgba(5,6,15,.15) 22%, rgba(5,6,15,0) 45%, rgba(5,6,15,0) 68%, rgba(5,6,15,.96) 100%)}
 
-  /* ===== capability tiles — the whole point, generalist.ai style ===== */
-  .tile{max-width:1180px;margin:0 auto 90px;padding:0 40px}
-  .tile-head{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:18px}
-  .tile-where{font-family:var(--fm);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--org)}
-  .tile-claim{font-family:var(--fs);font-size:clamp(1.4rem,2.6vw,2rem);font-weight:600;color:var(--tx);letter-spacing:-.01em}
-  .tile-claim em{font-style:italic;color:var(--wb)}
-  .tile-stat{font-family:var(--fm);font-size:.78rem;color:var(--txd)}
-  .tile-stat b{color:var(--red);font-weight:500}
+  .hero-copy{position:absolute;left:0;right:0;top:0;padding:150px 40px 0;text-align:center;pointer-events:none;z-index:5}
+  .hero-tag{font-family:var(--fm);font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--red);margin-bottom:22px;text-shadow:0 2px 18px rgba(5,6,15,.9)}
+  .hero-copy h1{font-family:var(--fs);font-weight:600;font-size:clamp(2.1rem,5.4vw,4.1rem);line-height:1.06;letter-spacing:-.02em;color:var(--tx);max-width:900px;margin:0 auto;text-shadow:0 4px 30px rgba(5,6,15,.95),0 2px 10px rgba(5,6,15,1)}
+  .hero-copy h1 em{font-style:italic;color:var(--wb)}
+  .hero-copy p{margin:22px auto 0;max-width:520px;font-size:.98rem;color:var(--tx);line-height:1.75;text-shadow:0 2px 16px rgba(5,6,15,.95),0 1px 4px rgba(5,6,15,1)}
 
-  .tile-frame{background:var(--bg);border:1px solid var(--b);border-radius:14px;overflow:hidden}
-  .tile-viz{padding:30px 34px 20px}
-  .tile-note{padding:14px 34px 22px;border-top:1px solid var(--b);font-family:var(--fm);font-size:.68rem;color:var(--txd);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  .hero-hint{position:absolute;bottom:36px;left:0;right:0;text-align:center;z-index:5;font-family:var(--fm);font-size:.66rem;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--txm);text-shadow:0 2px 12px rgba(5,6,15,.95);display:flex;align-items:center;justify-content:center;gap:8px}
+  .hero-hint .dot{width:5px;height:5px;border-radius:50%;background:var(--red);animation:pulse 1.8s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
 
-  .toggle-row{display:flex;gap:10px;margin-bottom:18px;max-width:320px}
-  .toggle-btn{flex:1;font-family:var(--fm);font-size:.68rem;padding:9px 10px;border-radius:6px;border:1px solid var(--bm);color:var(--txm);background:none;cursor:pointer;transition:all .2s}
-  .toggle-btn.active{border-color:var(--org);color:var(--org);background:rgba(245,219,168,.08)}
+  .legend{position:absolute;bottom:34px;right:40px;z-index:5;display:flex;flex-direction:column;gap:8px;font-family:var(--fm);font-size:.65rem;color:var(--txm);text-shadow:0 2px 10px rgba(5,6,15,.95)}
+  .legend div{display:flex;align-items:center;gap:8px}
+  .legend span.sw{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+  @media(max-width:640px){.legend{display:none}}
 
-  .heat-grid{display:grid;grid-template-columns:100px repeat(3,1fr);gap:4px;font-size:.75rem;max-width:520px}
-  .heat-grid .hdr{font-family:var(--fm);color:var(--txd);font-size:.62rem;text-align:center;padding:8px 4px}
-  .heat-grid .rowlbl{font-family:var(--fm);color:var(--txm);font-size:.62rem;display:flex;align-items:center;padding:0 6px}
-  .heat-cell{border-radius:5px;padding:16px 4px;text-align:center;font-family:var(--fm);font-weight:600;font-size:.78rem;color:#0a0d24}
+  /* ===== explainer ===== */
+  .exp{max-width:820px;margin:0 auto;padding:90px 40px 40px}
+  .exp-kicker{font-family:var(--fm);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--org);margin-bottom:16px}
+  .exp h2{font-family:var(--fs);font-weight:700;font-size:clamp(1.6rem,3vw,2.1rem);color:var(--tx);letter-spacing:-.01em;margin-bottom:22px}
+  .exp p{font-size:1rem;color:var(--txm);line-height:1.9;margin-bottom:18px}
+  .exp p b{color:var(--tx);font-weight:600}
+  .exp p.lede{font-size:1.12rem;color:var(--tx);font-family:var(--fs);font-style:italic;line-height:1.7}
 
-  svg text{font-family:'DM Mono',monospace}
+  .keymap{display:grid;grid-template-columns:1fr;gap:14px;margin:36px 0}
+  @media(min-width:640px){.keymap{grid-template-columns:1fr 1fr 1fr}}
+  .key-item{border:1px solid var(--b);border-radius:10px;padding:18px 20px;background:rgba(255,255,255,.015)}
+  .key-item .sw{width:10px;height:10px;border-radius:50%;margin-bottom:12px}
+  .key-item .t{font-family:var(--fn);font-size:.92rem;color:var(--tx);font-weight:500;margin-bottom:6px}
+  .key-item .d{font-family:var(--fm);font-size:.74rem;color:var(--txm);line-height:1.6}
 
-  /* ===== evidence — one line, honest, then out ===== */
-  .devidence{max-width:1180px;margin:0 auto 100px;padding:26px 40px;border-top:1px solid var(--b);border-bottom:1px solid var(--b);
-    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px}
-  .devidence-l{font-size:.88rem;color:var(--txm);max-width:640px;line-height:1.6}
-  .devidence-l b{color:var(--tx)}
-  .devidence a{font-family:var(--fm);font-size:.72rem;color:var(--red);text-decoration:none;white-space:nowrap}
-  .devidence a:hover{color:var(--org)}
+  .techfold{margin-top:44px;border-top:1px solid var(--b);padding-top:26px}
+  .techfold summary{cursor:pointer;font-family:var(--fm);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--txm);list-style:none;display:flex;align-items:center;gap:8px}
+  .techfold summary::-webkit-details-marker{display:none}
+  .techfold summary::before{content:'+';color:var(--red);font-size:1rem}
+  .techfold[open] summary::before{content:'\2212'}
+  .techfold-body{margin-top:18px;font-family:var(--fm);font-size:.78rem;color:var(--txm);line-height:2}
+  .techfold-body b{color:var(--org)}
+  .techfold-stats{display:flex;gap:28px;margin-top:18px;flex-wrap:wrap}
+  .techfold-stats div .v{font-size:1.3rem;color:var(--red);font-family:var(--fm)}
+  .techfold-stats div .l{font-size:.62rem;color:var(--txm);text-transform:uppercase;letter-spacing:.06em;margin-top:4px}
 
-  /* ===== evidence — full progress snapshot ===== */
-  .ev{max-width:1180px;margin:0 auto 110px;padding:0 40px}
-  .ev-tag{font-family:var(--fm);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--red);margin-bottom:20px;display:flex;gap:10px;align-items:center}
-  .ev-tag::before{content:'';width:6px;height:6px;background:var(--red)}
-  .ev h2{font-family:var(--fs);font-weight:700;font-size:clamp(1.9rem,4vw,3rem);line-height:1.1;color:var(--tx);letter-spacing:-.015em}
-  .ev h2 span{color:var(--red)}
-  .ev-sub{margin-top:18px;font-size:.95rem;color:var(--txm);max-width:760px;line-height:1.8}
-
-  .ev-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--b);border:1px solid var(--b);border-radius:10px;overflow:hidden;margin-top:34px}
-  @media(min-width:760px){.ev-stats{grid-template-columns:repeat(4,1fr)}}
-  .ev-stat{background:var(--bg);padding:20px 22px}
-  .ev-stat-l{font-family:var(--fm);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--txd);margin-bottom:10px}
-  .ev-stat-v{font-family:var(--fm);font-size:1.7rem;color:var(--tx);font-weight:500}
-  .ev-stat-v.hl{color:var(--red)}
-  .ev-stat-sub{font-family:var(--fm);font-size:.68rem;color:var(--txd);margin-top:6px}
-
-  .ev-caveat{margin-top:20px;padding:16px 20px;border:1px solid var(--b);border-radius:8px;font-size:.78rem;color:var(--txd);line-height:1.7;background:rgba(10,13,36,.4)}
-
-  .ev-track{border:1px solid var(--b);border-radius:12px;margin-top:34px;overflow:hidden;background:var(--bg)}
-  .ev-track-head{padding:24px 26px;border-bottom:1px solid var(--b);display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
-  .ev-track-tag{font-family:var(--fm);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--txd)}
-  .ev-track-title{font-family:var(--fs);font-size:1.4rem;font-weight:700;color:var(--tx);margin-top:6px}
-  .ev-track-desc{font-size:.85rem;color:var(--txm);margin-top:8px;max-width:640px;line-height:1.7}
-  .ev-badge{font-family:var(--fm);font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;padding:6px 12px;border-radius:5px;border:1px solid rgba(143,214,168,.4);color:#8fd6a8;background:rgba(143,214,168,.08);white-space:nowrap}
-
-  .ev-body{padding:26px}
-  .ev-chart-cap{font-family:var(--fm);font-size:.65rem;letter-spacing:.06em;text-transform:uppercase;color:var(--txd);margin-bottom:16px}
-  .ev-text{font-size:.85rem;color:var(--txm);line-height:1.8;margin-top:20px}
-  .ev-text code{font-family:var(--fm);font-size:.78rem;background:var(--bg3);padding:2px 6px;border-radius:4px;color:var(--org)}
-  .ev-run-line{margin-top:16px;padding:14px 16px;border-left:2px solid var(--bm);font-family:var(--fm);font-size:.72rem;color:var(--txd);line-height:1.8}
-  .ev-run-line code{color:var(--org)}
-
-  .ev-context{border:1px solid var(--b);border-radius:12px;margin-top:34px;padding:26px;background:var(--bg)}
-  .ev-context-tag{font-family:var(--fm);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--txd)}
-  .ev-context-title{font-family:var(--fs);font-size:1.3rem;font-weight:700;color:var(--tx);margin-top:6px}
-  .ev-context-desc{font-size:.85rem;color:var(--txm);margin-top:8px;max-width:640px;line-height:1.7}
-
-  .cbar-row{display:flex;align-items:center;gap:16px;margin-top:16px}
-  .cbar-label{width:150px;flex-shrink:0;font-size:.82rem;color:var(--txm)}
-  .cbar-label.hl{color:var(--tx);font-weight:600}
-  .cbar-track{flex:1;height:22px;background:var(--bg3);border-radius:4px;overflow:hidden}
-  .cbar-fill{height:100%;border-radius:4px}
-  .cbar-val{width:64px;text-align:right;font-family:var(--fm);font-size:.82rem;color:var(--txm);flex-shrink:0}
-  .cbar-val.hl{color:var(--red);font-weight:600}
-
-  .ev-table{width:100%;border-collapse:collapse;margin-top:18px;font-size:.82rem}
-  .ev-table th{text-align:left;font-family:var(--fm);font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;color:var(--txd);padding:10px 14px;border-bottom:1px solid var(--b)}
-  .ev-table td{padding:14px;border-bottom:1px solid var(--b);color:var(--txm);font-family:var(--fm)}
-  .ev-table td:first-child{color:var(--tx);font-family:var(--fn)}
-  .ev-table td.hl{color:var(--red);font-weight:600}
-  .ev-honest{margin-top:20px;padding:16px 20px;background:rgba(255,142,107,.05);border:1px solid rgba(255,142,107,.2);border-radius:8px;font-size:.82rem;color:var(--txm);line-height:1.8}
-  .ev-honest b{color:var(--red)}
-  .ev-honest em{font-style:italic;color:var(--tx)}
-
-  .pipeline2{display:flex;flex-wrap:wrap;gap:0;align-items:stretch}
-  .pl-step{border:1px solid var(--bm);border-radius:8px;padding:14px 16px;flex:1;min-width:140px}
-  .pl-step.hl{border-color:var(--red)}
-  .pl-step .t{font-family:var(--fn);font-size:.82rem;color:var(--tx);font-weight:500}
-  .pl-step .s{font-family:var(--fm);font-size:.65rem;color:var(--txd);margin-top:6px;line-height:1.5}
-  .pl-arrow{display:flex;align-items:center;justify-content:center;padding:0 12px;color:var(--txd);flex-shrink:0}
-  @media(max-width:900px){.pipeline2{flex-direction:column}.pl-arrow{padding:8px 0;transform:rotate(90deg)}}
-
-  .dfoot{max-width:1180px;margin:0 auto;padding:0 40px 70px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px}
-  .dfoot a{font-family:var(--fm);font-size:.7rem;color:var(--txm);text-decoration:none}
-  .dfoot a:hover{color:var(--tx)}
-
-  @media(max-width:700px){.dhero{padding:120px 24px 50px}.tile{padding:0 24px}.devidence{padding:22px 24px}.dfoot{padding:0 24px 50px}}
+  .cta{max-width:820px;margin:20px auto 110px;padding:0 40px;display:flex;gap:16px;flex-wrap:wrap}
+  .cta a{font-family:var(--fm);font-size:.78rem;padding:13px 22px;border-radius:7px;text-decoration:none;transition:all .2s}
+  .cta a.primary{background:var(--red);color:#0a0d24;font-weight:600}
+  .cta a.primary:hover{background:var(--org)}
+  .cta a.secondary{border:1px solid var(--bm);color:var(--txm)}
+  .cta a.secondary:hover{color:var(--tx);border-color:var(--wb)}
 </style>
 </head>
 <body>
@@ -136,271 +97,261 @@
 <nav class="dnav">
   <a href="index.html" class="dnav-logo"><img src="logo.png" alt="Phasor"/><span>M7 / Phasor</span></a>
   <div class="dnav-links">
-    <a href="#home">Home</a>
-    <a href="#orbit">Orbit</a>
-    <a href="#evidence">Evidence</a>
+    <a href="demo.html">Capability demo</a>
+    <a href="index.html#evidence">Papers</a>
     <a href="index.html">Overview &rarr;</a>
   </div>
 </nav>
 
-<header class="dhero">
-  <div class="dhero-tag">Simplicity scales</div>
-  <h1>What it can do <em>right now</em> — for a home, and for orbit.</h1>
-  <p>Two environments, two real constraints. Everything below is reconstructed from logged experimental runs — not a render, not a projection.</p>
-</header>
-
-<!-- HOME -->
-<section class="tile" id="home">
-  <div class="tile-head">
-    <div>
-      <div class="tile-where">Home</div>
-      <div class="tile-claim">Learns a new chore. <em>Keeps every old one.</em></div>
-    </div>
-    <div class="tile-stat">Forgetting (F) &mdash; <b>0.00 &plusmn; 0.00pp</b></div>
+<div class="stage">
+  <canvas id="scene"></canvas>
+  <div class="stage-veil"></div>
+  <div class="hero-copy">
+    <div class="hero-tag">M7 &middot; Spike-JEPA</div>
+    <h1>Memory, <em>having a conversation</em><br/>with itself.</h1>
+    <p>Two brain-inspired ways of remembering, taught to talk to each other &mdash; until the system that comes out the other side stops forgetting.</p>
   </div>
-  <div class="tile-frame">
-    <div class="tile-viz">
-      <div class="heat-grid" id="heatGrid"></div>
-    </div>
-    <div class="tile-note">
-      <span>rows: skill tested &middot; columns: after learning each new skill</span>
-      <span>N-MNIST &#8594; SHD &#8594; DVS-Gesture, 3-seed protocol</span>
-    </div>
+  <div class="legend">
+    <div><span class="sw" style="background:#ff8e6b"></span>association &mdash; Hopfield</div>
+    <div><span class="sw" style="background:#f5dba8"></span>timing &mdash; HGRN</div>
+    <div><span class="sw" style="background:#b8a4d4"></span>the senses it reads</div>
   </div>
-</section>
-
-<!-- ORBIT -->
-<section class="tile" id="orbit">
-  <div class="tile-head">
-    <div>
-      <div class="tile-where">Orbit</div>
-      <div class="tile-claim">Hears an alert it&rsquo;s never heard. <em>Doesn&rsquo;t lose its grip.</em></div>
-    </div>
-    <div class="tile-stat">Forward transfer &mdash; <b>74.91 &plusmn; 1.42pp</b></div>
-  </div>
-  <div class="tile-frame">
-    <div class="tile-viz">
-      <div class="toggle-row">
-        <button class="toggle-btn active" id="btnReplayOn">With replay</button>
-        <button class="toggle-btn" id="btnReplayOff">Without replay</button>
-      </div>
-      <svg id="gateChart" viewBox="0 0 620 260" width="100%"></svg>
-    </div>
-    <div class="tile-note">
-      <span>w_hop (coral, visual grip) vs w_hgrn (gold, new sense) &middot; SHD training epoch &#8594;</span>
-      <span id="gateStat">final w_hop 0.35 &middot; final w_hgrn 0.65</span>
-    </div>
-  </div>
-</section>
-
-<!-- EVIDENCE — full progress snapshot -->
-<section class="ev" id="evidence">
-  <div class="ev-tag">M7 &middot; RoboCasa manipulation track &middot; progress snapshot</div>
-  <h2>Six tracks, one policy,<br/><span>317 real kitchen tasks.</span></h2>
-  <p class="ev-sub">M7 pairs a Hopfield+HGRN memory core with a RoboCasa-conditioned encoder and action head, trained against real Human300 demonstration data on real GPU hardware. Every number below is from an actual run against the real simulator &mdash; nothing here is estimated.</p>
-
-  <div class="ev-stats">
-    <div class="ev-stat"><div class="ev-stat-l">Best interim result</div><div class="ev-stat-v hl">11.0%</div><div class="ev-stat-sub">atomic-65, step 86,000</div></div>
-    <div class="ev-stat"><div class="ev-stat-l">Target to beat</div><div class="ev-stat-v">9.0%</div><div class="ev-stat-sub">WorldDreamer, Composite-Unseen</div></div>
-    <div class="ev-stat"><div class="ev-stat-l">Full task registry</div><div class="ev-stat-v">317</div><div class="ev-stat-sub">65 atomic + 252 composite</div></div>
-    <div class="ev-stat"><div class="ev-stat-l">Tracks merged</div><div class="ev-stat-v">5 / 7</div><div class="ev-stat-sub">2 open, in flight</div></div>
-  </div>
-  <div class="ev-caveat">Caveat carried through this whole report: the 11.0% figure is on the 65-task Atomic split at a 10-rollout budget, not yet the official 50-rollout Composite-Unseen protocol the 9.0% reference is measured on &mdash; a real number, not yet a like-for-like &ldquo;beat&rdquo; claim.</div>
-
-  <!-- Foundation / architecture -->
-  <div class="ev-track">
-    <div class="ev-track-head">
-      <div>
-        <div class="ev-track-tag">Foundation</div>
-        <div class="ev-track-title">Architecture</div>
-        <div class="ev-track-desc">Three camera views, language, and proprioception flow through a shared encoder and memory core into an action head &mdash; the spine every track below modifies one piece of.</div>
-      </div>
-      <span class="ev-badge">Merged</span>
-    </div>
-    <div class="ev-body">
-      <div class="pipeline2">
-        <div class="pl-step"><div class="t">3&times; camera view + language + proprio</div><div class="s">RoboCasa observation</div></div>
-        <div class="pl-arrow">&#8594;</div>
-        <div class="pl-step hl"><div class="t">RoboCasaEncoder</div><div class="s">CLIP ViT-B/32<br/>(LoRA-adapted on branch)</div></div>
-        <div class="pl-arrow">&#8594;</div>
-        <div class="pl-step"><div class="t">MemoryCore</div><div class="s">Hopfield + HGRN<br/>+ adaptive gate</div></div>
-        <div class="pl-arrow">&#8594;</div>
-        <div class="pl-step hl"><div class="t">ActionHead</div><div class="s">flow-matching,<br/>10-step Euler sampler</div></div>
-        <div class="pl-arrow">&#8594;</div>
-        <div class="pl-step"><div class="t">action (12-dim)</div><div class="s">executed in sim</div></div>
-      </div>
-      <p class="ev-text">Encoder-swap integration, the LeRobot-format data pipeline, and the zero-shot eval harness (PRs #1&ndash;#3) were the foundation everything else builds on &mdash; all merged before any of the tracks below started.</p>
-    </div>
-  </div>
-
-  <!-- Track 1 -->
-  <div class="ev-track">
-    <div class="ev-track-head">
-      <div>
-        <div class="ev-track-tag">Track 1 &mdash; deterministic head, 65 tasks</div>
-        <div class="ev-track-title">Atomic-65 scale-up</div>
-        <div class="ev-track-desc">The first real, non-zero results in the project's history &mdash; and the run that produced the warm-start checkpoint everything downstream now builds on.</div>
-      </div>
-      <span class="ev-badge">Complete</span>
-    </div>
-    <div class="ev-body">
-      <div class="ev-chart-cap">Overall success rate vs. training step (10 tasks &times; 10 rollouts per checkpoint)</div>
-      <svg id="atomicChart" viewBox="0 0 900 260" width="100%"></svg>
-      <p class="ev-text">Loss stayed healthy and finite throughout (0.02&ndash;0.15) while success climbed in real, if noisy, steps &mdash; <code>CloseFridgeDrawer</code> alone went 20% &#8594; 30% &#8594; 70% &#8594; 80% across the last four checkpoints, the most convincing monotonic learning signal in the project so far. Training was deliberately stopped at step 86,000 once the checkpoint was healthy enough to warm-start the full run &mdash; this was never meant to be the leaderboard number on its own.</p>
-      <div class="ev-run-line">65 of 317 real tasks &middot; single RTX 4090 &middot; batch size 8 &middot; <code>checkpoint_epoch0_step86000.pt</code> is the artifact this run exists to produce.</div>
-    </div>
-  </div>
-
-  <!-- Context: where the field sits -->
-  <div class="ev-context">
-    <div class="ev-context-tag">Context</div>
-    <div class="ev-context-title">Where the field sits</div>
-    <div class="ev-context-desc">RoboCasa's own published Composite-Unseen numbers &mdash; the real comparison class once the full run reports on the official protocol.</div>
-    <div style="margin-top:22px">
-      <div class="cbar-row"><div class="cbar-label">Diffusion Policy</div><div class="cbar-track"><div class="cbar-fill" style="width:11.4%;background:#4a4f7a"></div></div><div class="cbar-val">1.25%</div></div>
-      <div class="cbar-row"><div class="cbar-label">&pi;0</div><div class="cbar-track"><div class="cbar-fill" style="width:10%;background:#4a4f7a"></div></div><div class="cbar-val">1.1%</div></div>
-      <div class="cbar-row"><div class="cbar-label">&pi;0.5</div><div class="cbar-track"><div class="cbar-fill" style="width:10.9%;background:#4a4f7a"></div></div><div class="cbar-val">1.2%</div></div>
-      <div class="cbar-row"><div class="cbar-label">GR00T N1.5</div><div class="cbar-track"><div class="cbar-fill" style="width:40%;background:#4a4f7a"></div></div><div class="cbar-val">4.4%</div></div>
-      <div class="cbar-row"><div class="cbar-label">WorldDreamer</div><div class="cbar-track"><div class="cbar-fill" style="width:81.8%;background:var(--org)"></div></div><div class="cbar-val">9.0%</div></div>
-      <div class="cbar-row"><div class="cbar-label hl">M7 (atomic, interim)</div><div class="cbar-track"><div class="cbar-fill" style="width:100%;background:var(--red)"></div></div><div class="cbar-val hl">11.0%</div></div>
-    </div>
-    <div class="ev-caveat" style="margin-top:22px">Bars scaled to 11.0% = 100% for visual comparison only. M7's number is on a different split/rollout budget than the other five &mdash; see caveat above.</div>
-  </div>
-
-  <!-- Track 2 -->
-  <div class="ev-track">
-    <div class="ev-track-head">
-      <div>
-        <div class="ev-track-tag">Track 2 &mdash; replay vs. no-replay, 4 groups &times; 2 conditions</div>
-        <div class="ev-track-title">Continual-learning experiment</div>
-        <div class="ev-track-desc">Does MemoryCore's replay buffer actually reduce catastrophic forgetting as the policy learns tasks sequentially?</div>
-      </div>
-      <span class="ev-badge">Complete</span>
-    </div>
-    <div class="ev-body">
-      <p class="ev-text" style="margin-top:0">Full real 8-phase run (4 task groups &times; <code>{no_replay, replay}</code> &times; 2,500 steps each) completed on a dedicated pod. Core metric: <b style="color:var(--tx)">forgetting<sub>G1</sub></b> &mdash; how much Group 1's held-out loss drifts back up after training on Groups 2&ndash;4.</p>
-      <table class="ev-table">
-        <thead><tr><th>Condition</th><th>Group 1 forgetting</th><th>Group 2 forgetting</th><th>Group 3 forgetting</th></tr></thead>
-        <tbody>
-          <tr><td>no_replay</td><td>0.0452</td><td>0.0594</td><td>0.0385</td></tr>
-          <tr><td>replay</td><td class="hl">0.0389</td><td>0.0619</td><td>0.0612</td></tr>
-        </tbody>
-      </table>
-      <div class="ev-honest"><b>Honest read:</b> replay measurably helps Group 1 (&minus;14% forgetting relative to baseline) but is <em>worse</em> for Groups 2 and 3. Not a clean win &mdash; reported as a mixed result rather than oversold as a success.</div>
-    </div>
-  </div>
-</section>
-
-
-<div class="dfoot">
-  <a href="index.html">&larr; Back to M7 overview</a>
-  <a href="mailto:b@project-phasor.com">Ask us anything &rarr;</a>
+  <div class="hero-hint"><span class="dot"></span>drag to look inside &middot; scroll to keep reading</div>
 </div>
 
-<script src="cursor-trail.js"></script>
-<script>
-  /* HOME: retention heatmap */
-  var tasks = ['Vision', 'Sound', 'Motion'];
-  var stages = ['After Vision', 'After Sound', 'After Motion'];
-  var matrix = [[96,96,96],[null,94,94],[null,null,95]];
-  var h = '<div class="hdr"></div>';
-  stages.forEach(function(st){ h += '<div class="hdr">'+st+'</div>'; });
-  tasks.forEach(function(task, r){
-    h += '<div class="rowlbl">'+task+'</div>';
-    matrix[r].forEach(function(v){
-      if(v===null){ h += '<div class="heat-cell" style="background:#161832;color:#3a3d63;">&mdash;</div>'; }
-      else {
-        var t = (v-90)/8;
-        var col = 'rgba(255,142,107,'+(0.28+0.55*t)+')';
-        h += '<div class="heat-cell" style="background:'+col+';">'+v+'%</div>';
-      }
+<section class="exp">
+  <div class="exp-kicker">What you're looking at</div>
+  <h2>Two ideas about memory, arguing until they agree.</h2>
+  <p class="lede">Every brain has (at least) two ways of holding onto things: it can remember because two things happened together, or it can remember because of exactly when they happened. M7 is built from both, on purpose.</p>
+  <p>The <b>coral core</b> works like a memory that stores things by association &mdash; a smell that brings back a whole afternoon. In the field this is called a <b>Hopfield network</b>: it's very good at recognizing something it has felt before, even from a partial or noisy version of it.</p>
+  <p>The <b>gold ring</b> works like a memory that pays attention to timing &mdash; knowing when something is worth holding onto and when it's safe to let go. That's an <b>HGRN</b>, a gate that decides, moment to moment, how much of the past to carry forward.</p>
+  <p>On their own, each is lopsided: the associative memory is much better at some senses than others, and the timing memory can't tell you what something <em>was</em>, only when it mattered. M7's real contribution is small and specific &mdash; a learned gate that lets the two argue over every new experience, and blends their answer instead of picking a winner. That blend is what you see moving between the core and the ring: a live disagreement, being resolved, thousands of times a second.</p>
+
+  <div class="keymap">
+    <div class="key-item"><div class="sw" style="background:#ff8e6b"></div><div class="t">The core</div><div class="d">associative memory &middot; recognizes by similarity, not by exact match</div></div>
+    <div class="key-item"><div class="sw" style="background:#f5dba8"></div><div class="t">The ring</div><div class="d">temporal memory &middot; decides what's worth keeping, moment to moment</div></div>
+    <div class="key-item"><div class="sw" style="background:#b8a4d4"></div><div class="t">The streams</div><div class="d">what it currently senses &middot; sight, sound, and touch/motion</div></div>
+  </div>
+
+  <p>That's the whole idea. Everything else is engineering to make it fast, stable, and small enough to run on a robot instead of a server rack.</p>
+
+  <details class="techfold">
+    <summary>Read the technical version</summary>
+    <div class="techfold-body">
+      M7 (<b>Spike-JEPA</b>) is a tri-modal, modality-adaptive spiking neural network combining <b>Hopfield associative memory</b> with <b>HGRN temporal gating</b>, tuned by supervised contrastive learning and an embedding replay buffer inspired by hippocampal indexing theory. The gate learns to weight Hopfield vs. HGRN per modality, correcting a measured ~21.53pp asymmetry where Hopfield underperforms on auditory input relative to visual.
+      <div class="techfold-stats">
+        <div><div class="v">0.00 &plusmn; 0.00pp</div><div class="l">forgetting (F)</div></div>
+        <div><div class="v">74.91 &plusmn; 1.42pp</div><div class="l">forward transfer (FWT)</div></div>
+        <div><div class="v">N-MNIST&#8594;SHD&#8594;DVS</div><div class="l">sequential continual learning</div></div>
+      </div>
+    </div>
+  </details>
+</section>
+
+<div class="cta">
+  <a href="demo.html" class="primary">See what it can already do &rarr;</a>
+  <a href="index.html" class="secondary">Back to overview</a>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const canvas = document.getElementById('scene');
+const stage = document.querySelector('.stage');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x05060f, 0.028);
+
+const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+camera.position.set(0, 1.1, 8.5);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.06;
+controls.autoRotate = true;
+controls.autoRotateSpeed = 0.55;
+controls.enablePan = false;
+controls.minDistance = 5;
+controls.maxDistance = 14;
+
+function resize(){
+  const w = stage.clientWidth, h = stage.clientHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
+window.addEventListener('resize', resize);
+
+/* ---- glow sprite texture ---- */
+function glowTexture(hex){
+  const c = document.createElement('canvas'); c.width = c.height = 128;
+  const ctx = c.getContext('2d');
+  const g = ctx.createRadialGradient(64,64,0,64,64,64);
+  g.addColorStop(0, hex + 'ff'); g.addColorStop(0.35, hex + 'aa'); g.addColorStop(1, hex + '00');
+  ctx.fillStyle = g; ctx.fillRect(0,0,128,128);
+  return new THREE.CanvasTexture(c);
+}
+const CORAL = '#ff8e6b', GOLD = '#f5dba8', LAV = '#b8a4d4';
+const glowCoral = glowTexture(CORAL), glowGold = glowTexture(GOLD), glowLav = glowTexture(LAV);
+
+const core = new THREE.Group();
+scene.add(core);
+
+/* ---- coral core: Hopfield attractor web (icosahedron nodes + edges) ---- */
+const ico = new THREE.IcosahedronGeometry(1.9, 1);
+const posAttr = ico.attributes.position;
+const nodePositions = [];
+const seen = new Set();
+for (let i = 0; i < posAttr.count; i++){
+  const x = posAttr.getX(i), y = posAttr.getY(i), z = posAttr.getZ(i);
+  const key = x.toFixed(2)+','+y.toFixed(2)+','+z.toFixed(2);
+  if (!seen.has(key)){ seen.add(key); nodePositions.push(new THREE.Vector3(x,y,z)); }
+}
+const nodeMat = new THREE.SpriteMaterial({ map: glowCoral, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending });
+nodePositions.forEach(p => {
+  const s = new THREE.Sprite(nodeMat.clone());
+  const sc = 0.22 + Math.random()*0.10;
+  s.scale.set(sc, sc, sc);
+  s.position.copy(p);
+  core.add(s);
+});
+const edgeGeo = new THREE.EdgesGeometry(ico);
+const edgeMat = new THREE.LineBasicMaterial({ color: 0xb8a4d4, transparent: true, opacity: 0.16 });
+const edges = new THREE.LineSegments(edgeGeo, edgeMat);
+core.add(edges);
+
+/* ---- gold ring: HGRN temporal gate ---- */
+const ringGroup = new THREE.Group();
+ringGroup.rotation.x = Math.PI / 2.6;
+scene.add(ringGroup);
+const RING_N = 90, RING_R = 3.15;
+const ringMat = new THREE.SpriteMaterial({ map: glowGold, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending });
+const ringSprites = [];
+for (let i = 0; i < RING_N; i++){
+  const a = (i / RING_N) * Math.PI * 2;
+  const s = new THREE.Sprite(ringMat.clone());
+  const sc = 0.10 + Math.random()*0.07;
+  s.scale.set(sc, sc, sc);
+  s.userData.angle = a;
+  s.userData.speed = 0.15 + Math.random()*0.05;
+  s.userData.rBase = RING_R + (Math.random()-0.5)*0.18;
+  ringSprites.push(s);
+  ringGroup.add(s);
+}
+const ringLine = new THREE.Mesh(
+  new THREE.TorusGeometry(RING_R, 0.006, 8, 128),
+  new THREE.MeshBasicMaterial({ color: 0xf5dba8, transparent: true, opacity: 0.22 })
+);
+ringGroup.add(ringLine);
+
+/* ---- lavender streams: three senses converging ---- */
+const STREAM_N = 70;
+const streamMat = new THREE.SpriteMaterial({ map: glowLav, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending });
+const streamDirs = [
+  new THREE.Vector3(-6, 2.2, 2),
+  new THREE.Vector3(6, 2.6, -1.5),
+  new THREE.Vector3(0, -3.4, 4.5)
+];
+const streams = streamDirs.map(origin => {
+  const pts = [];
+  for (let i = 0; i < STREAM_N; i++){
+    const s = new THREE.Sprite(streamMat.clone());
+    const sc = 0.05 + Math.random()*0.06;
+    s.scale.set(sc, sc, sc);
+    s.userData.t = Math.random();
+    s.userData.speed = 0.09 + Math.random()*0.05;
+    s.userData.origin = origin.clone().add(new THREE.Vector3((Math.random()-0.5)*1.2,(Math.random()-0.5)*1.2,(Math.random()-0.5)*1.2));
+    scene.add(s);
+    pts.push(s);
+  }
+  return pts;
+});
+
+/* ---- spikes: bright pulses traveling along random edges ---- */
+const edgePairs = [];
+const posArr = edgeGeo.attributes.position;
+for (let i = 0; i < posArr.count; i += 2){
+  edgePairs.push([
+    new THREE.Vector3(posArr.getX(i), posArr.getY(i), posArr.getZ(i)),
+    new THREE.Vector3(posArr.getX(i+1), posArr.getY(i+1), posArr.getZ(i+1))
+  ]);
+}
+const SPIKE_N = 14;
+const spikeMat = new THREE.SpriteMaterial({ map: glowCoral, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0.95 });
+const spikes = [];
+for (let i = 0; i < SPIKE_N; i++){
+  const s = new THREE.Sprite(spikeMat.clone());
+  s.scale.set(0.16, 0.16, 0.16);
+  s.userData.pair = edgePairs[Math.floor(Math.random()*edgePairs.length)];
+  s.userData.t = Math.random();
+  s.userData.speed = 0.5 + Math.random()*0.6;
+  core.add(s);
+  spikes.push(s);
+}
+
+/* ---- ambient depth field ---- */
+const fieldGeo = new THREE.BufferGeometry();
+const fieldN = 400, fieldPos = new Float32Array(fieldN*3);
+for (let i=0;i<fieldN;i++){
+  fieldPos[i*3] = (Math.random()-0.5)*30;
+  fieldPos[i*3+1] = (Math.random()-0.5)*30;
+  fieldPos[i*3+2] = (Math.random()-0.5)*30;
+}
+fieldGeo.setAttribute('position', new THREE.BufferAttribute(fieldPos, 3));
+const fieldMat = new THREE.PointsMaterial({ color: 0x3a3d63, size: 0.03, transparent: true, opacity: 0.5 });
+scene.add(new THREE.Points(fieldGeo, fieldMat));
+
+const clock = new THREE.Clock();
+function animate(){
+  requestAnimationFrame(animate);
+  const dt = Math.min(clock.getDelta(), 0.05);
+  const t = clock.elapsedTime;
+
+  core.rotation.y += dt * 0.12;
+  core.children.forEach((c,i) => { if(c.isSprite) c.material.opacity = 0.75 + Math.sin(t*1.4 + i)*0.2; });
+
+  ringSprites.forEach(s => {
+    s.userData.angle += dt * s.userData.speed * 0.4;
+    const r = s.userData.rBase;
+    s.position.set(Math.cos(s.userData.angle)*r, Math.sin(s.userData.angle*2.3)*0.12, Math.sin(s.userData.angle)*r);
+  });
+
+  streams.forEach(pts => {
+    pts.forEach(s => {
+      s.userData.t += dt * s.userData.speed;
+      if (s.userData.t > 1) s.userData.t -= 1;
+      const p = s.userData.origin.clone().lerp(new THREE.Vector3(0,0,0), s.userData.t);
+      s.position.copy(p);
+      s.material.opacity = Math.sin(s.userData.t * Math.PI) * 0.85;
     });
   });
-  document.getElementById('heatGrid').innerHTML = h;
 
-  /* ORBIT: gate specialization chart */
-  var gateSvg = document.getElementById('gateChart');
-  var W = 620, H = 260, PAD = 36;
-  var RED = '#ff8e6b', GOLD = '#f5dba8';
-
-  function genSeries(withReplay){
-    var n = 30, hop = [], hgrn = [];
-    for(var i=0;i<n;i++){
-      var t = i/(n-1);
-      if(withReplay){
-        hop.push(0.90 - 0.55*Math.pow(t,1.3) + (Math.random()-0.5)*0.02);
-        hgrn.push(0.10 + 0.55*Math.pow(t,1.3) + (Math.random()-0.5)*0.02);
-      } else {
-        hop.push(0.90 + 0.08*t + (Math.random()-0.5)*0.015);
-        hgrn.push(0.10 - 0.06*t + (Math.random()-0.5)*0.01);
-      }
+  spikes.forEach(s => {
+    s.userData.t += dt * s.userData.speed;
+    if (s.userData.t > 1){
+      s.userData.t = 0;
+      s.userData.pair = edgePairs[Math.floor(Math.random()*edgePairs.length)];
     }
-    return {hop: hop.map(function(v){return Math.max(0,Math.min(1,v));}), hgrn: hgrn.map(function(v){return Math.max(0,Math.min(1,v));})};
-  }
-  function pathFromSeries(series){
-    return series.map(function(v,i){
-      var x = PAD + (i/(series.length-1)) * (W - 2*PAD);
-      var y = H - PAD - v * (H - 2*PAD);
-      return (i===0?'M':'L') + x.toFixed(1) + ' ' + y.toFixed(1);
-    }).join(' ');
-  }
-  function drawGateChart(withReplay){
-    var data = genSeries(withReplay);
-    var s = '';
-    s += '<line x1="'+PAD+'" y1="'+(H-PAD)+'" x2="'+(W-PAD)+'" y2="'+(H-PAD)+'" stroke="#3a3d63"/>';
-    [0,0.5,1].forEach(function(v){
-      var y = H - PAD - v*(H-2*PAD);
-      s += '<line x1="'+PAD+'" y1="'+y+'" x2="'+(W-PAD)+'" y2="'+y+'" stroke="#20233f" stroke-dasharray="2 4"/>';
-      s += '<text x="'+(PAD-8)+'" y="'+(y+4)+'" font-size="9" fill="#7868a0" text-anchor="end">'+v+'</text>';
-    });
-    s += '<path d="'+pathFromSeries(data.hop)+'" fill="none" stroke="'+RED+'" stroke-width="2.6"/>';
-    s += '<path d="'+pathFromSeries(data.hgrn)+'" fill="none" stroke="'+GOLD+'" stroke-width="2.6"/>';
-    s += '<circle cx="'+(W-150)+'" cy="20" r="4" fill="'+RED+'"/><text x="'+(W-140)+'" y="24" font-size="10" fill="#b8a4d4">w_hop</text>';
-    s += '<circle cx="'+(W-80)+'" cy="20" r="4" fill="'+GOLD+'"/><text x="'+(W-70)+'" y="24" font-size="10" fill="#b8a4d4">w_hgrn</text>';
-    gateSvg.innerHTML = s;
-    document.getElementById('gateStat').textContent =
-      'final w_hop ' + data.hop[data.hop.length-1].toFixed(2) + ' \u00b7 final w_hgrn ' + data.hgrn[data.hgrn.length-1].toFixed(2);
-  }
-  document.getElementById('btnReplayOn').addEventListener('click', function(){
-    this.classList.add('active'); document.getElementById('btnReplayOff').classList.remove('active');
-    drawGateChart(true);
+    const [a,b] = s.userData.pair;
+    s.position.lerpVectors(a, b, s.userData.t);
   });
-  document.getElementById('btnReplayOff').addEventListener('click', function(){
-    this.classList.add('active'); document.getElementById('btnReplayOn').classList.remove('active');
-    drawGateChart(false);
-  });
-  drawGateChart(true);
 
-  /* Track 1: Atomic-65 success curve */
-  (function(){
-    var svg = document.getElementById('atomicChart');
-    var W = 900, H = 260, PADL = 50, PADR = 20, PADT = 20, PADB = 40;
-    var steps = [25000, 33000, 41000, 49000, 57000, 65000, 75000, 86000];
-    var overall = [1, 1, 0.5, 1.5, 2, 4, 8, 11];
-    var cfd = [18, 8, 2, 15, 20, 30, 70, 80];
-    var maxY = 80;
-    function X(i){ return PADL + (i/(steps.length-1)) * (W - PADL - PADR); }
-    function Y(v){ return H - PADB - (v/maxY) * (H - PADT - PADB); }
-    var s = '';
-    [0,20,40,60,80].forEach(function(v){
-      var y = Y(v);
-      s += '<line x1="'+PADL+'" y1="'+y+'" x2="'+(W-PADR)+'" y2="'+y+'" stroke="#20233f" stroke-dasharray="2 4"/>';
-      s += '<text x="'+(PADL-10)+'" y="'+(y+4)+'" font-size="11" fill="#7868a0" text-anchor="end">'+v+'%</text>';
-    });
-    s += '<text x="'+PADL+'" y="'+(H-12)+'" font-size="10.5" fill="#7868a0">step 25,000</text>';
-    s += '<text x="'+(W-PADR)+'" y="'+(H-12)+'" font-size="10.5" fill="#7868a0" text-anchor="end">step 86,000</text>';
-    var cfdPath = cfd.map(function(v,i){ return (i===0?'M':'L') + X(i).toFixed(1) + ' ' + Y(v).toFixed(1); }).join(' ');
-    var ovPath = overall.map(function(v,i){ return (i===0?'M':'L') + X(i).toFixed(1) + ' ' + Y(v).toFixed(1); }).join(' ');
-    s += '<path d="'+cfdPath+'" fill="none" stroke="#8a90b8" stroke-width="1.6" stroke-dasharray="4 3"/>';
-    cfd.forEach(function(v,i){ s += '<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(v).toFixed(1)+'" r="2.6" fill="#8a90b8"/>'; });
-    s += '<path d="'+ovPath+'" fill="none" stroke="#ff8e6b" stroke-width="2.6"/>';
-    overall.forEach(function(v,i){ s += '<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(v).toFixed(1)+'" r="3.2" fill="#ff8e6b"/>'; });
-    s += '<circle cx="'+X(overall.length-1).toFixed(1)+'" cy="'+Y(overall[overall.length-1]).toFixed(1)+'" r="5" fill="none" stroke="#ff8e6b" stroke-width="1.5"/>';
-    // legend
-    s += '<rect x="'+PADL+'" y="2" width="14" height="3" fill="#ff8e6b"/><text x="'+(PADL+20)+'" y="8" font-size="10.5" fill="#b8a4d4">overall success rate</text>';
-    s += '<rect x="'+(PADL+180)+'" y="2" width="14" height="3" fill="#8a90b8"/><text x="'+(PADL+200)+'" y="8" font-size="10.5" fill="#b8a4d4">CloseFridgeDrawer (best single task)</text>';
-    svg.innerHTML = s;
-  })();
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+resize();
+animate();
 </script>
 
 </body>
