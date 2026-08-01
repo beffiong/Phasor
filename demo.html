@@ -1,1190 +1,407 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Phasor — AV Fusion Demo</title>
-<link rel="icon" type="image/png" href="logo.png">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@400;500&family=Jost:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>M7 — Demo</title>
+<meta name="description" content="What M7 can currently do, for a home and for orbit. Real runs, not renders."/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Mono:wght@300;400;500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link rel="icon" type="image/png" href="logo.png"/>
+<link rel="stylesheet" href="style.css"/>
+<link rel="stylesheet" href="cursor-trail.css"/>
 <style>
-:root{
-  --bg:#0a0906;--bg2:#111009;--bg3:#1a180f;--surface:#221f14;
-  --border:rgba(255,240,200,0.07);--border-strong:rgba(255,240,200,0.13);
-  --gold:#c9a84c;--gold-dim:rgba(201,168,76,0.10);--gold-glow:rgba(201,168,76,0.22);
-  --cream:#f5f0e8;--muted:#6b6550;--muted2:#9c9478;
-  --green:#4ade80;--red:#f87171;--amber:#fbbf24;--purple:#a78bfa;--teal:#2dd4bf;
-}
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--cream);font-family:'Jost',sans-serif;font-weight:400;line-height:1.6;overflow-x:hidden;min-height:100vh}
-body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-  background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);
-  background-size:64px 64px;mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,black,transparent)}
+  body{background:var(--bgd)}
 
-/* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;
-  padding:0 48px;height:64px;background:rgba(10,9,6,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
-.nav-logo{display:flex;align-items:center;gap:12px;text-decoration:none}
-.nav-logo img{height:26px;width:auto}
-.nav-logo span{font-family:'Jost',sans-serif;font-weight:600;font-size:.95rem;color:var(--cream);letter-spacing:-.01em}
-.nav-center{font-size:.65rem;font-family:'DM Mono',monospace;color:var(--muted);letter-spacing:.12em;text-transform:uppercase}
-.nav-right{display:flex;align-items:center;gap:16px}
-.nav-back{font-size:.72rem;font-family:'DM Mono',monospace;color:var(--muted2);text-decoration:none;letter-spacing:.06em;transition:color .2s}
-.nav-back:hover{color:var(--cream)}
-.nav-badge{padding:6px 14px;border-radius:100px;border:1px solid var(--gold);font-size:.63rem;color:var(--gold);letter-spacing:.06em;font-family:'DM Mono',monospace}
+  /* ===== minimal chrome ===== */
+  .dnav{position:fixed;top:0;left:0;right:0;z-index:200;height:58px;display:flex;align-items:center;justify-content:space-between;
+    padding:0 40px;background:rgba(10,13,36,.6);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--b)}
+  .dnav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+  .dnav-logo img{height:22px}
+  .dnav-logo span{font-family:var(--fm);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--tx)}
+  .dnav-links{display:flex;gap:28px}
+  .dnav-links a{font-family:var(--fm);font-size:.68rem;letter-spacing:.06em;color:var(--txm);text-decoration:none;transition:color .2s}
+  .dnav-links a:hover{color:var(--tx)}
+  @media(max-width:700px){.dnav-links{display:none}}
 
-/* PAGE HEADER */
-.page-header{position:relative;z-index:1;padding:100px 80px 48px;max-width:1400px;margin:0 auto;border-bottom:1px solid var(--border)}
-.page-eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:.67rem;font-family:'DM Mono',monospace;
-  color:var(--gold);letter-spacing:.14em;text-transform:uppercase;margin-bottom:18px}
-.page-eyebrow::before{content:'';width:24px;height:1px;background:var(--gold)}
-.page-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2.4rem,4.5vw,4.2rem);
-  font-weight:300;line-height:1.05;letter-spacing:-.02em;margin-bottom:14px}
-.page-title em{font-style:italic;color:var(--gold)}
-.page-sub{font-size:.9rem;color:var(--muted2);max-width:640px;line-height:1.8;font-weight:300;margin-bottom:28px}
-.page-meta{display:flex;gap:24px;flex-wrap:wrap;align-items:center}
-.meta-item{display:flex;align-items:center;gap:7px;font-size:.68rem;font-family:'DM Mono',monospace;color:var(--muted);letter-spacing:.04em}
-.meta-dot{width:5px;height:5px;border-radius:50%;background:var(--gold);flex-shrink:0}
+  /* ===== hero — one line, nothing else ===== */
+  .dhero{max-width:900px;margin:0 auto;padding:170px 40px 70px;text-align:left}
+  .dhero-tag{font-family:var(--fm);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--red);margin-bottom:20px}
+  .dhero h1{font-family:var(--fs);font-weight:600;font-size:clamp(2.1rem,5vw,3.6rem);line-height:1.08;letter-spacing:-.02em;color:var(--tx)}
+  .dhero h1 em{font-style:italic;color:var(--wb)}
+  .dhero p{margin-top:20px;font-size:.95rem;color:var(--txm);max-width:520px;line-height:1.7}
 
-/* SECTION NAV */
-.section-nav{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:0 80px;
-  display:flex;gap:0;border-bottom:1px solid var(--border);overflow-x:auto}
-.section-nav::-webkit-scrollbar{height:0}
-.snav-item{font-size:.65rem;font-family:'DM Mono',monospace;letter-spacing:.12em;text-transform:uppercase;
-  padding:16px 20px;color:var(--muted);text-decoration:none;transition:color .2s;border-bottom:1px solid transparent;white-space:nowrap}
-.snav-item:hover,.snav-item.active{color:var(--gold);border-bottom-color:var(--gold)}
+  /* ===== capability tiles — the whole point, generalist.ai style ===== */
+  .tile{max-width:1180px;margin:0 auto 90px;padding:0 40px}
+  .tile-head{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+  .tile-where{font-family:var(--fm);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--org)}
+  .tile-claim{font-family:var(--fs);font-size:clamp(1.4rem,2.6vw,2rem);font-weight:600;color:var(--tx);letter-spacing:-.01em}
+  .tile-claim em{font-style:italic;color:var(--wb)}
+  .tile-stat{font-family:var(--fm);font-size:.78rem;color:var(--txd)}
+  .tile-stat b{color:var(--red);font-weight:500}
 
-/* DEMO CONTAINER */
-.demo-wrap{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:48px 80px 0}
-.demo-section{margin-bottom:64px}
-.demo-section-tag{font-size:.6rem;font-family:'DM Mono',monospace;color:var(--gold);
-  letter-spacing:.16em;text-transform:uppercase;margin-bottom:10px;
-  display:flex;align-items:center;gap:10px}
-.demo-section-tag::before{content:'';width:20px;height:1px;background:var(--gold)}
-.demo-section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,2.8vw,2.8rem);
-  font-weight:300;line-height:1.1;letter-spacing:-.02em;margin-bottom:6px}
-.demo-section-title em{font-style:italic;color:var(--gold)}
-.demo-section-sub{font-size:.82rem;color:var(--muted2);line-height:1.75;font-weight:300;margin-bottom:24px;max-width:600px}
+  .tile-frame{background:var(--bg);border:1px solid var(--b);border-radius:14px;overflow:hidden}
+  .tile-viz{padding:30px 34px 20px}
+  .tile-note{padding:14px 34px 22px;border-top:1px solid var(--b);font-family:var(--fm);font-size:.68rem;color:var(--txd);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
 
-/* DEMO BOX */
-.dbox{background:var(--bg2);border:1px solid var(--border);border-radius:8px;overflow:hidden}
-.dbox-bar{display:flex;align-items:center;justify-content:space-between;padding:11px 18px;
-  border-bottom:1px solid var(--border);background:rgba(17,16,9,.8)}
-.dbox-bar-l{font-size:.62rem;font-family:'DM Mono',monospace;color:var(--gold);letter-spacing:.1em;text-transform:uppercase}
-.dbox-bar-r{font-size:.62rem;font-family:'DM Mono',monospace;color:var(--muted);letter-spacing:.06em}
-.view-tabs{display:flex;gap:4px;padding:10px 14px;border-bottom:1px solid var(--border)}
-.vtab{padding:5px 14px;border-radius:100px;border:1px solid var(--border-strong);background:transparent;
-  color:var(--muted2);font-family:'Jost',sans-serif;font-size:.72rem;font-weight:500;cursor:pointer;transition:all .18s;white-space:nowrap}
-.vtab:hover,.vtab.on{background:var(--gold-dim);border-color:var(--gold);color:var(--gold)}
-.cut-row{display:flex;gap:4px}
-.cut{padding:5px 14px;border-radius:100px;border:1px solid var(--border-strong);background:transparent;
-  color:var(--muted2);font-family:'Jost',sans-serif;font-size:.72rem;cursor:pointer;transition:all .18s}
-.cut.on{background:var(--gold-dim);border-color:var(--gold);color:var(--gold)}
-.canvas-outer{position:relative;overflow:hidden;background:var(--bg);line-height:0}
-canvas{display:block;width:100%}
-.clbl{position:absolute;top:8px;left:10px;font-size:.6rem;font-family:'DM Mono',monospace;
-  color:var(--gold);opacity:.65;pointer-events:none;letter-spacing:.08em}
-.clbl-r{position:absolute;top:8px;right:10px;font-size:.6rem;font-family:'DM Mono',monospace;
-  color:var(--green);opacity:.75;pointer-events:none;letter-spacing:.06em}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border)}
-.g2-cell{background:var(--bg2);padding:8px;position:relative;overflow:hidden}
-.g2-lbl{font-size:.58rem;font-family:'DM Mono',monospace;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
-.stats4{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-top:1px solid var(--border)}
-.stat-c{background:var(--bg2);padding:13px 16px}
-.stat-v{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;color:var(--gold);line-height:1}
-.stat-v span{font-size:.75rem;color:var(--muted);font-family:'DM Mono',monospace}
-.stat-l{font-size:.58rem;font-family:'DM Mono',monospace;color:var(--muted);margin-top:2px;letter-spacing:.08em;text-transform:uppercase}
-.cap-area{padding:14px 18px;border-top:1px solid var(--border);min-height:60px}
-.cap-lbl{font-size:.6rem;font-family:'DM Mono',monospace;color:var(--gold);letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px}
-.cap-body{font-size:.8rem;color:var(--cream);line-height:1.72;opacity:.8;font-weight:300}
-.tl-outer{padding:10px 14px 8px}
-.tl{height:16px;background:var(--bg);border:1px solid var(--border);position:relative;cursor:pointer;overflow:hidden;border-radius:2px}
-.tl-prog{height:100%;background:var(--gold-dim)}
-.tl-cur{position:absolute;top:0;bottom:0;width:1px;background:var(--gold)}
-.tl-times{position:absolute;inset:0;display:flex;justify-content:space-between;align-items:center;
-  padding:0 7px;pointer-events:none;font-size:.58rem;color:var(--muted);font-family:'DM Mono',monospace}
-.ctrl-row{display:flex;gap:1px;background:var(--border);border-top:1px solid var(--border)}
-.cbtn{flex:1;font-size:.65rem;letter-spacing:.1em;padding:10px 0;background:var(--bg2);border:none;
-  color:var(--muted2);cursor:pointer;font-family:'DM Mono',monospace;text-transform:uppercase;transition:all .2s}
-.cbtn:hover,.cbtn.on{color:var(--gold);background:var(--gold-dim)}
-.status-bar{padding:8px 14px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;
-  font-size:.6rem;color:var(--muted);letter-spacing:.08em;font-family:'DM Mono',monospace;text-transform:uppercase}
-.dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 1.3s infinite;flex-shrink:0}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
+  .toggle-row{display:flex;gap:10px;margin-bottom:18px;max-width:320px}
+  .toggle-btn{flex:1;font-family:var(--fm);font-size:.68rem;padding:9px 10px;border-radius:6px;border:1px solid var(--bm);color:var(--txm);background:none;cursor:pointer;transition:all .2s}
+  .toggle-btn.active{border-color:var(--org);color:var(--org);background:rgba(245,219,168,.08)}
 
-/* ARCH CARDS */
-.arch-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);margin-top:24px;border:1px solid var(--border);border-radius:8px;overflow:hidden}
-.arch-card{background:var(--bg2);padding:20px}
-.arch-card-tag{font-size:.6rem;font-family:'DM Mono',monospace;color:var(--gold);letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px}
-.arch-item{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:.75rem;color:var(--muted2);font-weight:300}
-.anode{background:var(--bg3);border:1px solid var(--border-strong);padding:3px 9px;font-size:.6rem;font-family:'DM Mono',monospace;color:var(--muted2);white-space:nowrap}
-.aarr{color:var(--muted);font-size:.7rem}
+  .heat-grid{display:grid;grid-template-columns:100px repeat(3,1fr);gap:4px;font-size:.75rem;max-width:520px}
+  .heat-grid .hdr{font-family:var(--fm);color:var(--txd);font-size:.62rem;text-align:center;padding:8px 4px}
+  .heat-grid .rowlbl{font-family:var(--fm);color:var(--txm);font-size:.62rem;display:flex;align-items:center;padding:0 6px}
+  .heat-cell{border-radius:5px;padding:16px 4px;text-align:center;font-family:var(--fm);font-weight:600;font-size:.78rem;color:#0a0d24}
 
-/* LONG CUT EXTRAS */
-.long-extra{padding:14px 18px;border-top:1px solid var(--border);display:none}
-.long-extra.show{display:block}
-.bench-section-lbl{font-size:.6rem;font-family:'DM Mono',monospace;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
-.bench-row{display:flex;align-items:center;gap:10px;margin-bottom:7px;font-size:.72rem}
-.bench-lbl{width:52px;color:var(--muted);font-family:'DM Mono',monospace;font-size:.6rem}
-.bench-track{flex:1;height:2px;background:var(--surface)}
-.bench-fill{height:100%;transition:width 1.2s}
-.bench-val{font-size:.65rem;width:34px;text-align:right;font-family:'DM Mono',monospace}
+  svg text{font-family:'DM Mono',monospace}
 
-/* CONTEXT STRIP */
-.context-strip{position:relative;z-index:1;border-top:1px solid var(--border);margin-top:0}
-.context-inner{max-width:1400px;margin:0 auto;padding:36px 80px;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border)}
-.context-card{background:var(--bg2);padding:26px 22px;transition:background .2s}
-.context-card:hover{background:var(--bg3)}
-.context-num{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:var(--gold);line-height:1;margin-bottom:7px}
-.context-card h4{font-size:.78rem;font-weight:600;margin-bottom:5px}
-.context-card p{font-size:.71rem;color:var(--muted2);line-height:1.6;font-weight:300}
+  /* ===== evidence — one line, honest, then out ===== */
+  .devidence{max-width:1180px;margin:0 auto 100px;padding:26px 40px;border-top:1px solid var(--b);border-bottom:1px solid var(--b);
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px}
+  .devidence-l{font-size:.88rem;color:var(--txm);max-width:640px;line-height:1.6}
+  .devidence-l b{color:var(--tx)}
+  .devidence a{font-family:var(--fm);font-size:.72rem;color:var(--red);text-decoration:none;white-space:nowrap}
+  .devidence a:hover{color:var(--org)}
 
-/* FOOTER */
-footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:22px 80px;
-  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
-.footer-brand{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:300;color:var(--cream)}
-.footer-links{display:flex;gap:18px}
-.footer-links a{font-size:.62rem;color:var(--muted);text-decoration:none;font-family:'DM Mono',monospace;letter-spacing:.06em;transition:color .2s}
-.footer-links a:hover{color:var(--gold)}
-.footer-note{font-size:.6rem;color:var(--muted);font-family:'DM Mono',monospace}
+  /* ===== evidence — full progress snapshot ===== */
+  .ev{max-width:1180px;margin:0 auto 110px;padding:0 40px}
+  .ev-tag{font-family:var(--fm);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--red);margin-bottom:20px;display:flex;gap:10px;align-items:center}
+  .ev-tag::before{content:'';width:6px;height:6px;background:var(--red)}
+  .ev h2{font-family:var(--fs);font-weight:700;font-size:clamp(1.9rem,4vw,3rem);line-height:1.1;color:var(--tx);letter-spacing:-.015em}
+  .ev h2 span{color:var(--red)}
+  .ev-sub{margin-top:18px;font-size:.95rem;color:var(--txm);max-width:760px;line-height:1.8}
 
-@media(max-width:900px){
-  nav,.page-header,.demo-wrap,.section-nav,.context-inner{padding-left:20px;padding-right:20px}
-  .stats4{grid-template-columns:1fr 1fr}
-  .arch-grid{grid-template-columns:1fr}
-  .context-inner{grid-template-columns:1fr 1fr}
-  footer{padding:18px 20px;flex-direction:column;text-align:center}
-  .nav-center{display:none}
-}
+  .ev-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--b);border:1px solid var(--b);border-radius:10px;overflow:hidden;margin-top:34px}
+  @media(min-width:760px){.ev-stats{grid-template-columns:repeat(4,1fr)}}
+  .ev-stat{background:var(--bg);padding:20px 22px}
+  .ev-stat-l{font-family:var(--fm);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--txd);margin-bottom:10px}
+  .ev-stat-v{font-family:var(--fm);font-size:1.7rem;color:var(--tx);font-weight:500}
+  .ev-stat-v.hl{color:var(--red)}
+  .ev-stat-sub{font-family:var(--fm);font-size:.68rem;color:var(--txd);margin-top:6px}
 
-/* ── NEUROFUSION DASHBOARD (scoped) ── */
-.nf-wrap{display:flex;flex-direction:column;height:580px;font-family:'JetBrains Mono','DM Mono',monospace;overflow:hidden}
-.nf-wrap *{box-sizing:border-box;margin:0;padding:0}
-.nf-hdr{height:40px;background:#0c1018;border-bottom:1px solid #1e2a35;display:flex;align-items:center;padding:0 16px;gap:0;flex-shrink:0}
-.nf-logo{font-size:12px;font-weight:700;color:#00e5a0;letter-spacing:.5px}
-.nf-sep{color:#243040;margin:0 8px;font-weight:300;font-size:14px}
-.nf-title{font-size:12px;color:#8aa0b0;font-weight:400}
-.nf-live{display:flex;align-items:center;gap:5px;margin-left:20px;font-size:10px;color:#00c480;letter-spacing:.5px}
-.nf-live-dot{width:6px;height:6px;border-radius:50%;background:#00e5a0;animation:nfpulse 1.4s infinite;flex-shrink:0}
-@keyframes nfpulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(0,229,160,.35)}50%{opacity:.7;box-shadow:0 0 0 3px rgba(0,229,160,0)}}
-.nf-time{margin-left:auto;font-size:11px;color:#8aa0b0;font-variant-numeric:tabular-nums;letter-spacing:1px}
-.nf-main{flex:1;display:grid;grid-template-columns:240px 1fr 200px;overflow:hidden;min-height:0;background:#1e2a35}
-.nf-sidebar{background:#0d1218;border-right:1px solid #1e2a35;overflow-y:auto;padding:12px 10px;display:flex;flex-direction:column;gap:8px}
-.nf-sidebar::-webkit-scrollbar{width:2px}
-.nf-sidebar::-webkit-scrollbar-thumb{background:#243040}
-.nf-slbl{font-size:8px;letter-spacing:2px;color:#4a6070;text-transform:uppercase;margin-bottom:5px;padding-left:1px}
-.nf-sc{background:#111820;border:1px solid #1e2a35;padding:9px 11px;cursor:pointer;transition:border-color .15s}
-.nf-sc:hover,.nf-sc.active{border-color:#00c480}
-.nf-sc.active{background:rgba(0,229,160,.03)}
-.nf-sc-title{font-size:11px;font-weight:500;color:#e8f0f4;margin-bottom:6px}
-.nf-bar-track{height:3px;background:#1e2a35;border-radius:2px;margin-bottom:5px;overflow:hidden}
-.nf-bar-fill{height:100%;border-radius:2px;transition:width .4s}
-.nf-sc-meta{font-size:9px;color:#6a8090;letter-spacing:.2px}
-.nf-hw{background:#111820;border:1px solid #1e2a35;padding:9px 11px}
-.nf-hw-lbl{font-size:9px;color:#6a8090;margin-bottom:3px}
-.nf-hw-chip{font-size:12px;font-weight:600;color:#00e5a0;margin-bottom:2px}
-.nf-hw-sub{font-size:9px;color:#6a8090}
-.nf-mode{background:#111820;border:1px solid #00c480;padding:9px 11px;display:flex;align-items:center;gap:8px}
-.nf-mode-dot{width:7px;height:7px;border-radius:50%;background:#00e5a0;animation:nfpulse 1.4s infinite;flex-shrink:0}
-.nf-mode-txt{font-size:12px;font-weight:500;color:#e8f0f4}
-.nf-center{display:flex;flex-direction:column;overflow:hidden;background:#0b0e12}
-.nf-cbar{height:38px;border-bottom:1px solid #1e2a35;display:flex;align-items:center;padding:0 12px;gap:0;background:#0d1218;flex-shrink:0}
-.nf-cbar-lbl{font-size:9px;letter-spacing:1.5px;color:#6a8090;text-transform:uppercase;margin-right:14px}
-.nf-vbtns{display:flex;gap:2px}
-.nf-vbtn{padding:3px 14px;background:transparent;border:1px solid #243040;color:#6a8090;cursor:pointer;font-family:inherit;font-size:10px;font-weight:600;letter-spacing:.5px;transition:all .15s}
-.nf-vbtn:hover,.nf-vbtn.on{background:rgba(0,229,160,.07);border-color:#00c480;color:#e8f0f4}
-.nf-canvas-area{flex:1;position:relative;overflow:hidden}
-.nf-canvas-area canvas{display:block;width:100%;height:100%}
-.nf-right{background:#0d1218;border-left:1px solid #1e2a35;padding:12px;overflow-y:auto;display:flex;flex-direction:column}
-.nf-right::-webkit-scrollbar{width:2px}
-.nf-right::-webkit-scrollbar-thumb{background:#243040}
-.nf-rlbl{font-size:8px;letter-spacing:2px;color:#4a6070;text-transform:uppercase;margin-bottom:8px}
-.nf-metric{margin-bottom:12px}
-.nf-mval{font-size:24px;font-weight:700;color:#00e5a0;line-height:1;letter-spacing:-.5px}
-.nf-mval.am{color:#f0a800}
-.nf-mval.wh{color:#e8f0f4}
-.nf-msub{font-size:9px;color:#6a8090;margin-top:2px;letter-spacing:.3px}
-.nf-rdiv{height:1px;background:#1e2a35;margin:6px 0 12px}
-.nf-vs-lbl{font-size:9px;color:#6a8090;margin-bottom:6px;letter-spacing:.3px}
-.nf-vs-row{display:flex;align-items:center;gap:5px;margin-bottom:4px;font-size:10px;color:#00c480}
-.nf-vs-row span{color:#6a8090;font-size:9px;margin-left:2px}
-.nf-statusbar{height:28px;background:#070a0d;border-top:1px solid #1e2a35;display:flex;align-items:center;overflow:hidden;flex-shrink:0;padding:0 10px;position:relative}
-.nf-scroll{display:flex;align-items:center;gap:16px;white-space:nowrap;animation:nfscroll 28s linear infinite}
-@keyframes nfscroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-.nf-tag{padding:1px 6px;font-size:8px;font-weight:700;letter-spacing:.5px;border;font-family:inherit}
-.nf-tag.ok{color:#00e5a0;border:1px solid #00c480}
-.nf-tag.warn{color:#f0a800;border:1px solid #f0a800}
-.nf-stxt{color:#6a8090;font-size:9px;letter-spacing:.2px}
-.nf-power{margin-left:auto;flex-shrink:0;padding:1px 8px;border:1px solid #00c480;background:rgba(0,229,160,.06);color:#00e5a0;font-size:9px;font-weight:700;letter-spacing:.5px;font-family:inherit}
-@media(max-width:700px){.nf-main{grid-template-columns:1fr}.nf-sidebar,.nf-right{display:none}}
+  .ev-caveat{margin-top:20px;padding:16px 20px;border:1px solid var(--b);border-radius:8px;font-size:.78rem;color:var(--txd);line-height:1.7;background:rgba(10,13,36,.4)}
 
+  .ev-track{border:1px solid var(--b);border-radius:12px;margin-top:34px;overflow:hidden;background:var(--bg)}
+  .ev-track-head{padding:24px 26px;border-bottom:1px solid var(--b);display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+  .ev-track-tag{font-family:var(--fm);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--txd)}
+  .ev-track-title{font-family:var(--fs);font-size:1.4rem;font-weight:700;color:var(--tx);margin-top:6px}
+  .ev-track-desc{font-size:.85rem;color:var(--txm);margin-top:8px;max-width:640px;line-height:1.7}
+  .ev-badge{font-family:var(--fm);font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;padding:6px 12px;border-radius:5px;border:1px solid rgba(143,214,168,.4);color:#8fd6a8;background:rgba(143,214,168,.08);white-space:nowrap}
+
+  .ev-body{padding:26px}
+  .ev-chart-cap{font-family:var(--fm);font-size:.65rem;letter-spacing:.06em;text-transform:uppercase;color:var(--txd);margin-bottom:16px}
+  .ev-text{font-size:.85rem;color:var(--txm);line-height:1.8;margin-top:20px}
+  .ev-text code{font-family:var(--fm);font-size:.78rem;background:var(--bg3);padding:2px 6px;border-radius:4px;color:var(--org)}
+  .ev-run-line{margin-top:16px;padding:14px 16px;border-left:2px solid var(--bm);font-family:var(--fm);font-size:.72rem;color:var(--txd);line-height:1.8}
+  .ev-run-line code{color:var(--org)}
+
+  .ev-context{border:1px solid var(--b);border-radius:12px;margin-top:34px;padding:26px;background:var(--bg)}
+  .ev-context-tag{font-family:var(--fm);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--txd)}
+  .ev-context-title{font-family:var(--fs);font-size:1.3rem;font-weight:700;color:var(--tx);margin-top:6px}
+  .ev-context-desc{font-size:.85rem;color:var(--txm);margin-top:8px;max-width:640px;line-height:1.7}
+
+  .cbar-row{display:flex;align-items:center;gap:16px;margin-top:16px}
+  .cbar-label{width:150px;flex-shrink:0;font-size:.82rem;color:var(--txm)}
+  .cbar-label.hl{color:var(--tx);font-weight:600}
+  .cbar-track{flex:1;height:22px;background:var(--bg3);border-radius:4px;overflow:hidden}
+  .cbar-fill{height:100%;border-radius:4px}
+  .cbar-val{width:64px;text-align:right;font-family:var(--fm);font-size:.82rem;color:var(--txm);flex-shrink:0}
+  .cbar-val.hl{color:var(--red);font-weight:600}
+
+  .ev-table{width:100%;border-collapse:collapse;margin-top:18px;font-size:.82rem}
+  .ev-table th{text-align:left;font-family:var(--fm);font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;color:var(--txd);padding:10px 14px;border-bottom:1px solid var(--b)}
+  .ev-table td{padding:14px;border-bottom:1px solid var(--b);color:var(--txm);font-family:var(--fm)}
+  .ev-table td:first-child{color:var(--tx);font-family:var(--fn)}
+  .ev-table td.hl{color:var(--red);font-weight:600}
+  .ev-honest{margin-top:20px;padding:16px 20px;background:rgba(255,142,107,.05);border:1px solid rgba(255,142,107,.2);border-radius:8px;font-size:.82rem;color:var(--txm);line-height:1.8}
+  .ev-honest b{color:var(--red)}
+  .ev-honest em{font-style:italic;color:var(--tx)}
+
+  .pipeline2{display:flex;flex-wrap:wrap;gap:0;align-items:stretch}
+  .pl-step{border:1px solid var(--bm);border-radius:8px;padding:14px 16px;flex:1;min-width:140px}
+  .pl-step.hl{border-color:var(--red)}
+  .pl-step .t{font-family:var(--fn);font-size:.82rem;color:var(--tx);font-weight:500}
+  .pl-step .s{font-family:var(--fm);font-size:.65rem;color:var(--txd);margin-top:6px;line-height:1.5}
+  .pl-arrow{display:flex;align-items:center;justify-content:center;padding:0 12px;color:var(--txd);flex-shrink:0}
+  @media(max-width:900px){.pipeline2{flex-direction:column}.pl-arrow{padding:8px 0;transform:rotate(90deg)}}
+
+  .dfoot{max-width:1180px;margin:0 auto;padding:0 40px 70px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px}
+  .dfoot a{font-family:var(--fm);font-size:.7rem;color:var(--txm);text-decoration:none}
+  .dfoot a:hover{color:var(--tx)}
+
+  @media(max-width:700px){.dhero{padding:120px 24px 50px}.tile{padding:0 24px}.devidence{padding:22px 24px}.dfoot{padding:0 24px 50px}}
 </style>
 </head>
 <body>
 
-<nav>
-  <a class="nav-logo" href="/">
-    <img src="logo.png" alt="Phasor" onerror="this.style.display='none'">
-    <span>Phasor</span>
-  </a>
-  <div class="nav-center">AV Fusion Demo &middot; TCP Architecture &middot; BrainChip Akida</div>
-  <div class="nav-right">
-    <a class="nav-back" href="/">&#8592; Back to site</a>
-    <div class="nav-badge">Investor Brief &middot; 2026</div>
+<nav class="dnav">
+  <a href="index.html" class="dnav-logo"><img src="logo.png" alt="Phasor"/><span>M7 / Phasor</span></a>
+  <div class="dnav-links">
+    <a href="#home">Home</a>
+    <a href="#orbit">Orbit</a>
+    <a href="#evidence">Evidence</a>
+    <a href="index.html">Overview &rarr;</a>
   </div>
 </nav>
 
-<header class="page-header">
-  <div class="page-eyebrow">AV Fusion Demo &middot; TCP Architecture &middot; Platform Demo</div>
-  <h1 class="page-title">From raw sensor to<br><em>neuromorphic perception</em> &mdash; live.</h1>
-  <p class="page-sub">Phasor&rsquo;s cross-modal TCP fusion architecture across three simulation environments &mdash; sensor fusion, cinematic AV demo, and full ROS rover simulation with Doosan M1013 arm. This is what edge AI looks like at watts-scale power.</p>
-  <div class="page-meta">
-    <div class="meta-item"><div class="meta-dot"></div>94% energy reduction vs GPU</div>
-    <div class="meta-item"><div class="meta-dot"></div>2.1ms fusion latency</div>
-    <div class="meta-item"><div class="meta-dot"></div>847Hz update rate on Akida</div>
-    <div class="meta-item"><div class="meta-dot"></div>652 Episodes datasets</div>
-  </div>
+<header class="dhero">
+  <div class="dhero-tag">Simplicity scales</div>
+  <h1>What it can do <em>right now</em> — for a home, and for orbit.</h1>
+  <p>Two environments, two real constraints. Everything below is reconstructed from logged experimental runs — not a render, not a projection.</p>
 </header>
 
-<div class="section-nav">
-  <a class="snav-item active" href="#s1">01 &mdash; Sensor fusion</a>
-  <a class="snav-item" href="#s2">02 &mdash; Cinematic AV</a>
-  <a class="snav-item" href="#s3">03 &mdash; Rover + ROS</a>
-  <a class="snav-item" href="#arch">04 &mdash; Architecture</a>
-  <a class="snav-item" href="#s5">05 &mdash; Live dashboard</a>
-</div>
-
-<div class="demo-wrap">
-
-<!-- ═══════ 01 SENSOR FUSION ═══════ -->
-<div class="demo-section" id="s1">
-  <div class="demo-section-tag">01 &mdash; Sensor fusion</div>
-  <h2 class="demo-section-title">BEV &middot; EVS &middot; SNN &mdash; <em>three views, one pipeline</em></h2>
-  <p class="demo-section-sub">Bird&rsquo;s-eye object tracking, raw event camera stream and SNN spike raster &mdash; all from the same neuromorphic fusion model running on BrainChip Akida hardware.</p>
-  <div class="dbox">
-    <div class="dbox-bar">
-      <span class="dbox-bar-l">BEV + EVS + SNN pipeline &mdash; Akida target</span>
-      <span class="dbox-bar-r" id="s1mode">BEV view</span>
-    </div>
-    <div class="view-tabs">
-      <button class="vtab on" onclick="s1View('bev',this)">BEV track</button>
-      <button class="vtab" onclick="s1View('evs',this)">EVS stream</button>
-      <button class="vtab" onclick="s1View('spk',this)">SNN spikes</button>
-    </div>
-    <div class="canvas-outer" style="height:220px">
-      <canvas id="s1c" height="220"></canvas>
-      <div class="clbl" id="s1clbl">Bird&rsquo;s-eye view</div>
-      <div class="clbl-r" id="s1conf">CONF &mdash;</div>
-    </div>
-    <div class="stats4">
-      <div class="stat-c"><div class="stat-v">94<span>%</span></div><div class="stat-l">Energy reduction</div></div>
-      <div class="stat-c"><div class="stat-v">2.1<span>ms</span></div><div class="stat-l">Fusion latency</div></div>
-      <div class="stat-c"><div class="stat-v">847<span>Hz</span></div><div class="stat-l">Update rate</div></div>
-      <div class="stat-c"><div class="stat-v" id="s1cmet">&mdash;<span>%</span></div><div class="stat-l">TCP confidence</div></div>
-    </div>
-    <div class="cap-area">
-      <div class="cap-lbl" id="s1ct">Ready</div>
-      <div class="cap-body" id="s1cb">Select a view above then press play. BEV shows fused object tracking with TCP confidence bars. EVS shows raw asynchronous event camera stream. SNN shows layer-by-layer spike raster.</div>
-    </div>
-    <div class="tl-outer"><div class="tl" id="s1tl" onclick="s1Seek(event)">
-      <div class="tl-prog" id="s1tlp" style="width:0%"></div>
-      <div class="tl-cur" id="s1tlc" style="left:0%"></div>
-      <div class="tl-times"><span>00:00</span><span>00:30</span><span>01:05</span></div>
-    </div></div>
-    <div class="ctrl-row">
-      <button class="cbtn" id="s1pb" onclick="s1Toggle()">&#9654; Play</button>
-      <button class="cbtn" onclick="s1Reset()">&#8635; Reset</button>
-    </div>
-    <div class="status-bar"><div class="dot"></div><span id="s1stat">Akida hardware target &middot; ready</span></div>
-  </div>
-</div>
-
-<!-- ═══════ 02 CINEMATIC ═══════ -->
-<div class="demo-section" id="s2">
-  <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:8px">
+<!-- HOME -->
+<section class="tile" id="home">
+  <div class="tile-head">
     <div>
-      <div class="demo-section-tag">02 &mdash; Cinematic AV demo</div>
-      <h2 class="demo-section-title">Four-panel fusion &mdash; <em>EVS &middot; BEV &middot; SNN &middot; TCP</em></h2>
+      <div class="tile-where">Home</div>
+      <div class="tile-claim">Learns a new chore. <em>Keeps every old one.</em></div>
     </div>
-    <div class="cut-row" style="margin-top:12px">
-      <button class="cut on" onclick="s2Cut('short',this)">60s cut</button>
-      <button class="cut" onclick="s2Cut('long',this)">3 min cut</button>
+    <div class="tile-stat">Forgetting (F) &mdash; <b>0.00 &plusmn; 0.00pp</b></div>
+  </div>
+  <div class="tile-frame">
+    <div class="tile-viz">
+      <div class="heat-grid" id="heatGrid"></div>
+    </div>
+    <div class="tile-note">
+      <span>rows: skill tested &middot; columns: after learning each new skill</span>
+      <span>N-MNIST &#8594; SHD &#8594; DVS-Gesture, 3-seed protocol</span>
     </div>
   </div>
-  <p class="demo-section-sub">All four sensor fusion layers running simultaneously. The long cut includes architecture breakdown and GPU benchmark comparison.</p>
-  <div class="dbox">
-    <div class="dbox-bar">
-      <span class="dbox-bar-l">Phasor &middot; AV fusion &mdash; four-panel view</span>
-      <span class="dbox-bar-r" id="s2ts">T+00:00</span>
+</section>
+
+<!-- ORBIT -->
+<section class="tile" id="orbit">
+  <div class="tile-head">
+    <div>
+      <div class="tile-where">Orbit</div>
+      <div class="tile-claim">Hears an alert it&rsquo;s never heard. <em>Doesn&rsquo;t lose its grip.</em></div>
     </div>
-    <div class="g2">
-      <div class="g2-cell"><div class="g2-lbl">EVS &mdash; event stream</div><canvas id="s2evs" height="80"></canvas></div>
-      <div class="g2-cell"><div class="g2-lbl">BEV &mdash; object track</div><canvas id="s2bev" height="80"></canvas></div>
-      <div class="g2-cell"><div class="g2-lbl">SNN &mdash; spike raster</div><canvas id="s2spk" height="80"></canvas></div>
-      <div class="g2-cell"><div class="g2-lbl">TCP &mdash; confidence</div><canvas id="s2tcp" height="80"></canvas></div>
-    </div>
-    <div class="stats4">
-      <div class="stat-c"><div class="stat-v">94<span>%</span></div><div class="stat-l">Energy reduction</div></div>
-      <div class="stat-c"><div class="stat-v">2.1<span>ms</span></div><div class="stat-l">Latency</div></div>
-      <div class="stat-c"><div class="stat-v">847<span>Hz</span></div><div class="stat-l">Update rate</div></div>
-      <div class="stat-c"><div class="stat-v" id="s2cmet">&mdash;<span>%</span></div><div class="stat-l">TCP confidence</div></div>
-    </div>
-    <div class="cap-area">
-      <div class="cap-lbl" id="s2ct">Ready</div>
-      <div class="cap-body" id="s2cb">Four-panel simultaneous view of the full AV sensor fusion pipeline. Select cut duration above then press play.</div>
-    </div>
-    <div class="long-extra" id="s2long">
-      <div class="bench-section-lbl" style="margin-bottom:10px">Architecture</div>
-      <div class="arch-item"><div class="anode">EVS cam</div><span class="aarr">&#8594;</span><div class="anode">Delta enc</div><span class="aarr">&#8594;</span><div class="anode">SNN L1</div></div>
-      <div class="arch-item"><div class="anode">LiDAR</div><span class="aarr">&#8594;</span><div class="anode">Rate enc</div><span class="aarr">&#8594;</span><div class="anode">SNN L2</div></div>
-      <div class="arch-item" style="margin-bottom:14px"><div class="anode">IMU</div><span class="aarr">&#8594;</span><div class="anode">Temporal enc</div><span class="aarr">&#8594;</span><div class="anode">TCP fusion</div></div>
-      <div class="bench-section-lbl">Benchmark vs GPU baseline</div>
-      <div class="bench-row"><span class="bench-lbl">Phasor</span><div class="bench-track"><div class="bench-fill" id="s2b1" style="width:0%;background:var(--gold)"></div></div><span class="bench-val" style="color:var(--gold)">2.1ms</span></div>
-      <div class="bench-row"><span class="bench-lbl">GPU</span><div class="bench-track"><div class="bench-fill" id="s2b2" style="width:0%;background:var(--red)"></div></div><span class="bench-val" style="color:var(--red)">38ms</span></div>
-    </div>
-    <div class="tl-outer"><div class="tl" id="s2tl" onclick="s2Seek(event)">
-      <div class="tl-prog" id="s2tlp" style="width:0%"></div>
-      <div class="tl-cur" id="s2tlc" style="left:0%"></div>
-      <div class="tl-times"><span>00:00</span><span id="s2tlm">00:30</span><span id="s2tle">01:00</span></div>
-    </div></div>
-    <div class="ctrl-row">
-      <button class="cbtn" id="s2pb" onclick="s2Toggle()">&#9654; Play</button>
-      <button class="cbtn" onclick="s2Reset()">&#8635; Reset</button>
-    </div>
-    <div class="status-bar"><div class="dot"></div><span id="s2stat">Ready &middot; Akida hardware target</span></div>
+    <div class="tile-stat">Forward transfer &mdash; <b>74.91 &plusmn; 1.42pp</b></div>
   </div>
-</div>
-
-<!-- ═══════ 03 ROVER + ROS ═══════ -->
-<div class="demo-section" id="s3">
-  <div class="demo-section-tag">03 &mdash; Rover + Doosan arm &middot; ROS simulation</div>
-  <h2 class="demo-section-title">Full-stack robotics &mdash; <em>perception to manipulation</em></h2>
-  <p class="demo-section-sub">Rover with Doosan M1013 6-DOF arm. ROS2 topic graph live. TCP confidence propagating from EVS camera through SNN fusion to arm controller &mdash; the complete closed-loop neuromorphic stack.</p>
-  <div class="dbox">
-    <div class="dbox-bar">
-      <span class="dbox-bar-l">Phasor &middot; Rover sim v0.4 &mdash; Doosan M1013</span>
-      <span class="dbox-bar-r" id="s3ts">T+00:00</span>
-    </div>
-    <div class="canvas-outer" style="height:210px">
-      <canvas id="s3sc" height="210"></canvas>
-      <div class="clbl">Scene view</div>
-      <div class="clbl-r" id="s3arm">ARM: IDLE</div>
-    </div>
-    <div class="g2">
-      <div class="g2-cell"><div class="g2-lbl">EVS stream</div><canvas id="s3evs" height="72"></canvas></div>
-      <div class="g2-cell"><div class="g2-lbl">TCP confidence</div><canvas id="s3tcp" height="72"></canvas></div>
-    </div>
-    <div style="padding:10px 14px;border-top:1px solid var(--border)">
-      <div class="g2-lbl" style="margin-bottom:6px">ROS topic graph</div>
-      <canvas id="s3ros" height="90"></canvas>
-    </div>
-    <div class="cap-area">
-      <div class="cap-lbl" id="s3ct">Standby</div>
-      <div class="cap-body" id="s3cb">Rover and Doosan M1013 arm online. ROS2 topic graph ready. EVS camera mounted. Press play to begin simulation.</div>
-    </div>
-    <div class="tl-outer"><div class="tl" id="s3tl" onclick="s3Seek(event)">
-      <div class="tl-prog" id="s3tlp" style="width:0%"></div>
-      <div class="tl-cur" id="s3tlc" style="left:0%"></div>
-      <div class="tl-times"><span>00:00</span><span>00:35</span><span>01:10</span></div>
-    </div></div>
-    <div class="ctrl-row">
-      <button class="cbtn" id="s3pb" onclick="s3Toggle()">&#9654; Play</button>
-      <button class="cbtn" onclick="s3Reset()">&#8635; Reset</button>
-    </div>
-    <div class="status-bar"><div class="dot"></div><span id="s3stat">ROS master &middot; ready</span></div>
-  </div>
-</div>
-
-<!-- ═══════ 04 ARCHITECTURE ═══════ -->
-<div class="demo-section" id="arch">
-  <div class="demo-section-tag">04 &mdash; NeuroTriangle framework</div>
-  <h2 class="demo-section-title">Data &#8594; Algorithm &#8594; <em>Hardware</em></h2>
-  <p class="demo-section-sub">Three layers. One stack. The data moat enables the algorithm. The algorithm targets the hardware. The hardware enables edge deployment at watts-scale power.</p>
-  <div class="arch-grid">
-    <div class="arch-card">
-      <div class="arch-card-tag">Data layer &middot; Phasor Episodes</div>
-      <div class="arch-item"><div class="anode">652 datasets</div><span class="aarr">&#8594;</span><div class="anode">Spike encoding</div></div>
-      <div class="arch-item"><div class="anode">7 domains</div><span class="aarr">&#8594;</span><div class="anode">AER format</div></div>
-      <div class="arch-item"><div class="anode">v2e &middot; I2E &middot; NIR</div><span class="aarr">&#8594;</span><div class="anode">Cloudflare R2</div></div>
-    </div>
-    <div class="arch-card">
-      <div class="arch-card-tag">Algorithm layer &middot; TCP fusion</div>
-      <div class="arch-item"><div class="anode">EVS + LiDAR + IMU</div><span class="aarr">&#8594;</span><div class="anode">SNN</div></div>
-      <div class="arch-item"><div class="anode">Temporal confidence</div><span class="aarr">&#8594;</span><div class="anode">TCP</div></div>
-      <div class="arch-item"><div class="anode">Continual learning</div><span class="aarr">&#8594;</span><div class="anode">Cross-modal</div></div>
-    </div>
-    <div class="arch-card">
-      <div class="arch-card-tag">Hardware layer &middot; edge targets</div>
-      <div class="arch-item"><div class="anode">BrainChip Akida</div><span class="aarr">+</span><div class="anode">Innatera</div></div>
-      <div class="arch-item"><div class="anode">SynSense Speck</div><span class="aarr">+</span><div class="anode">Intel Loihi</div></div>
-      <div class="arch-item"><div class="anode">NIR standard</div><span class="aarr">&#8594;</span><div class="anode">NeuroBench</div></div>
-    </div>
-    <div class="arch-card">
-      <div class="arch-card-tag">Deployment &middot; AV + robotics</div>
-      <div class="arch-item"><div class="anode">ROS2 topics</div><span class="aarr">&#8594;</span><div class="anode">Arm control</div></div>
-      <div class="arch-item"><div class="anode">0.8mJ / inference</div><span class="aarr">&#8594;</span><div class="anode">Edge deploy</div></div>
-      <div class="arch-item"><div class="anode">Five AI / Bosch</div><span class="aarr">&#8594;</span><div class="anode">Production</div></div>
-    </div>
-  </div>
-</div>
-
-
-<!-- ═══════ 05 NEUROFUSION DASHBOARD ═══════ -->
-<div class="demo-section" id="s5">
-  <div class="demo-section-tag">05 &mdash; Live dashboard</div>
-  <h2 class="demo-section-title">NeuroFusion v0.4 &mdash; <em>mission control</em></h2>
-  <p class="demo-section-sub">Full sensor fusion dashboard &mdash; three sensor streams fusing in real time, BEV object tracking with range rings, live performance metrics and system log.</p>
-  <div class="dbox">
-    <div class="nf-wrap">
-
-      <!-- NF HEADER -->
-      <div class="nf-hdr">
-        <div class="nf-logo">PHASOR</div>
-        <div class="nf-sep">/</div>
-        <div class="nf-title">NeuroFusion v0.4</div>
-        <div class="nf-live">
-          <div class="nf-live-dot"></div>
-          <span>LIVE &middot; <span id="nf-spikerate">1.4MHz</span> spike rate</span>
-        </div>
-        <div class="nf-time" id="nf-clock">00:00:00</div>
+  <div class="tile-frame">
+    <div class="tile-viz">
+      <div class="toggle-row">
+        <button class="toggle-btn active" id="btnReplayOn">With replay</button>
+        <button class="toggle-btn" id="btnReplayOff">Without replay</button>
       </div>
+      <svg id="gateChart" viewBox="0 0 620 260" width="100%"></svg>
+    </div>
+    <div class="tile-note">
+      <span>w_hop (coral, visual grip) vs w_hgrn (gold, new sense) &middot; SHD training epoch &#8594;</span>
+      <span id="gateStat">final w_hop 0.35 &middot; final w_hgrn 0.65</span>
+    </div>
+  </div>
+</section>
 
-      <!-- NF MAIN -->
-      <div class="nf-main">
+<!-- EVIDENCE — full progress snapshot -->
+<section class="ev" id="evidence">
+  <div class="ev-tag">M7 &middot; RoboCasa manipulation track &middot; progress snapshot</div>
+  <h2>Six tracks, one policy,<br/><span>317 real kitchen tasks.</span></h2>
+  <p class="ev-sub">M7 pairs a Hopfield+HGRN memory core with a RoboCasa-conditioned encoder and action head, trained against real Human300 demonstration data on real GPU hardware. Every number below is from an actual run against the real simulator &mdash; nothing here is estimated.</p>
 
-        <!-- LEFT SIDEBAR -->
-        <div class="nf-sidebar">
-          <div>
-            <div class="nf-slbl">Sensor streams</div>
-            <div class="nf-sc active" onclick="nfSetStream(0,this)" id="nfsc0">
-              <div class="nf-sc-title">Event Camera (EVS)</div>
-              <div class="nf-bar-track"><div class="nf-bar-fill" id="nfbar0" style="background:#00e5a0;width:80%"></div></div>
-              <div class="nf-sc-meta">1.4M ev/s &middot; &Delta;t 0.7&micro;s</div>
-            </div>
-          </div>
-          <div class="nf-sc" onclick="nfSetStream(1,this)" id="nfsc1">
-            <div class="nf-sc-title">LiDAR (3D)</div>
-            <div class="nf-bar-track"><div class="nf-bar-fill" id="nfbar1" style="background:#2196f3;width:65%"></div></div>
-            <div class="nf-sc-meta">72k pts/s &middot; 128-line</div>
-          </div>
-          <div class="nf-sc" onclick="nfSetStream(2,this)" id="nfsc2">
-            <div class="nf-sc-title">IMU (6-DOF)</div>
-            <div class="nf-bar-track"><div class="nf-bar-fill" id="nfbar2" style="background:#f0a800;width:75%"></div></div>
-            <div class="nf-sc-meta">1kHz &middot; acc &plusmn;0.02g</div>
-          </div>
-          <div class="nf-sc" onclick="nfSetStream(3,this)" id="nfsc3">
-            <div class="nf-sc-title">Fused Output (SNN)</div>
-            <div class="nf-bar-track"><div class="nf-bar-fill" id="nfbar3" style="background:#00e5a0;width:90%"></div></div>
-            <div class="nf-sc-meta">SNN layer 4 &middot; 98.2% conf</div>
-          </div>
-          <div style="margin-top:4px">
-            <div class="nf-slbl">Hardware</div>
-            <div class="nf-hw">
-              <div class="nf-hw-lbl">Target chip</div>
-              <div class="nf-hw-chip">BrainChip Akida</div>
-              <div class="nf-hw-sub">AKD1500 &middot; MetaTF</div>
-            </div>
-          </div>
-          <div style="margin-top:4px">
-            <div class="nf-slbl">Mode</div>
-            <div class="nf-mode">
-              <div class="nf-mode-dot"></div>
-              <div class="nf-mode-txt">Real&#8209;time</div>
-            </div>
-          </div>
-        </div>
+  <div class="ev-stats">
+    <div class="ev-stat"><div class="ev-stat-l">Best interim result</div><div class="ev-stat-v hl">11.0%</div><div class="ev-stat-sub">atomic-65, step 86,000</div></div>
+    <div class="ev-stat"><div class="ev-stat-l">Target to beat</div><div class="ev-stat-v">9.0%</div><div class="ev-stat-sub">WorldDreamer, Composite-Unseen</div></div>
+    <div class="ev-stat"><div class="ev-stat-l">Full task registry</div><div class="ev-stat-v">317</div><div class="ev-stat-sub">65 atomic + 252 composite</div></div>
+    <div class="ev-stat"><div class="ev-stat-l">Tracks merged</div><div class="ev-stat-v">5 / 7</div><div class="ev-stat-sub">2 open, in flight</div></div>
+  </div>
+  <div class="ev-caveat">Caveat carried through this whole report: the 11.0% figure is on the 65-task Atomic split at a 10-rollout budget, not yet the official 50-rollout Composite-Unseen protocol the 9.0% reference is measured on &mdash; a real number, not yet a like-for-like &ldquo;beat&rdquo; claim.</div>
 
-        <!-- CENTER CANVAS -->
-        <div class="nf-center">
-          <div class="nf-cbar">
-            <span class="nf-cbar-lbl">Fused perception &middot;</span>
-            <div class="nf-vbtns">
-              <button class="nf-vbtn on" onclick="nfSetView('bev',this)">BEV</button>
-              <button class="nf-vbtn" onclick="nfSetView('evs',this)">EVS</button>
-              <button class="nf-vbtn" onclick="nfSetView('spikes',this)">SPIKES</button>
-            </div>
-          </div>
-          <div class="nf-canvas-area">
-            <canvas id="nfCanvas"></canvas>
-          </div>
-        </div>
-
-        <!-- RIGHT METRICS -->
-        <div class="nf-right">
-          <div class="nf-rlbl">Performance</div>
-          <div class="nf-metric"><div class="nf-mval" id="nf-lat">2.1ms</div><div class="nf-msub">fusion latency</div></div>
-          <div class="nf-metric"><div class="nf-mval" id="nf-hz">848Hz</div><div class="nf-msub">update rate</div></div>
-          <div class="nf-rdiv"></div>
-          <div class="nf-metric"><div class="nf-mval am">94%</div><div class="nf-msub">energy reduction</div></div>
-          <div class="nf-metric"><div class="nf-mval wh" id="nf-objs">8</div><div class="nf-msub">objects tracked</div></div>
-          <div class="nf-metric"><div class="nf-mval" id="nf-spk">1.4M</div><div class="nf-msub">spikes/sec</div></div>
-          <div class="nf-metric"><div class="nf-mval" id="nf-conf">98.2%</div><div class="nf-msub">snn confidence</div></div>
-          <div class="nf-rdiv"></div>
-          <div>
-            <div class="nf-vs-lbl">vs GPU baseline:</div>
-            <div class="nf-vs-row">&#8595; 94%<span>power</span></div>
-            <div class="nf-vs-row">&#8595; 12&times;<span>latency</span></div>
-            <div class="nf-vs-row">&#8595; 8&times;<span>bandwidth</span></div>
-          </div>
-        </div>
-
-      </div><!-- /nf-main -->
-
-      <!-- STATUS BAR -->
-      <div class="nf-statusbar">
-        <div class="nf-scroll">
-          <span class="nf-tag ok">OK</span><span class="nf-stxt">fusion pipeline nominal</span>
-          <span class="nf-tag ok">OK</span><span class="nf-stxt">SNN layer 4 &middot; 14 active neurons</span>
-          <span class="nf-tag warn">WARN</span><span class="nf-stxt">object at 2.1m &mdash; confidence 91%</span>
-          <span class="nf-tag ok">OK</span><span class="nf-stxt">Akida AKD1500 &middot; 0.8mJ/inference</span>
-          <span class="nf-tag ok">OK</span><span class="nf-stxt">EVS stream nominal &middot; 1.4M ev/s</span>
-          <span class="nf-tag ok">OK</span><span class="nf-stxt">LiDAR sync &middot; &Delta;t 0.3ms</span>
-          <span class="nf-tag warn">WARN</span><span class="nf-stxt">TCP confidence at 91% &mdash; monitoring</span>
-          <span class="nf-tag ok">OK</span><span class="nf-stxt">cross-modal fusion nominal &middot; 848Hz</span>
-          <!-- duplicate for seamless scroll -->
-          <span class="nf-tag ok">OK</span><span class="nf-stxt">fusion pipeline nominal</span>
-          <span class="nf-tag ok">OK</span><span class="nf-stxt">SNN layer 4 &middot; 14 active neurons</span>
-          <span class="nf-tag warn">WARN</span><span class="nf-stxt">object at 2.1m &mdash; confidence 91%</span>
-          <span class="nf-tag ok">OK</span><span class="nf-stxt">Akida AKD1500 &middot; 0.8mJ/inference</span>
-          <span class="nf-tag ok">OK</span><span class="nf-stxt">EVS stream nominal &middot; 1.4M ev/s</span>
-          <span class="nf-tag ok">OK</span><span class="nf-stxt">LiDAR sync &middot; &Delta;t 0.3ms</span>
-          <span class="nf-tag warn">WARN</span><span class="nf-stxt">TCP confidence at 91% &mdash; monitoring</span>
-          <span class="nf-tag ok">OK</span><span class="nf-stxt">cross-modal fusion nominal &middot; 848Hz</span>
-        </div>
-        <div class="nf-power" id="nf-pwr">&#8627; 2.1mW</div>
+  <!-- Foundation / architecture -->
+  <div class="ev-track">
+    <div class="ev-track-head">
+      <div>
+        <div class="ev-track-tag">Foundation</div>
+        <div class="ev-track-title">Architecture</div>
+        <div class="ev-track-desc">Three camera views, language, and proprioception flow through a shared encoder and memory core into an action head &mdash; the spine every track below modifies one piece of.</div>
       </div>
-
-    </div><!-- /nf-wrap -->
-  </div><!-- /dbox -->
-</div>
-
-</div><!-- /demo-wrap -->
-
-<div class="context-strip">
-  <div class="context-inner">
-    <div class="context-card">
-      <div class="context-num">94%</div>
-      <h4>Energy reduction</h4>
-      <p>SNN inference on BrainChip Akida vs GPU equivalent. NICE 2026 &amp; AAAI 2026 peer-reviewed.</p>
+      <span class="ev-badge">Merged</span>
     </div>
-    <div class="context-card">
-      <div class="context-num">2.1ms</div>
-      <h4>Fusion latency</h4>
-      <p>End-to-end cross-modal fusion: EVS + LiDAR + IMU. 847Hz continuous update rate on Akida hardware.</p>
-    </div>
-    <div class="context-card">
-      <div class="context-num">652</div>
-      <h4>Episodes datasets</h4>
-      <p>Event-based datasets across 7 domains &mdash; the world&rsquo;s largest neuromorphic training library.</p>
-    </div>
-    <div class="context-card">
-      <div class="context-num">TCP</div>
-      <h4>Core innovation</h4>
-      <p>Temporal Confidence Propagation &mdash; maintains object tracking under occlusion. No standard SNN framework does this.</p>
+    <div class="ev-body">
+      <div class="pipeline2">
+        <div class="pl-step"><div class="t">3&times; camera view + language + proprio</div><div class="s">RoboCasa observation</div></div>
+        <div class="pl-arrow">&#8594;</div>
+        <div class="pl-step hl"><div class="t">RoboCasaEncoder</div><div class="s">CLIP ViT-B/32<br/>(LoRA-adapted on branch)</div></div>
+        <div class="pl-arrow">&#8594;</div>
+        <div class="pl-step"><div class="t">MemoryCore</div><div class="s">Hopfield + HGRN<br/>+ adaptive gate</div></div>
+        <div class="pl-arrow">&#8594;</div>
+        <div class="pl-step hl"><div class="t">ActionHead</div><div class="s">flow-matching,<br/>10-step Euler sampler</div></div>
+        <div class="pl-arrow">&#8594;</div>
+        <div class="pl-step"><div class="t">action (12-dim)</div><div class="s">executed in sim</div></div>
+      </div>
+      <p class="ev-text">Encoder-swap integration, the LeRobot-format data pipeline, and the zero-shot eval harness (PRs #1&ndash;#3) were the foundation everything else builds on &mdash; all merged before any of the tracks below started.</p>
     </div>
   </div>
+
+  <!-- Track 1 -->
+  <div class="ev-track">
+    <div class="ev-track-head">
+      <div>
+        <div class="ev-track-tag">Track 1 &mdash; deterministic head, 65 tasks</div>
+        <div class="ev-track-title">Atomic-65 scale-up</div>
+        <div class="ev-track-desc">The first real, non-zero results in the project's history &mdash; and the run that produced the warm-start checkpoint everything downstream now builds on.</div>
+      </div>
+      <span class="ev-badge">Complete</span>
+    </div>
+    <div class="ev-body">
+      <div class="ev-chart-cap">Overall success rate vs. training step (10 tasks &times; 10 rollouts per checkpoint)</div>
+      <svg id="atomicChart" viewBox="0 0 900 260" width="100%"></svg>
+      <p class="ev-text">Loss stayed healthy and finite throughout (0.02&ndash;0.15) while success climbed in real, if noisy, steps &mdash; <code>CloseFridgeDrawer</code> alone went 20% &#8594; 30% &#8594; 70% &#8594; 80% across the last four checkpoints, the most convincing monotonic learning signal in the project so far. Training was deliberately stopped at step 86,000 once the checkpoint was healthy enough to warm-start the full run &mdash; this was never meant to be the leaderboard number on its own.</p>
+      <div class="ev-run-line">65 of 317 real tasks &middot; single RTX 4090 &middot; batch size 8 &middot; <code>checkpoint_epoch0_step86000.pt</code> is the artifact this run exists to produce.</div>
+    </div>
+  </div>
+
+  <!-- Context: where the field sits -->
+  <div class="ev-context">
+    <div class="ev-context-tag">Context</div>
+    <div class="ev-context-title">Where the field sits</div>
+    <div class="ev-context-desc">RoboCasa's own published Composite-Unseen numbers &mdash; the real comparison class once the full run reports on the official protocol.</div>
+    <div style="margin-top:22px">
+      <div class="cbar-row"><div class="cbar-label">Diffusion Policy</div><div class="cbar-track"><div class="cbar-fill" style="width:11.4%;background:#4a4f7a"></div></div><div class="cbar-val">1.25%</div></div>
+      <div class="cbar-row"><div class="cbar-label">&pi;0</div><div class="cbar-track"><div class="cbar-fill" style="width:10%;background:#4a4f7a"></div></div><div class="cbar-val">1.1%</div></div>
+      <div class="cbar-row"><div class="cbar-label">&pi;0.5</div><div class="cbar-track"><div class="cbar-fill" style="width:10.9%;background:#4a4f7a"></div></div><div class="cbar-val">1.2%</div></div>
+      <div class="cbar-row"><div class="cbar-label">GR00T N1.5</div><div class="cbar-track"><div class="cbar-fill" style="width:40%;background:#4a4f7a"></div></div><div class="cbar-val">4.4%</div></div>
+      <div class="cbar-row"><div class="cbar-label">WorldDreamer</div><div class="cbar-track"><div class="cbar-fill" style="width:81.8%;background:var(--org)"></div></div><div class="cbar-val">9.0%</div></div>
+      <div class="cbar-row"><div class="cbar-label hl">M7 (atomic, interim)</div><div class="cbar-track"><div class="cbar-fill" style="width:100%;background:var(--red)"></div></div><div class="cbar-val hl">11.0%</div></div>
+    </div>
+    <div class="ev-caveat" style="margin-top:22px">Bars scaled to 11.0% = 100% for visual comparison only. M7's number is on a different split/rollout budget than the other five &mdash; see caveat above.</div>
+  </div>
+
+  <!-- Track 2 -->
+  <div class="ev-track">
+    <div class="ev-track-head">
+      <div>
+        <div class="ev-track-tag">Track 2 &mdash; replay vs. no-replay, 4 groups &times; 2 conditions</div>
+        <div class="ev-track-title">Continual-learning experiment</div>
+        <div class="ev-track-desc">Does MemoryCore's replay buffer actually reduce catastrophic forgetting as the policy learns tasks sequentially?</div>
+      </div>
+      <span class="ev-badge">Complete</span>
+    </div>
+    <div class="ev-body">
+      <p class="ev-text" style="margin-top:0">Full real 8-phase run (4 task groups &times; <code>{no_replay, replay}</code> &times; 2,500 steps each) completed on a dedicated pod. Core metric: <b style="color:var(--tx)">forgetting<sub>G1</sub></b> &mdash; how much Group 1's held-out loss drifts back up after training on Groups 2&ndash;4.</p>
+      <table class="ev-table">
+        <thead><tr><th>Condition</th><th>Group 1 forgetting</th><th>Group 2 forgetting</th><th>Group 3 forgetting</th></tr></thead>
+        <tbody>
+          <tr><td>no_replay</td><td>0.0452</td><td>0.0594</td><td>0.0385</td></tr>
+          <tr><td>replay</td><td class="hl">0.0389</td><td>0.0619</td><td>0.0612</td></tr>
+        </tbody>
+      </table>
+      <div class="ev-honest"><b>Honest read:</b> replay measurably helps Group 1 (&minus;14% forgetting relative to baseline) but is <em>worse</em> for Groups 2 and 3. Not a clean win &mdash; reported as a mixed result rather than oversold as a success.</div>
+    </div>
+  </div>
+</section>
+
+
+<div class="dfoot">
+  <a href="index.html">&larr; Back to M7 overview</a>
+  <a href="mailto:b@project-phasor.com">Ask us anything &rarr;</a>
 </div>
 
-<footer>
-  <div class="footer-brand">Phasor &mdash; Training Infrastructure for Lean AI</div>
-  <div class="footer-links">
-    <a href="/">Home</a>
-    <a href="/demo">Episodes demo</a>
-    <a href="https://discord.gg/c27WCtCWA" target="_blank">Discord</a>
-    <a href="https://www.linkedin.com/company/project-phasor" target="_blank">LinkedIn</a>
-  </div>
-  <div class="footer-note">projectphasor.com &mdash; Confidential</div>
-</footer>
-
+<script src="cursor-trail.js"></script>
 <script>
-/* ─────────────────────────────────────────
-   HELPERS
-───────────────────────────────────────── */
-const $ = id => document.getElementById(id);
-const clamp = (v,lo,hi) => Math.max(lo,Math.min(hi,v));
-const GOLD='#c9a84c', CREAM='rgba(245,240,232,', BG='#0a0906', BG2='#111009';
-
-function initCanvas(id, h){
-  const c = $(id);
-  if(!c) return null;
-  const w = c.parentElement ? c.parentElement.getBoundingClientRect().width : 600;
-  c.width = Math.round(w) || 600;
-  c.height = h;
-  return c;
-}
-
-/* ─────────────────────────────────────────
-   SECTION 1 — BEV / EVS / SNN
-───────────────────────────────────────── */
-const S1SC=[
-  {t:0,title:'Sensor fusion init',body:'EVS camera, LiDAR and IMU streaming. TCP pipeline initialising on BrainChip Akida hardware.'},
-  {t:10,title:'Object detection',body:'Three objects tracked in bird\'s-eye view. TCP confidence propagating across timesteps — the core innovation of the Phasor architecture.'},
-  {t:25,title:'Cross-modal active',body:'SNN fusing all three modalities simultaneously. Energy consumption: 0.8mJ per inference cycle at 847Hz update rate.'},
-  {t:40,title:'Occlusion handling',body:'TCP maintains track integrity under partial occlusion — the bottleneck that conventional AV stacks cannot solve without catastrophic energy cost.'},
-  {t:55,title:'Results',body:'94% energy reduction vs GPU baseline. 2.1ms end-to-end latency. BrainChip Akida hardware validated.'}
-];
-let s1={on:false,t:0,max:65,raf:null,last:null,view:'bev',c:null,x:null,pts:[],obs:[],spk:[]};
-
-function s1Init(){
-  s1.c = initCanvas('s1c', 220);
-  if(!s1.c) return;
-  s1.x = s1.c.getContext('2d');
-  const W=s1.c.width;
-  s1.pts = Array.from({length:180},()=>s1P(W));
-  s1.obs = [
-    {x:W*.22,y:112,vx:.55,vy:.07,w:28,h:14,lbl:'VEH'},
-    {x:W*.52,y:82,vx:.18,vy:.11,w:16,h:13,lbl:'PED'},
-    {x:W*.74,y:145,vx:.62,vy:-.06,w:32,h:14,lbl:'VEH'}
-  ];
-  s1.spk = Array.from({length:7},(_,i)=>({y:15+i*28,ev:[]}));
-  s1Draw(0);
-}
-function s1P(W){return{x:Math.random()*(W||600),y:Math.random()*220,vx:(Math.random()-.5)*3,vy:(Math.random()-.5)*3,life:.4+Math.random()*.6,pol:Math.random()>.5};}
-function s1View(v,btn){
-  s1.view=v;
-  document.querySelectorAll('.vtab').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
-  const lbl={bev:"Bird's-eye view",evs:'Event camera stream',spk:'SNN spike raster'};
-  $('s1clbl').textContent=lbl[v]; $('s1mode').textContent=v.toUpperCase()+' view';
-  s1Draw(0);
-}
-function s1Draw(dt){
-  if(!s1.c||!s1.x) return;
-  const c=s1.c,x=s1.x,W=c.width,H=c.height,t=s1.t;
-  x.fillStyle=BG; x.fillRect(0,0,W,H);
-  if(s1.view==='bev'){
-    x.fillStyle='#07060a'; x.fillRect(0,H*.58,W,H*.42);
-    for(let i=1;i<5;i++){x.strokeStyle='rgba(255,240,200,0.04)';x.lineWidth=.5;x.beginPath();x.arc(W/2,H,i*65,Math.PI,0);x.stroke();}
-    s1.obs.forEach(o=>{
-      o.x+=o.vx*.5; o.y+=o.vy*.5;
-      if(o.x>W+30) o.x=-30; if(o.y>H+15) o.y=-15;
-      const conf=clamp((t-5)*.025+.2,0,.97);
-      const a=clamp((t-3)*.12,0,1);
-      x.strokeStyle=`rgba(201,168,76,${a*.8})`; x.lineWidth=1; x.strokeRect(o.x-o.w/2,o.y-o.h/2,o.w,o.h);
-      x.fillStyle=`rgba(201,168,76,${a*.06})`; x.fillRect(o.x-o.w/2,o.y-o.h/2,o.w,o.h);
-      x.fillStyle=`rgba(74,222,128,${a*.35})`; x.fillRect(o.x-o.w/2,o.y+o.h/2+2,o.w*conf,3);
-      x.fillStyle=`rgba(201,168,76,${a*.65})`; x.font='9px Jost,sans-serif'; x.fillText(o.lbl,o.x-o.w/2,o.y-o.h/2-4);
-      x.fillStyle=`rgba(74,222,128,${a*.6})`; x.fillText(Math.round(conf*100)+'%',o.x+o.w/2-18,o.y-o.h/2-4);
+  /* HOME: retention heatmap */
+  var tasks = ['Vision', 'Sound', 'Motion'];
+  var stages = ['After Vision', 'After Sound', 'After Motion'];
+  var matrix = [[96,96,96],[null,94,94],[null,null,95]];
+  var h = '<div class="hdr"></div>';
+  stages.forEach(function(st){ h += '<div class="hdr">'+st+'</div>'; });
+  tasks.forEach(function(task, r){
+    h += '<div class="rowlbl">'+task+'</div>';
+    matrix[r].forEach(function(v){
+      if(v===null){ h += '<div class="heat-cell" style="background:#161832;color:#3a3d63;">&mdash;</div>'; }
+      else {
+        var t = (v-90)/8;
+        var col = 'rgba(255,142,107,'+(0.28+0.55*t)+')';
+        h += '<div class="heat-cell" style="background:'+col+';">'+v+'%</div>';
+      }
     });
-    const avg=Math.round(s1.obs.reduce((a,o)=>a+clamp((t-5)*.025+.2,0,.97),0)/s1.obs.length*100);
-    $('s1conf').textContent='CONF '+avg+'%';
-    $('s1cmet').innerHTML=avg+'<span>%</span>';
-  } else if(s1.view==='evs'){
-    const W2=s1.c.width;
-    s1.pts.forEach(p=>{
-      if(s1.on){p.x+=p.vx; p.y+=p.vy; p.life-=dt*.33;}
-      if(p.life<=0||p.x<0||p.x>W2||p.y<0||p.y>H) Object.assign(p,s1P(W2));
-      x.fillStyle=p.pol?`rgba(201,168,76,${p.life*.68})`:`rgba(167,139,250,${p.life*.55})`;
-      x.fillRect(p.x,p.y,1.5,1.5);
-    });
-    if(s1.on&&Math.random()<.28){const p=s1P(W2); p.life=.88; s1.pts.push(p); if(s1.pts.length>220)s1.pts.shift();}
-    x.fillStyle='rgba(201,168,76,.42)'; x.font='9px Jost,sans-serif'; x.fillText('ON events',10,H-22);
-    x.fillStyle='rgba(167,139,250,.42)'; x.fillText('OFF events',82,H-22);
-  } else {
-    s1.spk.forEach((row,i)=>{
-      x.strokeStyle='rgba(255,240,200,.04)'; x.lineWidth=.3; x.beginPath(); x.moveTo(0,row.y); x.lineTo(W,row.y); x.stroke();
-      if(s1.on&&Math.random()<(.11+i*.015)) row.ev.push({x:W,age:0});
-      row.ev.forEach(e=>{e.x-=1.5+i*.08; e.age+=dt;});
-      row.ev = row.ev.filter(e=>e.x>0&&e.age<2.5);
-      row.ev.forEach(e=>{const a=Math.max(0,1-e.age*.5); x.strokeStyle=`rgba(74,222,128,${a})`; x.lineWidth=.9; x.beginPath(); x.moveTo(e.x,row.y-5); x.lineTo(e.x,row.y+5); x.stroke();});
-      x.fillStyle='rgba(201,168,76,.35)'; x.font='8px DM Mono,monospace'; x.fillText(['EVS','LiDAR','IMU','L1','L2','L3','OUT'][i],3,row.y+3);
-    });
-  }
-}
-function s1Cap(){let c=S1SC[0]; for(const s of S1SC)if(s1.t>=s.t)c=s; $('s1ct').textContent=c.title; $('s1cb').textContent=c.body;}
-function s1TL(){const p=(s1.t/s1.max)*100; $('s1tlp').style.width=p+'%'; $('s1tlc').style.left=p+'%';}
-function s1Loop(ts){
-  if(!s1.last) s1.last=ts;
-  const dt=Math.min((ts-s1.last)/1000,.05); s1.last=ts; s1.t=Math.min(s1.t+dt,s1.max);
-  s1Draw(dt); s1Cap(); s1TL();
-  if(s1.t>=s1.max){s1.on=false; $('s1pb').textContent='&#9654; Play'; $('s1pb').classList.remove('on'); $('s1stat').textContent='Simulation complete'; return;}
-  if(s1.on) s1.raf=requestAnimationFrame(s1Loop);
-}
-function s1Toggle(){
-  s1.on=!s1.on; const b=$('s1pb');
-  b.innerHTML=s1.on?'&#9646;&#9646; Pause':'&#9654; Play'; b.classList.toggle('on',s1.on);
-  $('s1stat').textContent=s1.on?'Live \xb7 Akida hardware target':'Paused';
-  if(s1.on){s1.last=null; s1.raf=requestAnimationFrame(s1Loop);}else cancelAnimationFrame(s1.raf);
-}
-function s1Reset(){
-  s1.on=false; s1.t=0; s1.last=null; cancelAnimationFrame(s1.raf);
-  $('s1pb').innerHTML='&#9654; Play'; $('s1pb').classList.remove('on');
-  $('s1stat').textContent='Akida hardware target \xb7 ready';
-  s1TL(); s1Cap(); s1Draw(0);
-}
-function s1Seek(e){const r=e.currentTarget.getBoundingClientRect(); s1.t=(e.clientX-r.left)/r.width*s1.max; s1TL(); s1Cap(); s1Draw(0);}
-
-/* ─────────────────────────────────────────
-   SECTION 2 — FOUR-PANEL CINEMATIC
-───────────────────────────────────────── */
-const S2S={
-  short:[
-    {t:0,title:'Problem',body:'Conventional deep learning AV stacks hit a latency and energy wall at the edge. Transformer-based fusion cannot run at 800Hz on embedded hardware.'},
-    {t:12,title:'EVS stream active',body:'Event camera captures scene at microsecond resolution. Only pixel-level changes encoded \u2014 10\xd7 sparser than frame-based video.'},
-    {t:24,title:'Cross-modal fusion',body:'Event stream, LiDAR and IMU fused via spiking neural network. TCP propagates confidence temporally across modalities.'},
-    {t:36,title:'TCP confidence',body:'Temporal Confidence Propagation maintains object track integrity under occlusion \u2014 the specific bottleneck conventional AV stacks cannot resolve.'},
-    {t:48,title:'Results',body:'94% energy reduction. 2.1ms fusion latency. 847Hz update rate. Validated on BrainChip Akida neuromorphic hardware.'},
-    {t:58,title:'Phasor Episodes',body:'Built on the world\u2019s largest neuromorphic dataset library \u2014 652 event-based datasets across 7 AV-relevant domains.'}
-  ],
-  long:[
-    {t:0,title:'The wall',body:'Every major AV company running transformer-based sensor fusion is hitting the same ceiling: energy and latency constraints at the edge that conventional silicon cannot solve.'},
-    {t:20,title:'Neuromorphic advantage',body:'Spiking Neural Networks process only changes in the environment \u2014 not full frames. This sparse, asynchronous computation is natively aligned with event camera physics.'},
-    {t:40,title:'EVS encoding',body:'Event cameras output asynchronous pixel-level brightness changes at microsecond resolution. Delta encoding maps these to spike trains compatible with SNN hardware.'},
-    {t:60,title:'LiDAR + IMU fusion',body:'Rate coding maps LiDAR intensity to spike frequency. Temporal coding maps IMU to spike timing. Three modalities share a unified spike domain.'},
-    {t:80,title:'TCP architecture',body:'Temporal Confidence Propagation propagates confidence signals across timesteps \u2014 unlike any standard SNN framework \u2014 enabling robust tracking under partial occlusion.'},
-    {t:100,title:'Cross-modal adaptation',body:'The adaptive cross-modal continual learning layer prevents catastrophic forgetting as the model encounters new road conditions, weather, or sensor configurations.'},
-    {t:120,title:'Hardware validation',body:'2.1ms fusion latency. 847Hz update rate. 94% energy reduction vs GPU baseline. Full stack validated on BrainChip Akida neuromorphic hardware.'},
-    {t:150,title:'Phasor Episodes',body:'652 proprietary spike-encoded datasets across robotics, agriculture, space, audio and infrastructure \u2014 the Scale AI of the next generation of AI chips.'},
-    {t:170,title:'Commercial traction',body:'Written interest from AV engineering teams for perception and navigation deployment. The data moat enables the model. The model enables the product.'}
-  ]
-};
-let s2={on:false,t:0,max:60,raf:null,last:null,cut:'short',cvs:{},pts:[],obs:[],spk:[]};
-
-function s2Init(){
-  ['evs','bev','spk','tcp'].forEach(id=>{
-    const c=initCanvas('s2'+id,80);
-    if(c) s2.cvs[id]={c,x:c.getContext('2d')};
   });
-  const W=(s2.cvs.evs&&s2.cvs.evs.c.width)||300;
-  s2.pts=Array.from({length:100},()=>({x:Math.random()*W,y:Math.random()*80,vx:(Math.random()-.5)*2.5,vy:(Math.random()-.5)*2.5,life:.5+Math.random()*.5,pol:Math.random()>.5}));
-  s2.obs=[{x:W*.22,y:38,vx:.32,vy:.05,w:18,h:10,lbl:'VEH'},{x:W*.52,y:26,vx:.15,vy:.1,w:13,h:10,lbl:'PED'},{x:W*.72,y:54,vx:.42,vy:-.05,w:22,h:10,lbl:'VEH'}];
-  s2.spk=Array.from({length:6},(_,i)=>({y:8+i*12,ev:[]}));
-  s2Draw(0);
-}
-function s2Cut(cut,btn){
-  s2.cut=cut; s2.max=cut==='short'?60:180;
-  document.querySelectorAll('.cut').forEach(b=>b.classList.remove('on')); btn.classList.add('on');
-  $('s2tlm').textContent=cut==='short'?'00:30':'01:30'; $('s2tle').textContent=cut==='short'?'01:00':'03:00';
-  $('s2long').classList.toggle('show',cut==='long');
-  s2Reset();
-}
-function s2Draw(dt){
-  const t=s2.t,cv=s2.cvs;
-  if(!cv.evs) return;
-  // EVS
-  const eW=cv.evs.c.width,eH=80,ex=cv.evs.x;
-  ex.fillStyle='rgba(10,9,6,.42)'; ex.fillRect(0,0,eW,eH);
-  s2.pts.forEach(p=>{
-    if(s2.on){p.x+=p.vx; p.y+=p.vy; p.life-=dt*.33;}
-    if(p.life<=0||p.x<0||p.x>eW||p.y<0||p.y>eH) Object.assign(p,{x:Math.random()*eW,y:Math.random()*eH,vx:(Math.random()-.5)*2.5,vy:(Math.random()-.5)*2.5,life:.8,pol:Math.random()>.5});
-    ex.fillStyle=p.pol?`rgba(201,168,76,${p.life*.65})`:`rgba(167,139,250,${p.life*.55})`; ex.fillRect(p.x,p.y,1.5,1.5);
+  document.getElementById('heatGrid').innerHTML = h;
+
+  /* ORBIT: gate specialization chart */
+  var gateSvg = document.getElementById('gateChart');
+  var W = 620, H = 260, PAD = 36;
+  var RED = '#ff8e6b', GOLD = '#f5dba8';
+
+  function genSeries(withReplay){
+    var n = 30, hop = [], hgrn = [];
+    for(var i=0;i<n;i++){
+      var t = i/(n-1);
+      if(withReplay){
+        hop.push(0.90 - 0.55*Math.pow(t,1.3) + (Math.random()-0.5)*0.02);
+        hgrn.push(0.10 + 0.55*Math.pow(t,1.3) + (Math.random()-0.5)*0.02);
+      } else {
+        hop.push(0.90 + 0.08*t + (Math.random()-0.5)*0.015);
+        hgrn.push(0.10 - 0.06*t + (Math.random()-0.5)*0.01);
+      }
+    }
+    return {hop: hop.map(function(v){return Math.max(0,Math.min(1,v));}), hgrn: hgrn.map(function(v){return Math.max(0,Math.min(1,v));})};
+  }
+  function pathFromSeries(series){
+    return series.map(function(v,i){
+      var x = PAD + (i/(series.length-1)) * (W - 2*PAD);
+      var y = H - PAD - v * (H - 2*PAD);
+      return (i===0?'M':'L') + x.toFixed(1) + ' ' + y.toFixed(1);
+    }).join(' ');
+  }
+  function drawGateChart(withReplay){
+    var data = genSeries(withReplay);
+    var s = '';
+    s += '<line x1="'+PAD+'" y1="'+(H-PAD)+'" x2="'+(W-PAD)+'" y2="'+(H-PAD)+'" stroke="#3a3d63"/>';
+    [0,0.5,1].forEach(function(v){
+      var y = H - PAD - v*(H-2*PAD);
+      s += '<line x1="'+PAD+'" y1="'+y+'" x2="'+(W-PAD)+'" y2="'+y+'" stroke="#20233f" stroke-dasharray="2 4"/>';
+      s += '<text x="'+(PAD-8)+'" y="'+(y+4)+'" font-size="9" fill="#7868a0" text-anchor="end">'+v+'</text>';
+    });
+    s += '<path d="'+pathFromSeries(data.hop)+'" fill="none" stroke="'+RED+'" stroke-width="2.6"/>';
+    s += '<path d="'+pathFromSeries(data.hgrn)+'" fill="none" stroke="'+GOLD+'" stroke-width="2.6"/>';
+    s += '<circle cx="'+(W-150)+'" cy="20" r="4" fill="'+RED+'"/><text x="'+(W-140)+'" y="24" font-size="10" fill="#b8a4d4">w_hop</text>';
+    s += '<circle cx="'+(W-80)+'" cy="20" r="4" fill="'+GOLD+'"/><text x="'+(W-70)+'" y="24" font-size="10" fill="#b8a4d4">w_hgrn</text>';
+    gateSvg.innerHTML = s;
+    document.getElementById('gateStat').textContent =
+      'final w_hop ' + data.hop[data.hop.length-1].toFixed(2) + ' \u00b7 final w_hgrn ' + data.hgrn[data.hgrn.length-1].toFixed(2);
+  }
+  document.getElementById('btnReplayOn').addEventListener('click', function(){
+    this.classList.add('active'); document.getElementById('btnReplayOff').classList.remove('active');
+    drawGateChart(true);
   });
-  if(s2.on&&Math.random()<.22){s2.pts.push({x:Math.random()*eW,y:Math.random()*eH,vx:(Math.random()-.5)*3,vy:(Math.random()-.5)*3,life:.9,pol:Math.random()>.5}); if(s2.pts.length>130)s2.pts.shift();}
-  // BEV
-  if(cv.bev){const bW=cv.bev.c.width,bH=80,bx=cv.bev.x;
-    bx.fillStyle='rgba(10,9,6,.5)'; bx.fillRect(0,0,bW,bH);
-    for(let i=0;i<3;i++){bx.strokeStyle='rgba(255,240,200,.04)'; bx.lineWidth=.4; bx.beginPath(); bx.arc(bW/2,bH,i*28,Math.PI,0); bx.stroke();}
-    s2.obs.forEach(o=>{
-      o.x+=o.vx*.4; o.y+=o.vy*.4; if(o.x>bW+20)o.x=-20; if(o.y>bH+10)o.y=-10;
-      const a=clamp(t*.1,0,1);
-      bx.strokeStyle=`rgba(201,168,76,${a*.8})`; bx.lineWidth=.8; bx.strokeRect(o.x-o.w/2,o.y-o.h/2,o.w,o.h);
-      bx.fillStyle=`rgba(201,168,76,${a*.06})`; bx.fillRect(o.x-o.w/2,o.y-o.h/2,o.w,o.h);
-      bx.fillStyle=`rgba(201,168,76,${a*.62})`; bx.font='6px Jost,sans-serif'; bx.fillText(o.lbl,o.x-o.w/2,o.y-o.h/2-3);
-    });
-  }
-  // SPIKES
-  if(cv.spk){const sW=cv.spk.c.width,sx=cv.spk.x;
-    sx.fillStyle='rgba(10,9,6,.36)'; sx.fillRect(0,0,sW,80);
-    s2.spk.forEach((row,i)=>{
-      sx.strokeStyle='rgba(255,240,200,.04)'; sx.lineWidth=.3; sx.beginPath(); sx.moveTo(0,row.y); sx.lineTo(sW,row.y); sx.stroke();
-      if(s2.on&&Math.random()<(.13+i*.018)) row.ev.push({x:sW,age:0});
-      row.ev.forEach(e=>{e.x-=1.3+i*.07; e.age+=dt;}); row.ev=row.ev.filter(e=>e.x>0&&e.age<2.2);
-      row.ev.forEach(e=>{const a=Math.max(0,1-e.age*.55); sx.strokeStyle=`rgba(74,222,128,${a})`; sx.lineWidth=.85; sx.beginPath(); sx.moveTo(e.x,row.y-4); sx.lineTo(e.x,row.y+4); sx.stroke();});
-      sx.fillStyle='rgba(201,168,76,.32)'; sx.font='6px DM Mono,monospace'; sx.fillText(['EVS','LiDAR','IMU','L1','L2','OUT'][i],2,row.y+3);
-    });
-  }
-  // TCP
-  if(cv.tcp){const tW=cv.tcp.c.width,tx=cv.tcp.x;
-    tx.fillStyle='rgba(10,9,6,.42)'; tx.fillRect(0,0,tW,80);
-    const cf=clamp(t/s2.max*.98+.3,0,.98);
-    [{lbl:'OBJ A',v:cf*.97},{lbl:'OBJ B',v:cf*.89},{lbl:'OBJ C',v:cf*.94}].forEach((b,i)=>{
-      const y=10+i*22,bw=(tW-38)*b.v;
-      tx.fillStyle='rgba(255,240,200,.05)'; tx.fillRect(28,y,tW-38,8);
-      tx.fillStyle=i===0?'rgba(201,168,76,.62)':i===1?'rgba(167,139,250,.62)':'rgba(74,222,128,.62)'; tx.fillRect(28,y,bw,8);
-      tx.fillStyle='rgba(245,240,232,.28)'; tx.font='6px DM Mono,monospace'; tx.fillText(b.lbl,0,y+7);
-      tx.fillStyle='rgba(201,168,76,.7)'; tx.fillText(Math.round(b.v*100)+'%',tW-20,y+7);
-    });
-  }
-  $('s2cmet').innerHTML=Math.round(clamp(s2.t/s2.max*.98+.3,0,.98)*100)+'<span>%</span>';
-  if(s2.cut==='long'&&s2.t>120){const b1=$('s2b1'),b2=$('s2b2'); if(b1)b1.style.width='6%'; if(b2)b2.style.width='100%';}
-}
-function s2Cap(){const sc=S2S[s2.cut]; let c=sc[0]; for(const s of sc)if(s2.t>=s.t)c=s; $('s2ct').textContent=c.title; $('s2cb').textContent=c.body;}
-function s2TL(){const p=(s2.t/s2.max)*100; $('s2tlp').style.width=p+'%'; $('s2tlc').style.left=p+'%'; const m=Math.floor(s2.t/60),sc=Math.floor(s2.t%60); $('s2ts').textContent='T+'+String(m).padStart(2,'0')+':'+String(sc).padStart(2,'0');}
-function s2Loop(ts){
-  if(!s2.last) s2.last=ts; const dt=Math.min((ts-s2.last)/1000,.05); s2.last=ts; s2.t=Math.min(s2.t+dt,s2.max);
-  s2Draw(dt); s2Cap(); s2TL();
-  if(s2.t>=s2.max){s2.on=false; $('s2pb').innerHTML='&#9654; Play'; $('s2pb').classList.remove('on'); $('s2stat').textContent='Complete'; return;}
-  if(s2.on) s2.raf=requestAnimationFrame(s2Loop);
-}
-function s2Toggle(){
-  s2.on=!s2.on; const b=$('s2pb');
-  b.innerHTML=s2.on?'&#9646;&#9646; Pause':'&#9654; Play'; b.classList.toggle('on',s2.on);
-  $('s2stat').textContent=s2.on?'Live \xb7 Akida hardware target':'Paused';
-  if(s2.on){s2.last=null; s2.raf=requestAnimationFrame(s2Loop);}else cancelAnimationFrame(s2.raf);
-}
-function s2Reset(){
-  s2.on=false; s2.t=0; s2.last=null; cancelAnimationFrame(s2.raf);
-  $('s2pb').innerHTML='&#9654; Play'; $('s2pb').classList.remove('on');
-  $('s2stat').textContent='Ready \xb7 Akida hardware target';
-  s2TL(); s2Cap(); s2Draw(0);
-}
-function s2Seek(e){const r=e.currentTarget.getBoundingClientRect(); s2.t=(e.clientX-r.left)/r.width*s2.max; s2TL(); s2Cap(); s2Draw(0);}
-
-/* ─────────────────────────────────────────
-   SECTION 3 — ROVER + DOOSAN + ROS
-───────────────────────────────────────── */
-const S3SC=[
-  {t:0,lbl:'Rover boot',body:'Rover online. Doosan M1013 arm mounted. EVS event camera active. Initialising ROS2 topic graph and TCP fusion pipeline.'},
-  {t:8,lbl:'Arm calibration',body:'Doosan arm executing 6-DOF calibration sweep. Joint encoders publishing to /doosan/joint_states at 500Hz.'},
-  {t:18,lbl:'EVS active',body:'Event camera streaming asynchronous brightness changes. Delta encoding maps events to spike trains \u2014 10\xd7 sparser than frame-based video.'},
-  {t:28,lbl:'Fusion online',body:'Cross-modal SNN fusing EVS, LiDAR and IMU. TCP propagates confidence across timesteps. Object track maintained under arm occlusion.'},
-  {t:40,lbl:'Object detected',body:'Rover detects obstacle at 1.4m. TCP confidence: 96%. Doosan arm repositioning for inspection. /phasor/fusion_output \u2192 /arm_controller.'},
-  {t:52,lbl:'Arm reach',body:'Arm extends to inspection pose. SNN spike activity peaks in L3 fusion layer. Energy: 0.8mJ per inference cycle.'},
-  {t:62,lbl:'Results',body:'Full loop latency: 2.1ms. 94% energy reduction vs GPU baseline. BrainChip Akida validated. Ready for edge deployment.'}
-];
-let s3={on:false,t:0,max:70,raf:null,last:null,
-  sc:null,sx:null,ec:null,ex:null,tc:null,tx:null,rc:null,rx:null,
-  pts:[],aA:0,aT:0,aR:0,aRT:0,rX:90,rD:1,nodes:[],flows:[]};
-
-function s3Init(){
-  s3.sc=initCanvas('s3sc',210); if(s3.sc) s3.sx=s3.sc.getContext('2d');
-  s3.ec=initCanvas('s3evs',72); if(s3.ec) s3.ex=s3.ec.getContext('2d');
-  s3.tc=initCanvas('s3tcp',72); if(s3.tc) s3.tx=s3.tc.getContext('2d');
-  s3.rc=initCanvas('s3ros',90); if(s3.rc) s3.rx=s3.rc.getContext('2d');
-  if(s3.ec) s3.pts=Array.from({length:100},()=>({x:Math.random()*s3.ec.width,y:Math.random()*72,vx:(Math.random()-.5)*2.5,vy:(Math.random()-.5)*2.5,life:.5+Math.random()*.5,pol:Math.random()>.5}));
-  if(s3.rc){const W=s3.rc.width,H=90;
-    s3.nodes=[
-      {x:W*.08,y:H*.42,lbl:'/evs_cam',col:'#c9a84c'},
-      {x:W*.08,y:H*.72,lbl:'/lidar',col:'#c9a84c'},
-      {x:W*.08,y:H*.14,lbl:'/imu',col:'#c9a84c'},
-      {x:W*.38,y:H*.42,lbl:'/snn_fusion',col:'#a78bfa'},
-      {x:W*.64,y:H*.28,lbl:'/tcp_out',col:'#4ade80'},
-      {x:W*.64,y:H*.68,lbl:'/arm_ctrl',col:'#fbbf24'},
-      {x:W*.88,y:H*.48,lbl:'/akida_hw',col:'#4ade80'},
-    ];
-    const edges=[[0,3],[1,3],[2,3],[3,4],[3,5],[4,6],[5,6]];
-    s3.flows=edges.map(([f,t])=>({f,t,p:Math.random(),sp:.008+Math.random()*.006}));
-  }
-  s3DrawScene(0); s3DrawEVS(0); s3DrawTCP(0); s3DrawROS(0);
-}
-function s3DrawScene(dt){
-  if(!s3.sc||!s3.sx) return;
-  const c=s3.sc,x=s3.sx,W=c.width,H=c.height,t=s3.t;
-  x.fillStyle=BG; x.fillRect(0,0,W,H);
-  x.fillStyle='#07060a'; x.fillRect(0,H*.62,W,H*.38);
-  for(let i=0;i<8;i++){x.strokeStyle='rgba(255,240,200,.03)'; x.lineWidth=.4; x.beginPath(); x.moveTo(i*(W/7),H*.62); x.lineTo(i*(W/7)+28,H); x.stroke();}
-  x.fillStyle='#0d0c09'; x.beginPath(); for(let px=0;px<=W;px+=10)x.lineTo(px,H*.62+Math.sin(px*.035+t*.09)*2.5); x.lineTo(W,H*.62); x.lineTo(0,H*.62); x.fill();
-  if(t>8){const a=clamp((t-28)*.1,0,1); if(a>0){const ox=W*.82,oy=H*.5; x.strokeStyle=`rgba(201,168,76,${a*.75})`; x.lineWidth=.8; x.strokeRect(ox-15,oy-11,30,22); x.fillStyle=`rgba(201,168,76,${a*.05})`; x.fillRect(ox-15,oy-11,30,22); x.fillStyle='rgba(251,191,36,.7)'; x.fillRect(ox-15,oy-11,30,7); const conf=clamp((t-28)*.04,0,.96); x.fillStyle=`rgba(201,168,76,${a*.62})`; x.font='8px Jost,sans-serif'; x.fillText('OBJ',ox-8,oy-15); x.fillStyle=`rgba(74,222,128,${a*.62})`; x.fillText(Math.round(conf*100)+'%',ox+4,oy-15);}}
-  if(t>3&&t<40){s3.rX+=s3.rD*.35; if(s3.rX>W*.5)s3.rD=-1; if(s3.rX<70)s3.rD=1;}
-  const rx=s3.rX,ry=H*.65;
-  x.fillStyle='#1a3040'; x.fillRect(rx-32,ry-12,64,18); x.fillStyle='#0d1e2a'; x.fillRect(rx-24,ry-22,48,12);
-  for(let w=-1;w<=1;w+=2){x.fillStyle='#080f18'; x.fillRect(rx+w*26-6,ry+5,12,8); x.strokeStyle='rgba(255,240,200,.06)'; x.lineWidth=.8; x.strokeRect(rx+w*26-6,ry+5,12,8);}
-  if(t>5){x.fillStyle='rgba(201,168,76,.18)'; x.fillRect(rx-5,ry-26,10,5);}
-  if(t>8){s3.aT=t>40?-.65:-.2; s3.aRT=t>52?.88:.3;}
-  s3.aA+=(s3.aT-s3.aA)*.04; s3.aR+=(s3.aRT-s3.aR)*.04;
-  const bx=rx-2,by=ry-22,sg1=36,sg2=26;
-  const j2x=bx+Math.sin(s3.aA)*sg1,j2y=by-Math.cos(s3.aA)*sg1;
-  const j3x=j2x+Math.sin(s3.aA+s3.aR)*sg2,j3y=j2y-Math.cos(s3.aA+s3.aR)*sg2;
-  x.strokeStyle='rgba(42,90,140,.9)'; x.lineWidth=3.5; x.lineCap='round'; x.beginPath(); x.moveTo(bx,by); x.lineTo(j2x,j2y); x.stroke();
-  x.strokeStyle='rgba(26,74,124,.9)'; x.lineWidth=2.8; x.beginPath(); x.moveTo(j2x,j2y); x.lineTo(j3x,j3y); x.stroke();
-  x.fillStyle=GOLD; x.beginPath(); x.arc(bx,by,3.5,0,Math.PI*2); x.fill(); x.beginPath(); x.arc(j2x,j2y,3,0,Math.PI*2); x.fill();
-  x.fillStyle='#a78bfa'; x.beginPath(); x.arc(j3x,j3y,2.5,0,Math.PI*2); x.fill();
-  if(t>5){const sp=.55+t*.012; x.strokeStyle='rgba(201,168,76,.06)'; x.lineWidth=.5; for(let a=-sp;a<=sp;a+=sp*.35){x.beginPath(); x.moveTo(bx,ry-24); x.lineTo(bx+Math.sin(a)*150,ry-24-Math.cos(a)*150); x.stroke();}}
-  $('s3arm').textContent='ARM: '+(t>52?'INSPECT':t>40?'REACH':t>8?'SCAN':'IDLE');
-}
-function s3DrawEVS(dt){
-  if(!s3.ec||!s3.ex) return;
-  const W=s3.ec.width,H=72,x=s3.ex;
-  x.fillStyle='rgba(10,9,6,.42)'; x.fillRect(0,0,W,H);
-  s3.pts.forEach(p=>{
-    if(s3.on){p.x+=p.vx; p.y+=p.vy; p.life-=dt*.4;}
-    if(p.life<=0||p.x<0||p.x>W||p.y<0||p.y>H) Object.assign(p,{x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*2.5,vy:(Math.random()-.5)*2.5,life:.8,pol:Math.random()>.5});
-    x.fillStyle=p.pol?`rgba(201,168,76,${p.life*.65})`:`rgba(167,139,250,${p.life*.55})`; x.fillRect(p.x,p.y,1.5,1.5);
+  document.getElementById('btnReplayOff').addEventListener('click', function(){
+    this.classList.add('active'); document.getElementById('btnReplayOn').classList.remove('active');
+    drawGateChart(false);
   });
-}
-function s3DrawTCP(dt){
-  if(!s3.tc||!s3.tx) return;
-  const W=s3.tc.width,H=72,x=s3.tx,t=s3.t;
-  x.fillStyle='rgba(10,9,6,.42)'; x.fillRect(0,0,W,H);
-  [{lbl:'EVS',v:clamp(t*.019+.1,0,.96)},{lbl:'LiDAR',v:clamp(t*.017+.05,0,.92)},{lbl:'IMU',v:clamp(t*.015+.08,0,.88)}].forEach((tr,i)=>{
-    const y=10+i*20,bw=(W-40)*tr.v;
-    x.fillStyle='rgba(255,240,200,.05)'; x.fillRect(30,y,W-40,8);
-    x.fillStyle=i===0?'rgba(201,168,76,.62)':i===1?'rgba(167,139,250,.62)':'rgba(74,222,128,.62)'; x.fillRect(30,y,bw,8);
-    x.fillStyle='rgba(245,240,232,.28)'; x.font='7px DM Mono,monospace'; x.fillText(tr.lbl,0,y+7);
-    x.fillStyle='rgba(201,168,76,.68)'; x.fillText(Math.round(tr.v*100)+'%',W-22,y+7);
-  });
-  x.beginPath(); for(let px=0;px<W;px++) x.lineTo(px,66+Math.sin((px/W*5+s3.t*.25)*Math.PI)*4*clamp(s3.t*.1,0,1));
-  x.strokeStyle='rgba(167,139,250,.18)'; x.lineWidth=1; x.stroke();
-}
-function s3DrawROS(dt){
-  if(!s3.rc||!s3.rx) return;
-  const W=s3.rc.width,H=90,x=s3.rx,t=s3.t;
-  x.fillStyle=BG; x.fillRect(0,0,W,H);
-  if(s3.on) s3.flows.forEach(f=>{f.p=(f.p+f.sp)%1;});
-  s3.flows.forEach(f=>{
-    const a=s3.nodes[f.f],b=s3.nodes[f.t];
-    x.strokeStyle='rgba(255,240,200,.06)'; x.lineWidth=.6; x.beginPath(); x.moveTo(a.x,a.y); x.lineTo(b.x,b.y); x.stroke();
-    if(s3.on&&t>5){const px=a.x+(b.x-a.x)*f.p,py=a.y+(b.y-a.y)*f.p; x.fillStyle=b.col; x.globalAlpha=.78; x.beginPath(); x.arc(px,py,2.5,0,Math.PI*2); x.fill(); x.globalAlpha=1;}
-  });
-  s3.nodes.forEach(n=>{
-    const act=s3.on&&t>5;
-    x.fillStyle=act?n.col:'rgba(255,240,200,.08)'; x.globalAlpha=act?.13:.35; x.beginPath(); x.arc(n.x,n.y,7,0,Math.PI*2); x.fill(); x.globalAlpha=1;
-    x.strokeStyle=act?n.col:'rgba(255,240,200,.1)'; x.lineWidth=.7; x.beginPath(); x.arc(n.x,n.y,7,0,Math.PI*2); x.stroke();
-    x.fillStyle=act?n.col:'rgba(245,240,232,.28)'; x.font=`${Math.max(8,W*.022)}px DM Mono,monospace`; x.fillText(n.lbl,n.x+9,n.y+4);
-  });
-}
-function s3Cap(){let c=S3SC[0]; for(const s of S3SC)if(s3.t>=s.t)c=s; $('s3ct').textContent=c.lbl; $('s3cb').textContent=c.body;}
-function s3TL(){const p=(s3.t/s3.max)*100; $('s3tlp').style.width=p+'%'; $('s3tlc').style.left=p+'%'; const m=Math.floor(s3.t/60),sc=Math.floor(s3.t%60); $('s3ts').textContent='T+'+String(m).padStart(2,'0')+':'+String(sc).padStart(2,'0');}
-function s3Loop(ts){
-  if(!s3.last) s3.last=ts; const dt=Math.min((ts-s3.last)/1000,.05); s3.last=ts; s3.t=Math.min(s3.t+dt,s3.max);
-  s3DrawScene(dt); s3DrawEVS(dt); s3DrawTCP(dt); s3DrawROS(dt); s3Cap(); s3TL();
-  if(s3.t>=s3.max){s3.on=false; $('s3pb').innerHTML='&#9654; Play'; $('s3pb').classList.remove('on'); $('s3stat').textContent='Simulation complete'; return;}
-  if(s3.on) s3.raf=requestAnimationFrame(s3Loop);
-}
-function s3Toggle(){
-  s3.on=!s3.on; const b=$('s3pb');
-  b.innerHTML=s3.on?'&#9646;&#9646; Pause':'&#9654; Play'; b.classList.toggle('on',s3.on);
-  $('s3stat').textContent=s3.on?'ROS master \xb7 live':'ROS master \xb7 paused';
-  if(s3.on){s3.last=null; s3.raf=requestAnimationFrame(s3Loop);}else cancelAnimationFrame(s3.raf);
-}
-function s3Reset(){
-  s3.on=false; s3.t=0; s3.last=null; s3.aA=0; s3.aT=0; s3.aR=0; s3.aRT=0; s3.rX=90; s3.rD=1;
-  cancelAnimationFrame(s3.raf); $('s3pb').innerHTML='&#9654; Play'; $('s3pb').classList.remove('on');
-  $('s3stat').textContent='ROS master \xb7 ready';
-  s3TL(); s3Cap(); s3DrawScene(0); s3DrawEVS(0); s3DrawTCP(0); s3DrawROS(0);
-}
-function s3Seek(e){const r=e.currentTarget.getBoundingClientRect(); s3.t=(e.clientX-r.left)/r.width*s3.max; s3TL(); s3Cap(); s3DrawScene(0); s3DrawEVS(0); s3DrawTCP(0); s3DrawROS(0);}
+  drawGateChart(true);
 
-/* ─────────────────────────────────────────
-   NAV SCROLL HIGHLIGHT
-───────────────────────────────────────── */
-const snavItems=document.querySelectorAll('.snav-item');
-const secs=['s1','s2','s3','arch','s5'].map(id=>$(id));
-window.addEventListener('scroll',()=>{
-  let cur='s1'; secs.forEach(s=>{if(s&&window.scrollY>=s.offsetTop-100)cur=s.id;});
-  snavItems.forEach(b=>b.classList.toggle('active',b.getAttribute('href')==='#'+cur));
-},{passive:true});
-
-/* ─────────────────────────────────────────
-   INIT — delay 300ms to guarantee layout
-───────────────────────────────────────── */
-window.addEventListener('load',()=>{
-  setTimeout(()=>{
-    s1Init(); s1Cap();
-    s2Init(); s2Cap();
-    s3Init(); s3Cap();
-  }, 300);
-});
-window.addEventListener('resize',()=>{
-  clearTimeout(window._rzTimer);
-  window._rzTimer=setTimeout(()=>{
-    s1Init(); s1Draw(0);
-    s2Init(); s2Draw(0);
-    s3Init(); s3DrawScene(0); s3DrawEVS(0); s3DrawTCP(0); s3DrawROS(0);
-  },200);
-},{passive:true});
-
-/* ─────────────────────────────────────────
-   SECTION 5 — NEUROFUSION DASHBOARD
-───────────────────────────────────────── */
-(function(){
-  const nfObjs=[
-    {id:'VEH',dist:12,ang:-.6,spd:.004,w:28,h:18,conf:.96,phase:0},
-    {id:'VEH',dist:18,ang:.45,spd:-.003,w:28,h:18,conf:.93,phase:.7},
-    {id:'VEH',dist:8,ang:-1.2,spd:.006,w:26,h:16,conf:.98,phase:1.4},
-    {id:'PED',dist:10,ang:.9,spd:.008,w:12,h:20,conf:.89,phase:2.1},
-    {id:'PED',dist:18,ang:-.3,spd:-.005,w:12,h:20,conf:.94,phase:2.8},
-    {id:'PED',dist:14,ang:1.8,spd:.007,w:12,h:20,conf:.91,phase:3.5},
-    {id:'CYCL',dist:22,ang:.15,spd:-.004,w:16,h:14,conf:.87,phase:4.2},
-    {id:'VEH',dist:28,ang:-.05,spd:.002,w:30,h:18,conf:.95,phase:4.9},
-  ];
-  nfObjs.forEach(o=>o.baseAng=o.ang);
-
-  let nfC=null,nfCtx=null,nfW=0,nfH=0;
-  let nfView='bev',nfTick=0,nfStart=Date.now();
-  let nfEvsPts=Array.from({length:250},nfNewEVSPt);
-  let nfSnnRows=Array.from({length:14},(_,i)=>({y:i,ev:[]}));
-  let nfRaf=null;
-
-  function nfNewEVSPt(){return{x:Math.random(),y:Math.random(),vx:(Math.random()-.5)*.004,vy:(Math.random()-.5)*.004,life:Math.random(),pol:Math.random()>.5};}
-
-  function nfResize(){
-    if(!nfC) return;
-    nfW=nfC.offsetWidth; nfH=nfC.offsetHeight;
-    nfC.width=nfW; nfC.height=nfH;
-  }
-
-  function nfM2px(m){return m/60*Math.min(nfW,nfH);}
-
-  function nfDrawBEV(){
-    const ctx=nfCtx,W=nfW,H=nfH,cx=W/2,cy=H/2+H*.12;
-    ctx.fillStyle='#0b0e12'; ctx.fillRect(0,0,W,H);
-    // Grid
-    const gs=nfM2px(10);
-    ctx.strokeStyle='rgba(0,229,160,.04)'; ctx.lineWidth=.5;
-    for(let x=cx%gs;x<W;x+=gs){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
-    for(let y=cy%gs;y<H;y+=gs){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
-    // Range rings
-    [10,20,30,40].forEach(r=>{
-      const rpx=nfM2px(r);
-      ctx.strokeStyle='rgba(0,229,160,.08)'; ctx.lineWidth=.6; ctx.setLineDash([4,6]);
-      ctx.beginPath(); ctx.arc(cx,cy,rpx,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]);
-      ctx.fillStyle='rgba(0,229,160,.28)'; ctx.font='9px JetBrains Mono,monospace';
-      ctx.fillText(r+'m',cx+rpx+4,cy-3);
+  /* Track 1: Atomic-65 success curve */
+  (function(){
+    var svg = document.getElementById('atomicChart');
+    var W = 900, H = 260, PADL = 50, PADR = 20, PADT = 20, PADB = 40;
+    var steps = [25000, 33000, 41000, 49000, 57000, 65000, 75000, 86000];
+    var overall = [1, 1, 0.5, 1.5, 2, 4, 8, 11];
+    var cfd = [18, 8, 2, 15, 20, 30, 70, 80];
+    var maxY = 80;
+    function X(i){ return PADL + (i/(steps.length-1)) * (W - PADL - PADR); }
+    function Y(v){ return H - PADB - (v/maxY) * (H - PADT - PADB); }
+    var s = '';
+    [0,20,40,60,80].forEach(function(v){
+      var y = Y(v);
+      s += '<line x1="'+PADL+'" y1="'+y+'" x2="'+(W-PADR)+'" y2="'+y+'" stroke="#20233f" stroke-dasharray="2 4"/>';
+      s += '<text x="'+(PADL-10)+'" y="'+(y+4)+'" font-size="11" fill="#7868a0" text-anchor="end">'+v+'%</text>';
     });
-    // FOV
-    const fovA=Math.PI*.55;
-    ctx.fillStyle='rgba(0,229,160,.022)';
-    ctx.beginPath(); ctx.moveTo(cx,cy);
-    ctx.arc(cx,cy,nfM2px(42),-Math.PI/2-fovA/2,-Math.PI/2+fovA/2);
-    ctx.closePath(); ctx.fill();
-    // Scan line
-    const scanA=-Math.PI/2+Math.sin(nfTick*.015)*fovA/2;
-    ctx.strokeStyle='rgba(0,229,160,.2)'; ctx.lineWidth=1.2; ctx.setLineDash([]);
-    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+Math.cos(scanA)*nfM2px(42),cy+Math.sin(scanA)*nfM2px(42)); ctx.stroke();
-    // Objects
-    nfObjs.forEach(o=>{
-      o.ang=o.baseAng+Math.sin(nfTick*.008+o.phase)*.07;
-      const rpx=nfM2px(o.dist);
-      const ox=cx+Math.cos(o.ang-Math.PI/2)*rpx;
-      const oy=cy+Math.sin(o.ang-Math.PI/2)*rpx;
-      const sc=Math.max(.4,1-o.dist/55);
-      const bw=o.w*sc,bh=o.h*sc;
-      ctx.save(); ctx.shadowColor='#00e5a0'; ctx.shadowBlur=6;
-      ctx.strokeStyle='#00e5a0'; ctx.lineWidth=.9; ctx.strokeRect(ox-bw/2,oy-bh/2,bw,bh);
-      ctx.restore();
-      ctx.fillStyle='rgba(0,229,160,.08)'; ctx.fillRect(ox-bw/2,oy-bh/2,bw,bh);
-      ctx.fillStyle='rgba(0,229,160,.3)'; ctx.fillRect(ox-bw/2,oy+bh/2-2,bw,2);
-      const cv=Math.min(.99,o.conf+Math.sin(nfTick*.03+o.phase)*.012);
-      ctx.fillStyle='#00e5a0'; ctx.fillRect(ox-bw/2,oy+bh/2-2,bw*cv,2);
-      ctx.fillStyle='#00e5a0'; ctx.font=(Math.max(7,9*sc))+'px JetBrains Mono,monospace';
-      ctx.fillText(o.id+' '+o.dist+'m',ox-bw/2,oy-bh/2-3);
-      ctx.strokeStyle='rgba(0,229,160,.4)'; ctx.lineWidth=.7; ctx.setLineDash([2,3]);
-      ctx.beginPath(); ctx.moveTo(ox,oy); ctx.lineTo(ox+Math.cos(o.ang-Math.PI/2)*8*sc,oy+Math.sin(o.ang-Math.PI/2)*8*sc); ctx.stroke(); ctx.setLineDash([]);
-    });
-    // EGO
-    const ew=18,eh=28;
-    ctx.fillStyle='#0b0e12'; ctx.fillRect(cx-ew/2,cy-eh/2,ew,eh);
-    ctx.strokeStyle='#00e5a0'; ctx.lineWidth=1.5; ctx.strokeRect(cx-ew/2,cy-eh/2,ew,eh);
-    ctx.fillStyle='#00e5a0'; ctx.font='8px JetBrains Mono,monospace'; ctx.textAlign='center';
-    ctx.fillText('EGO',cx,cy+4); ctx.textAlign='left';
-  }
-
-  function nfDrawEVS(){
-    nfCtx.fillStyle='rgba(11,14,18,.38)'; nfCtx.fillRect(0,0,nfW,nfH);
-    nfEvsPts.forEach(p=>{
-      p.x+=p.vx; p.y+=p.vy; p.life-=.008;
-      if(p.life<=0||p.x<0||p.x>1||p.y<0||p.y>1) Object.assign(p,nfNewEVSPt());
-      const a=p.life*.8;
-      nfCtx.fillStyle=p.pol?'rgba(0,229,160,'+a+')':'rgba(33,150,243,'+a+')';
-      nfCtx.fillRect(p.x*nfW,p.y*nfH,1.5,1.5);
-    });
-    if(Math.random()<.3){const p=nfNewEVSPt();p.life=.9;nfEvsPts.push(p);if(nfEvsPts.length>320)nfEvsPts.shift();}
-    nfCtx.fillStyle='rgba(0,229,160,.4)'; nfCtx.font='9px JetBrains Mono,monospace';
-    nfCtx.fillText('ON events',8,nfH-22); nfCtx.fillStyle='rgba(33,150,243,.4)'; nfCtx.fillText('OFF events',82,nfH-22);
-  }
-
-  function nfDrawSpikes(){
-    nfCtx.fillStyle='rgba(11,14,18,.38)'; nfCtx.fillRect(0,0,nfW,nfH);
-    const rowH=nfH/nfSnnRows.length;
-    nfSnnRows.forEach((row,i)=>{
-      const y=i*rowH+rowH/2;
-      nfCtx.strokeStyle='rgba(255,255,255,.03)'; nfCtx.lineWidth=.4;
-      nfCtx.beginPath(); nfCtx.moveTo(56,y); nfCtx.lineTo(nfW,y); nfCtx.stroke();
-      if(Math.random()<(.07+i*.007)) row.ev.push({x:nfW,age:0});
-      row.ev.forEach(e=>{e.x-=1.6; e.age++;});
-      row.ev=row.ev.filter(e=>e.x>56&&e.age<200);
-      row.ev.forEach(e=>{
-        const a=Math.max(0,1-e.age/200);
-        nfCtx.save(); nfCtx.globalAlpha=a; nfCtx.strokeStyle='#00e5a0';
-        nfCtx.lineWidth=1.1; nfCtx.shadowColor='#00e5a0'; nfCtx.shadowBlur=4;
-        nfCtx.beginPath(); nfCtx.moveTo(e.x,y-5); nfCtx.lineTo(e.x,y+5); nfCtx.stroke();
-        nfCtx.restore();
-      });
-      nfCtx.fillStyle='rgba(0,229,160,.38)'; nfCtx.font='8px JetBrains Mono,monospace';
-      nfCtx.fillText(['EVS in','EVS in','LiDAR','LiDAR','IMU','IMU','L1 fuse','L1 fuse','L2 fuse','L2 fuse','L3 fuse','L3 TCP','L4 out','SNN out'][i]||'',2,y+3);
-    });
-  }
-
-  function nfUpdateBars(){
-    const bars=[
-      {id:'nfbar0',min:60,max:100,col:'#00e5a0',ph:0},
-      {id:'nfbar1',min:50,max:90,col:'#2196f3',ph:.7},
-      {id:'nfbar2',min:70,max:95,col:'#f0a800',ph:1.4},
-      {id:'nfbar3',min:80,max:100,col:'#00e5a0',ph:2.1},
-    ];
-    bars.forEach(b=>{
-      const el=document.getElementById(b.id); if(!el) return;
-      const pct=b.min+(Math.sin(nfTick*.022+b.ph)*.5+.5)*(b.max-b.min);
-      el.style.width=Math.round(pct)+'%';
-    });
-  }
-
-  function nfUpdateMetrics(){
-    const lat=(2.1+Math.sin(nfTick*.04)*.05).toFixed(2);
-    const hz=Math.round(848+Math.sin(nfTick*.03)*4);
-    const conf=(98.2+Math.sin(nfTick*.05)*.4).toFixed(1);
-    const spk=(1.4+Math.sin(nfTick*.02)*.05).toFixed(1);
-    const pw=(2.1+Math.sin(nfTick*.025)*.08).toFixed(1);
-    const el=id=>document.getElementById(id);
-    if(el('nf-lat')) el('nf-lat').textContent=lat+'ms';
-    if(el('nf-hz')) el('nf-hz').textContent=hz+'Hz';
-    if(el('nf-conf')) el('nf-conf').textContent=conf+'%';
-    if(el('nf-spk')) el('nf-spk').textContent=spk+'M';
-    if(el('nf-spikerate')) el('nf-spikerate').textContent=spk+'MHz';
-    if(el('nf-pwr')) el('nf-pwr').textContent='\u21b7 '+pw+'mW';
-    const elapsed=Math.floor((Date.now()-nfStart)/1000);
-    const h=String(Math.floor(elapsed/3600)).padStart(2,'0');
-    const m=String(Math.floor((elapsed%3600)/60)).padStart(2,'0');
-    const s=String(elapsed%60).padStart(2,'0');
-    if(el('nf-clock')) el('nf-clock').textContent=h+':'+m+':'+s;
-  }
-
-  function nfLoop(){
-    nfTick++;
-    if(nfView==='bev') nfDrawBEV();
-    else if(nfView==='evs') nfDrawEVS();
-    else nfDrawSpikes();
-    nfUpdateBars();
-    if(nfTick%4===0) nfUpdateMetrics();
-    nfRaf=requestAnimationFrame(nfLoop);
-  }
-
-  window.nfSetView=function(v,btn){
-    nfView=v;
-    document.querySelectorAll('.nf-vbtn').forEach(b=>b.classList.remove('on'));
-    btn.classList.add('on');
-  };
-  window.nfSetStream=function(i,el){
-    document.querySelectorAll('.nf-sc').forEach(c=>c.classList.remove('active'));
-    el.classList.add('active');
-  };
-
-  // Use IntersectionObserver to start when visible
-  function nfInit(){
-    nfC=document.getElementById('nfCanvas');
-    if(!nfC) return;
-    nfCtx=nfC.getContext('2d');
-    nfResize();
-    // Start loop
-    if(nfRaf) cancelAnimationFrame(nfRaf);
-    nfLoop();
-    window.addEventListener('resize',()=>{clearTimeout(window._nfRzT);window._nfRzT=setTimeout(nfResize,150);},{passive:true});
-  }
-
-  // Init via IntersectionObserver so it starts when scrolled into view
-  window.addEventListener('load',()=>{
-    setTimeout(()=>{
-      const target=document.getElementById('s5');
-      if(!target){setTimeout(nfInit,500);return;}
-      const obs=new IntersectionObserver(entries=>{
-        if(entries[0].isIntersecting && !nfRaf){nfInit();}
-      },{threshold:.1});
-      obs.observe(target);
-    },400);
-  });
-})();
-
+    s += '<text x="'+PADL+'" y="'+(H-12)+'" font-size="10.5" fill="#7868a0">step 25,000</text>';
+    s += '<text x="'+(W-PADR)+'" y="'+(H-12)+'" font-size="10.5" fill="#7868a0" text-anchor="end">step 86,000</text>';
+    var cfdPath = cfd.map(function(v,i){ return (i===0?'M':'L') + X(i).toFixed(1) + ' ' + Y(v).toFixed(1); }).join(' ');
+    var ovPath = overall.map(function(v,i){ return (i===0?'M':'L') + X(i).toFixed(1) + ' ' + Y(v).toFixed(1); }).join(' ');
+    s += '<path d="'+cfdPath+'" fill="none" stroke="#8a90b8" stroke-width="1.6" stroke-dasharray="4 3"/>';
+    cfd.forEach(function(v,i){ s += '<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(v).toFixed(1)+'" r="2.6" fill="#8a90b8"/>'; });
+    s += '<path d="'+ovPath+'" fill="none" stroke="#ff8e6b" stroke-width="2.6"/>';
+    overall.forEach(function(v,i){ s += '<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(v).toFixed(1)+'" r="3.2" fill="#ff8e6b"/>'; });
+    s += '<circle cx="'+X(overall.length-1).toFixed(1)+'" cy="'+Y(overall[overall.length-1]).toFixed(1)+'" r="5" fill="none" stroke="#ff8e6b" stroke-width="1.5"/>';
+    // legend
+    s += '<rect x="'+PADL+'" y="2" width="14" height="3" fill="#ff8e6b"/><text x="'+(PADL+20)+'" y="8" font-size="10.5" fill="#b8a4d4">overall success rate</text>';
+    s += '<rect x="'+(PADL+180)+'" y="2" width="14" height="3" fill="#8a90b8"/><text x="'+(PADL+200)+'" y="8" font-size="10.5" fill="#b8a4d4">CloseFridgeDrawer (best single task)</text>';
+    svg.innerHTML = s;
+  })();
 </script>
+
 </body>
 </html>
