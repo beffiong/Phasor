@@ -221,7 +221,7 @@
     <div><span class="sw" style="background:#f5dba8"></span>timing &mdash; HGRN</div>
     <div><span class="sw" style="background:#b8a4d4"></span>the senses it reads</div>
   </div>
-  <div class="hero-hint"><span class="dot"></span>drag to look inside &middot; scroll to keep reading</div>
+  <div class="hero-hint"><span class="dot"></span>drag to look inside (2 fingers on mobile) &middot; scroll to keep reading</div>
 </div>
 
 <section class="exp">
@@ -319,29 +319,19 @@
   </div>
   <div class="ev-caveat">Caveat carried through this whole report: the 11.0% figure is on the 65-task Atomic split at a 10-rollout budget, not yet the official 50-rollout Composite-Unseen protocol the 9.0% reference is measured on &mdash; a real number, not yet a like-for-like &ldquo;beat&rdquo; claim.</div>
 
-  <!-- Foundation / architecture -->
+  <!-- Mini demo: furniture-themed robot -->
   <div class="ev-track">
     <div class="ev-track-head">
       <div>
-        <div class="ev-track-tag">Foundation</div>
-        <div class="ev-track-title">Architecture</div>
-        <div class="ev-track-desc">Three camera views, language, and proprioception flow through a shared encoder and memory core into an action head &mdash; the spine every track below modifies one piece of.</div>
+        <div class="ev-track-tag">Mini demo</div>
+        <div class="ev-track-title">What the task actually looks like</div>
+        <div class="ev-track-desc">A stylized illustration of <code style="font-family:var(--fm);color:var(--org)">CloseFridgeDrawer</code> &mdash; the task the Track&nbsp;1 numbers below were measured on.</div>
       </div>
-      <span class="ev-badge">Merged</span>
+      <span class="ev-badge" style="border-color:rgba(184,164,212,.4);color:var(--wb);background:rgba(184,164,212,.08)">Illustration, not footage</span>
     </div>
     <div class="ev-body">
-      <div class="pipeline2">
-        <div class="pl-step"><div class="t">3&times; camera view + language + proprio</div><div class="s">RoboCasa observation</div></div>
-        <div class="pl-arrow">&#8594;</div>
-        <div class="pl-step hl"><div class="t">RoboCasaEncoder</div><div class="s">CLIP ViT-B/32<br/>(LoRA-adapted on branch)</div></div>
-        <div class="pl-arrow">&#8594;</div>
-        <div class="pl-step"><div class="t">MemoryCore</div><div class="s">Hopfield + HGRN<br/>+ adaptive gate</div></div>
-        <div class="pl-arrow">&#8594;</div>
-        <div class="pl-step hl"><div class="t">ActionHead</div><div class="s">flow-matching,<br/>10-step Euler sampler</div></div>
-        <div class="pl-arrow">&#8594;</div>
-        <div class="pl-step"><div class="t">action (12-dim)</div><div class="s">executed in sim</div></div>
-      </div>
-      <p class="ev-text">Encoder-swap integration, the LeRobot-format data pipeline, and the zero-shot eval harness (PRs #1&ndash;#3) were the foundation everything else builds on &mdash; all merged before any of the tracks below started.</p>
+      <svg id="furnitureDemo" viewBox="0 0 900 300" width="100%"></svg>
+      <p class="ev-text" style="margin-top:14px">This is a drawing, not a recording &mdash; it exists to make the task legible to a reader who's never opened RoboCasa. The Track 1 chart below is the real one, built from logged evaluation rollouts.</p>
     </div>
   </div>
 
@@ -440,6 +430,13 @@ controls.autoRotateSpeed = 0.55;
 controls.enablePan = false;
 controls.minDistance = 5;
 controls.maxDistance = 14;
+// OrbitControls captures wheel (for zoom/dolly) and single-finger touch (for
+// rotate) on its DOM element by default, and both call preventDefault — which
+// was blocking normal page scroll anywhere over the hero canvas. Disable zoom
+// so the wheel is left alone, and free up one-finger touch for native
+// scrolling; two fingers still rotates the scene for anyone who wants to look.
+controls.enableZoom = false;
+controls.touches = { ONE: null, TWO: THREE.TOUCH.DOLLY_ROTATE };
 controls.update();
 
 function resize(){
@@ -721,6 +718,101 @@ drawGateChart(true);
   s += '<rect x="'+APADL+'" y="2" width="14" height="3" fill="#ff8e6b"/><text x="'+(APADL+20)+'" y="8" font-size="10.5" fill="#b8a4d4">overall success rate</text>';
   s += '<rect x="'+(APADL+180)+'" y="2" width="14" height="3" fill="#8a90b8"/><text x="'+(APADL+200)+'" y="8" font-size="10.5" fill="#b8a4d4">CloseFridgeDrawer (best single task)</text>';
   svgA.innerHTML = s;
+})();
+
+/* Mini demo: furniture-themed robot opening/closing a drawer */
+(function(){
+  const svg = document.getElementById('furnitureDemo');
+  const NS = 'http://www.w3.org/2000/svg';
+  function el(tag, attrs){
+    const e = document.createElementNS(NS, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+
+  // static scene: floor, cabinet, robot base
+  svg.appendChild(el('line', { x1:20, y1:265, x2:880, y2:265, stroke:'#20233f', 'stroke-width':1.5 }));
+  svg.appendChild(el('rect', { x:520, y:60, width:260, height:205, rx:8, fill:'none', stroke:'#4a4f7a', 'stroke-width':2 }));
+  svg.appendChild(el('line', { x1:520, y1:120, x2:780, y2:120, stroke:'#4a4f7a', 'stroke-width':1.5 }));
+  svg.appendChild(el('rect', { x:130, y:255, width:70, height:12, rx:4, fill:'#1a1d3f', stroke:'#4a4f7a' }));
+
+  // drawer group — translates on x to open/close
+  const drawerGroup = el('g', {});
+  const drawerBody = el('rect', { x:540, y:135, width:220, height:110, rx:6, fill:'rgba(37,41,82,.92)', stroke:'#b8a4d4', 'stroke-width':1.5 });
+  const handle = el('line', { x1:600, y1:190, x2:700, y2:190, stroke:'#f5dba8', 'stroke-width':5, 'stroke-linecap':'round' });
+  drawerGroup.appendChild(drawerBody);
+  drawerGroup.appendChild(handle);
+  svg.appendChild(drawerGroup);
+
+  // robot arm parts (positions set every frame)
+  const base = el('circle', { cx:165, cy:260, r:15, fill:'#1a1d3f', stroke:'#ff8e6b', 'stroke-width':2.5 });
+  const upperArm = el('line', { stroke:'#ff8e6b', 'stroke-width':6, 'stroke-linecap':'round' });
+  const elbow = el('circle', { r:7, fill:'#0a0d24', stroke:'#f5dba8', 'stroke-width':2.5 });
+  const forearm = el('line', { stroke:'#f5dba8', 'stroke-width':5, 'stroke-linecap':'round' });
+  const wrist = el('circle', { r:5, fill:'#0a0d24', stroke:'#b8a4d4', 'stroke-width':2 });
+  const fingerA = el('line', { stroke:'#b8a4d4', 'stroke-width':4, 'stroke-linecap':'round' });
+  const fingerB = el('line', { stroke:'#b8a4d4', 'stroke-width':4, 'stroke-linecap':'round' });
+  [upperArm, elbow, forearm, wrist, fingerA, fingerB].forEach(n => svg.appendChild(n));
+  svg.appendChild(base); // keep base under joints visually but drawn first is fine here
+
+  const BX = 165, BY = 260;
+  const L1 = 130, L2 = 130;
+
+  // hand-authored keyframes: shoulder / elbow angles (deg, 0=+x, ccw positive),
+  // gripper openness (0=open .. 1=closed), drawer x offset (px, negative = pulled toward robot)
+  const phases = [
+    { shoulder: -35, elbow: 130, grip: 0, drawerX: 0,   dur: 900  }, // idle, tucked
+    { shoulder:  16, elbow:  36, grip: 0, drawerX: 0,   dur: 1000 }, // reach to handle
+    { shoulder:  16, elbow:  36, grip: 1, drawerX: 0,   dur: 300  }, // grip
+    { shoulder: -18, elbow:  62, grip: 1, drawerX: -95, dur: 1100 }, // pull open
+    { shoulder: -18, elbow:  62, grip: 1, drawerX: -95, dur: 900  }, // hold open
+    { shoulder:  16, elbow:  36, grip: 1, drawerX: 0,   dur: 1100 }, // push closed
+    { shoulder:  16, elbow:  36, grip: 0, drawerX: 0,   dur: 300  }, // release
+    { shoulder: -35, elbow: 130, grip: 0, drawerX: 0,   dur: 900  }, // retract
+  ];
+  const totalDur = phases.reduce((a,p) => a + p.dur, 0);
+
+  function easeInOut(t){ return t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t+2, 2)/2; }
+  function lerp(a,b,t){ return a + (b-a)*t; }
+
+  const start = performance.now();
+  function frame(now){
+    let t = (now - start) % totalDur;
+    let i = 0;
+    while (t > phases[i].dur){ t -= phases[i].dur; i++; }
+    const cur = phases[i];
+    const prev = phases[(i - 1 + phases.length) % phases.length];
+    const e = easeInOut(Math.min(t / cur.dur, 1));
+
+    const shoulder = lerp(prev.shoulder, cur.shoulder, e);
+    const elbowDeg  = lerp(prev.elbow, cur.elbow, e);
+    const grip      = lerp(prev.grip, cur.grip, e);
+    const drawerX   = lerp(prev.drawerX, cur.drawerX, e);
+
+    const ex = BX + L1 * Math.cos(shoulder * Math.PI/180);
+    const ey = BY - L1 * Math.sin(shoulder * Math.PI/180);
+    const wx = ex + L2 * Math.cos(elbowDeg * Math.PI/180);
+    const wy = ey - L2 * Math.sin(elbowDeg * Math.PI/180);
+
+    upperArm.setAttribute('x1', BX); upperArm.setAttribute('y1', BY);
+    upperArm.setAttribute('x2', ex); upperArm.setAttribute('y2', ey);
+    elbow.setAttribute('cx', ex); elbow.setAttribute('cy', ey);
+    forearm.setAttribute('x1', ex); forearm.setAttribute('y1', ey);
+    forearm.setAttribute('x2', wx); forearm.setAttribute('y2', wy);
+    wrist.setAttribute('cx', wx); wrist.setAttribute('cy', wy);
+
+    const spread = 12 * (1 - grip) + 3;
+    const perpX = -Math.sin(elbowDeg * Math.PI/180), perpY = -Math.cos(elbowDeg * Math.PI/180);
+    fingerA.setAttribute('x1', wx); fingerA.setAttribute('y1', wy);
+    fingerA.setAttribute('x2', wx + perpX*spread + 14); fingerA.setAttribute('y2', wy + perpY*spread);
+    fingerB.setAttribute('x1', wx); fingerB.setAttribute('y1', wy);
+    fingerB.setAttribute('x2', wx - perpX*spread + 14); fingerB.setAttribute('y2', wy - perpY*spread);
+
+    drawerGroup.setAttribute('transform', 'translate(' + drawerX + ',0)');
+
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
 })();
 </script>
 
