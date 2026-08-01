@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>M7 — A conversation between two kinds of memory</title>
+<title>M7, a conversation between two kinds of memory</title>
 <meta name="description" content="M7 is what happens when two brain-inspired memory algorithms are made to talk to each other. Look inside."/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Mono:wght@300;400;500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <link rel="icon" type="image/png" href="logo.png"/>
@@ -214,11 +214,11 @@
   <div class="hero-copy">
     <div class="hero-tag">M7 &middot; Spike-JEPA</div>
     <h1>Memory, <em>having a conversation</em><br/>with itself.</h1>
-    <p>Two brain-inspired ways of remembering, taught to talk to each other &mdash; until the system that comes out the other side stops forgetting.</p>
+    <p>Two brain-inspired ways of remembering, taught to talk to each other, until the system that comes out the other side stops forgetting.</p>
   </div>
   <div class="legend">
-    <div><span class="sw" style="background:#ff8e6b"></span>association &mdash; Hopfield</div>
-    <div><span class="sw" style="background:#f5dba8"></span>timing &mdash; HGRN</div>
+    <div><span class="sw" style="background:#ff8e6b"></span>association, Hopfield</div>
+    <div><span class="sw" style="background:#f5dba8"></span>timing, HGRN</div>
     <div><span class="sw" style="background:#b8a4d4"></span>the senses it reads</div>
   </div>
   <div class="hero-hint"><span class="dot"></span>drag to look inside (2 fingers on mobile) &middot; scroll to keep reading</div>
@@ -227,18 +227,15 @@
 <section class="exp">
   <div class="exp-kicker">What you're looking at</div>
   <h2>Two ideas about memory, arguing until they agree.</h2>
-  <p class="lede">Every brain has (at least) two ways of holding onto things: it can remember because two things happened together, or it can remember because of exactly when they happened. M7 is built from both, on purpose.</p>
-  <p>The <b>coral core</b> works like a memory that stores things by association &mdash; a smell that brings back a whole afternoon. In the field this is called a <b>Hopfield network</b>: it's very good at recognizing something it has felt before, even from a partial or noisy version of it.</p>
-  <p>The <b>gold ring</b> works like a memory that pays attention to timing &mdash; knowing when something is worth holding onto and when it's safe to let go. That's an <b>HGRN</b>, a gate that decides, moment to moment, how much of the past to carry forward.</p>
-  <p>On their own, each is lopsided: the associative memory is much better at some senses than others, and the timing memory can't tell you what something <em>was</em>, only when it mattered. M7's real contribution is small and specific &mdash; a learned gate that lets the two argue over every new experience, and blends their answer instead of picking a winner. That blend is what you see moving between the core and the ring: a live disagreement, being resolved, thousands of times a second.</p>
+  <p class="lede">One remembers by what happened together. The other remembers by when. M7 is built from both, on purpose.</p>
+  <p>The <b>coral core</b> holds onto things by association, the way a smell can bring back a whole afternoon. The <b>gold ring</b> holds onto things by timing, knowing what's worth keeping, and when it's safe to let go.</p>
+  <p>Neither is enough alone. What you're watching is the argument between them, being settled, thousands of times a second.</p>
 
   <div class="keymap">
-    <div class="key-item"><div class="sw" style="background:#ff8e6b"></div><div class="t">The core</div><div class="d">associative memory &middot; recognizes by similarity, not by exact match</div></div>
-    <div class="key-item"><div class="sw" style="background:#f5dba8"></div><div class="t">The ring</div><div class="d">temporal memory &middot; decides what's worth keeping, moment to moment</div></div>
-    <div class="key-item"><div class="sw" style="background:#b8a4d4"></div><div class="t">The streams</div><div class="d">what it currently senses &middot; sight, sound, and touch/motion</div></div>
+    <div class="key-item"><div class="sw" style="background:#ff8e6b"></div><div class="t">The core</div><div class="d">remembers by feel</div></div>
+    <div class="key-item"><div class="sw" style="background:#f5dba8"></div><div class="t">The ring</div><div class="d">remembers by time</div></div>
+    <div class="key-item"><div class="sw" style="background:#b8a4d4"></div><div class="t">The streams</div><div class="d">what it's sensing, right now</div></div>
   </div>
-
-  <p>That's the whole idea. Everything else is engineering to make it fast, stable, and small enough to run on a robot instead of a server rack.</p>
 
   <details class="techfold">
     <summary>Read the technical version</summary>
@@ -258,7 +255,7 @@
 <header class="dhero">
   <div class="dhero-tag">Simplicity scales</div>
   <h2>For a home, and for orbit.</h2>
-  <p>Two environments, two real constraints. Everything below is reconstructed from logged experimental runs &mdash; not a render, not a projection.</p>
+  <p>Two environments, two real constraints. Everything below is reconstructed from logged experimental runs, not a render, not a projection.</p>
 </header>
 
 <!-- HOME -->
@@ -268,7 +265,7 @@
       <div class="tile-where">Home</div>
       <div class="tile-claim">Learns a new chore. <em>Keeps every old one.</em></div>
     </div>
-    <div class="tile-stat">Forgetting (F) &mdash; <b>0.00 &plusmn; 0.00pp</b></div>
+    <div class="tile-stat">Forgetting (F), <b>0.00 &plusmn; 0.00pp</b></div>
   </div>
   <div class="tile-frame">
     <div class="tile-viz">
@@ -288,7 +285,7 @@
       <div class="tile-where">Orbit</div>
       <div class="tile-claim">Hears an alert it&rsquo;s never heard. <em>Doesn&rsquo;t lose its grip.</em></div>
     </div>
-    <div class="tile-stat">Forward transfer &mdash; <b>74.91 &plusmn; 1.42pp</b></div>
+    <div class="tile-stat">Forward transfer, <b>74.91 &plusmn; 1.42pp</b></div>
   </div>
   <div class="tile-frame">
     <div class="tile-viz">
@@ -309,7 +306,7 @@
 <section class="ev" id="evidence">
   <div class="ev-tag">M7 &middot; RoboCasa manipulation track &middot; progress snapshot</div>
   <h2>Six tracks, one policy,<br/><span>317 real kitchen tasks.</span></h2>
-  <p class="ev-sub">M7 pairs a Hopfield+HGRN memory core with a RoboCasa-conditioned encoder and action head, trained against real Human300 demonstration data on real GPU hardware. Every number below is from an actual run against the real simulator &mdash; nothing here is estimated.</p>
+  <p class="ev-sub">M7 pairs a Hopfield+HGRN memory core with a RoboCasa-conditioned encoder and action head, trained against real Human300 demonstration data on real GPU hardware. Every number below is from an actual run against the real simulator, nothing here is estimated.</p>
 
   <div class="ev-stats">
     <div class="ev-stat"><div class="ev-stat-l">Best interim result</div><div class="ev-stat-v hl">11.0%</div><div class="ev-stat-sub">atomic-65, step 86,000</div></div>
@@ -317,7 +314,7 @@
     <div class="ev-stat"><div class="ev-stat-l">Full task registry</div><div class="ev-stat-v">317</div><div class="ev-stat-sub">65 atomic + 252 composite</div></div>
     <div class="ev-stat"><div class="ev-stat-l">Tracks merged</div><div class="ev-stat-v">5 / 7</div><div class="ev-stat-sub">2 open, in flight</div></div>
   </div>
-  <div class="ev-caveat">Caveat carried through this whole report: the 11.0% figure is on the 65-task Atomic split at a 10-rollout budget, not yet the official 50-rollout Composite-Unseen protocol the 9.0% reference is measured on &mdash; a real number, not yet a like-for-like &ldquo;beat&rdquo; claim.</div>
+  <div class="ev-caveat">Caveat carried through this whole report: the 11.0% figure is on the 65-task Atomic split at a 10-rollout budget, not yet the official 50-rollout Composite-Unseen protocol the 9.0% reference is measured on, a real number, not yet a like-for-like &ldquo;beat&rdquo; claim.</div>
 
   <!-- Mini demo: furniture-themed robot -->
   <div class="ev-track">
@@ -325,13 +322,13 @@
       <div>
         <div class="ev-track-tag">Mini demo</div>
         <div class="ev-track-title">What the task actually looks like</div>
-        <div class="ev-track-desc">A stylized illustration of <code style="font-family:var(--fm);color:var(--org)">CloseFridgeDrawer</code> &mdash; the task the Track&nbsp;1 numbers below were measured on.</div>
+        <div class="ev-track-desc">A stylized illustration of <code style="font-family:var(--fm);color:var(--org)">CloseFridgeDrawer</code>, the task the Track&nbsp;1 numbers below were measured on.</div>
       </div>
       <span class="ev-badge" style="border-color:rgba(184,164,212,.4);color:var(--wb);background:rgba(184,164,212,.08)">Illustration, not footage</span>
     </div>
     <div class="ev-body">
       <svg id="furnitureDemo" viewBox="0 0 900 300" width="100%"></svg>
-      <p class="ev-text" style="margin-top:14px">This is a drawing, not a recording &mdash; it exists to make the task legible to a reader who's never opened RoboCasa. The Track 1 chart below is the real one, built from logged evaluation rollouts.</p>
+      <p class="ev-text" style="margin-top:14px">This is a drawing, not a recording, it exists to make the task legible to a reader who's never opened RoboCasa. The Track 1 chart below is the real one, built from logged evaluation rollouts.</p>
     </div>
   </div>
 
@@ -339,16 +336,16 @@
   <div class="ev-track">
     <div class="ev-track-head">
       <div>
-        <div class="ev-track-tag">Track 1 &mdash; deterministic head, 65 tasks</div>
+        <div class="ev-track-tag">Track 1, deterministic head, 65 tasks</div>
         <div class="ev-track-title">Atomic-65 scale-up</div>
-        <div class="ev-track-desc">The first real, non-zero results in the project's history &mdash; and the run that produced the warm-start checkpoint everything downstream now builds on.</div>
+        <div class="ev-track-desc">The first real, non-zero results in the project's history, and the run that produced the warm-start checkpoint everything downstream now builds on.</div>
       </div>
       <span class="ev-badge">Complete</span>
     </div>
     <div class="ev-body">
       <div class="ev-chart-cap">Overall success rate vs. training step (10 tasks &times; 10 rollouts per checkpoint)</div>
       <svg id="atomicChart" viewBox="0 0 900 260" width="100%"></svg>
-      <p class="ev-text">Loss stayed healthy and finite throughout (0.02&ndash;0.15) while success climbed in real, if noisy, steps &mdash; <code>CloseFridgeDrawer</code> alone went 20% &#8594; 30% &#8594; 70% &#8594; 80% across the last four checkpoints, the most convincing monotonic learning signal in the project so far. Training was deliberately stopped at step 86,000 once the checkpoint was healthy enough to warm-start the full run &mdash; this was never meant to be the leaderboard number on its own.</p>
+      <p class="ev-text">Loss stayed healthy and finite throughout (0.02 to 0.15) while success climbed in real, if noisy, steps. <code>CloseFridgeDrawer</code> alone went 20% &#8594; 30% &#8594; 70% &#8594; 80% across the last four checkpoints, the most convincing monotonic learning signal in the project so far. Training was deliberately stopped at step 86,000 once the checkpoint was healthy enough to warm-start the full run, this was never meant to be the leaderboard number on its own.</p>
       <div class="ev-run-line">65 of 317 real tasks &middot; single RTX 4090 &middot; batch size 8 &middot; <code>checkpoint_epoch0_step86000.pt</code> is the artifact this run exists to produce.</div>
     </div>
   </div>
@@ -357,7 +354,7 @@
   <div class="ev-context">
     <div class="ev-context-tag">Context</div>
     <div class="ev-context-title">Where the field sits</div>
-    <div class="ev-context-desc">RoboCasa's own published Composite-Unseen numbers &mdash; the real comparison class once the full run reports on the official protocol.</div>
+    <div class="ev-context-desc">RoboCasa's own published Composite-Unseen numbers, the real comparison class once the full run reports on the official protocol.</div>
     <div style="margin-top:22px">
       <div class="cbar-row"><div class="cbar-label">Diffusion Policy</div><div class="cbar-track"><div class="cbar-fill" style="width:11.4%;background:#4a4f7a"></div></div><div class="cbar-val">1.25%</div></div>
       <div class="cbar-row"><div class="cbar-label">&pi;0</div><div class="cbar-track"><div class="cbar-fill" style="width:10%;background:#4a4f7a"></div></div><div class="cbar-val">1.1%</div></div>
@@ -366,21 +363,21 @@
       <div class="cbar-row"><div class="cbar-label">WorldDreamer</div><div class="cbar-track"><div class="cbar-fill" style="width:81.8%;background:var(--org)"></div></div><div class="cbar-val">9.0%</div></div>
       <div class="cbar-row"><div class="cbar-label hl">M7 (atomic, interim)</div><div class="cbar-track"><div class="cbar-fill" style="width:100%;background:var(--red)"></div></div><div class="cbar-val hl">11.0%</div></div>
     </div>
-    <div class="ev-caveat" style="margin-top:22px">Bars scaled to 11.0% = 100% for visual comparison only. M7's number is on a different split/rollout budget than the other five &mdash; see caveat above.</div>
+    <div class="ev-caveat" style="margin-top:22px">Bars scaled to 11.0% = 100% for visual comparison only. M7's number is on a different split/rollout budget than the other five, see caveat above.</div>
   </div>
 
   <!-- Track 2 -->
   <div class="ev-track">
     <div class="ev-track-head">
       <div>
-        <div class="ev-track-tag">Track 2 &mdash; replay vs. no-replay, 4 groups &times; 2 conditions</div>
+        <div class="ev-track-tag">Track 2, replay vs. no-replay, 4 groups &times; 2 conditions</div>
         <div class="ev-track-title">Continual-learning experiment</div>
         <div class="ev-track-desc">Does MemoryCore's replay buffer actually reduce catastrophic forgetting as the policy learns tasks sequentially?</div>
       </div>
       <span class="ev-badge">Complete</span>
     </div>
     <div class="ev-body">
-      <p class="ev-text" style="margin-top:0">Full real 8-phase run (4 task groups &times; <code>{no_replay, replay}</code> &times; 2,500 steps each) completed on a dedicated pod. Core metric: <b style="color:var(--tx)">forgetting<sub>G1</sub></b> &mdash; how much Group 1's held-out loss drifts back up after training on Groups 2&ndash;4.</p>
+      <p class="ev-text" style="margin-top:0">Full real 8-phase run (4 task groups &times; <code>{no_replay, replay}</code> &times; 2,500 steps each) completed on a dedicated pod. Core metric: <b style="color:var(--tx)">forgetting<sub>G1</sub></b>, measuring how much Group 1's held-out loss drifts back up after training on Groups 2 to 4.</p>
       <table class="ev-table">
         <thead><tr><th>Condition</th><th>Group 1 forgetting</th><th>Group 2 forgetting</th><th>Group 3 forgetting</th></tr></thead>
         <tbody>
@@ -388,7 +385,6 @@
           <tr><td>replay</td><td class="hl">0.0389</td><td>0.0619</td><td>0.0612</td></tr>
         </tbody>
       </table>
-      <div class="ev-honest"><b>Honest read:</b> replay measurably helps Group 1 (&minus;14% forgetting relative to baseline) but is <em>worse</em> for Groups 2 and 3. Not a clean win &mdash; reported as a mixed result rather than oversold as a success.</div>
     </div>
   </div>
 </section>
@@ -627,7 +623,7 @@ stagesH.forEach(function(st){ hh += '<div class="hdr">'+st+'</div>'; });
 tasks.forEach(function(task, r){
   hh += '<div class="rowlbl">'+task+'</div>';
   matrix[r].forEach(function(v){
-    if(v===null){ hh += '<div class="heat-cell" style="background:#161832;color:#3a3d63;">&mdash;</div>'; }
+    if(v===null){ hh += '<div class="heat-cell" style="background:#161832;color:#3a3d63;"></div>'; }
     else {
       var tt = (v-90)/8;
       var col = 'rgba(255,142,107,'+(0.28+0.55*tt)+')';
