@@ -195,6 +195,10 @@ var perm = new Uint8Array(512);
   function frame(now){
     if (!RM) requestAnimationFrame(frame);
     if (!running.p1 && !RM) return;
+    if (!RM && video.paused && video.readyState >= 2){
+      var pp = video.play();
+      if (pp && pp.catch) pp.catch(function(){});
+    }
     ctx.fillStyle = '#2B1E2E';
     ctx.fillRect(0, 0, W, H);
     if (video.readyState < 2) return;
