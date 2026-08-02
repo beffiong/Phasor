@@ -63,8 +63,10 @@
   .p1-note p{margin:0;font-family:var(--fm);font-size:.72rem;letter-spacing:.02em;line-height:1.8;color:rgba(255,255,255,.92)}
   #note1{left:26px;top:96px}
   #note2{right:26px;top:96px}
+  #note3{left:calc(50% - 185px);bottom:14%}
   @media(max-width:700px){.p1-note{left:16px !important;right:16px !important;max-width:none}
-    #note2{top:auto;bottom:24%}}
+    #note2{top:auto;bottom:24%}
+    #note3{top:38%;bottom:auto}}
   @media (prefers-reduced-motion: reduce){.p1-note{transition:none}}
 
   #p4{background:var(--ground-dark);padding:14svh 6vw 12svh;display:flex;flex-direction:column;align-items:center}
@@ -119,6 +121,10 @@
   <div class="p1-note" id="note2">
     <h2>Continual learning</h2>
     <p>The next breakthrough in physical AI is not stuffing data down a hyper-scaled transformer. It is by learning how the most efficient computer in existence learns &mdash; a.k.a. biological brains.</p>
+  </div>
+  <div class="p1-note" id="note3">
+    <h2>The Minimalist</h2>
+    <p>We built a neurocognitive model from the ground up, using neuro processes that we turned into learning algorithms. This is neuroscience turned intelligent.</p>
   </div>
 </section>
 
@@ -219,7 +225,12 @@ var perm = new Uint8Array(512);
 
   var note1 = document.getElementById('note1');
   var note2 = document.getElementById('note2');
-  var HOTS = [{fx: 0.37, fy: 0.50, note: note1}, {fx: 0.63, fy: 0.50, note: note2}];
+  var note3 = document.getElementById('note3');
+  var HOTS = [
+    {fx: 0.37, fy: 0.50, note: note1},
+    {fx: 0.63, fy: 0.50, note: note2},
+    {fx: 0.50, fy: 0.28, note: note3}
+  ];
   function updateNotes(){
     var rr = cell * 3.4;
     HOTS.forEach(function(h){
@@ -273,6 +284,7 @@ var perm = new Uint8Array(512);
     var pulse = 0.26 + 0.11 * Math.sin(now / 450);
     var h1x = HOTS[0].fx * W, h1y = HOTS[0].fy * H;
     var h2x = HOTS[1].fx * W, h2y = HOTS[1].fy * H;
+    var h3x = HOTS[2].fx * W, h3y = HOTS[2].fy * H;
     for (var j = 0; j < rows; j++){
       var y = j * rowH + hexS;
       var rowOff = (j & 1) ? cell / 2 : 0;
@@ -294,8 +306,8 @@ var perm = new Uint8Array(512);
         if (target > e) e = target;
         energy[k] = e;
         if (RM) e = 0.5;
-        var q1x = x - h1x, q1y = y - h1y, q2x = x - h2x, q2y = y - h2y;
-        if (q1x * q1x + q1y * q1y < hotR2 || q2x * q2x + q2y * q2y < hotR2) e = Math.max(e, pulse);
+        var q1x = x - h1x, q1y = y - h1y, q2x = x - h2x, q2y = y - h2y, q3x = x - h3x, q3y = y - h3y;
+        if (q1x * q1x + q1y * q1y < hotR2 || q2x * q2x + q2y * q2y < hotR2 || q3x * q3x + q3y * q3y < hotR2) e = Math.max(e, pulse);
         var under = Math.min(1, 0.42 + e * 0.5);
         ctx.fillStyle = 'rgba(' + r0 + ',' + g0 + ',' + b0 + ',' + under.toFixed(3) + ')';
         ctx.beginPath();
