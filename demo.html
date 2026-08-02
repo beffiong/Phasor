@@ -76,7 +76,7 @@
   .pt .lbl{opacity:0;transition:opacity .25s}
   .pt:hover .lbl,.pt.on .lbl{opacity:1}
   .pt circle{cursor:pointer}
-  .bars{width:100%;max-width:760px;margin-top:7svh}
+  .bars{width:100%;max-width:760px;margin-top:20px}
   .bar-row{display:grid;grid-template-columns:minmax(120px,190px) 1fr 62px;align-items:center;gap:14px;margin:9px 0}
   .bar-name{font-family:var(--fm);font-size:.68rem;color:#9BA1B4;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .bar-track{height:10px;border-radius:99px;background:rgba(223,196,158,.07);overflow:hidden}
@@ -84,6 +84,7 @@
   .bar-val{font-family:var(--fm);font-size:.7rem;color:#9BA1B4}
   .bar-row.hero .bar-name,.bar-row.hero .bar-val{color:var(--sand)}
   .bar-row.hero .bar-fill{background:var(--terracotta);box-shadow:0 0 14px rgba(217,162,84,.45)}
+  .bars-cap{font-family:var(--fm);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--sand);margin-top:7svh}
   .footnote{font-family:var(--fm);font-size:.62rem;color:#8A93A8;line-height:1.8;margin-top:7svh;max-width:640px}
   .footnote a{color:var(--sand)}
   .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
@@ -124,20 +125,22 @@
 <section class="panel full" id="p4" aria-label="Results">
   <div class="p4-head">
     <h1 class="p4-title">More from less.</h1>
-    <p class="p4-sub">13% zero-shot success on unseen composite tasks &mdash; in 82K training steps.</p>
+    <p class="p4-sub">13% zero-shot generalization from 5.2M samples &mdash; no policy on the leaderboard learns to generalize faster.</p>
   </div>
   <div id="scatterWrap">
     <svg id="scatter" viewBox="0 0 1000 620" role="img" aria-labelledby="scTitle">
-      <title id="scTitle">Scatter plot of Composite-Unseen success rate versus training steps for twelve policies</title>
+      <title id="scTitle">Scatter plot of generalization rate (percentage points per million training samples) versus total training samples for twelve policies</title>
     </svg>
   </div>
+  <div class="bars-cap">Composite-Unseen &middot; zero-shot success rate</div>
   <div class="bars" id="bars" aria-hidden="true"></div>
   <p class="footnote">RoboCasa365 leaderboard, Composite-Unseen split, retrieved 07/21/2026 &mdash;
     <a href="https://robocasa.ai/leaderboard.html">robocasa.ai/leaderboard.html</a>.
+    Training samples = training steps &times; batch size (sample presentations during training).
     Per the leaderboard&rsquo;s own note, training configurations differ across architectures and step counts are not directly comparable.</p>
   <table class="sr-only">
-    <caption>Composite-Unseen success rate and training steps by policy</caption>
-    <thead><tr><th>Policy</th><th>Composite-Unseen %</th><th>Training steps</th><th>Batch size</th></tr></thead>
+    <caption>Composite-Unseen success rate, training samples, and generalization rate by policy</caption>
+    <thead><tr><th>Policy</th><th>Composite-Unseen %</th><th>Training steps</th><th>Batch size</th><th>Training samples (M)</th><th>Rate (pp per 1M samples)</th></tr></thead>
     <tbody id="srTable"></tbody>
   </table>
 </section>
@@ -349,13 +352,16 @@ var perm = new Uint8Array(512);
     {name:'π0.5', pct:1.2, steps:75, batch:64},
     {name:'π0', pct:1.1, steps:75, batch:64}
   ];
-  function bubbleR(batch){ return 4 + 0.55 * Math.sqrt(batch); }
+  DATA.forEach(function(d){
+    d.sm = d.steps * d.batch / 1000;
+    d.rate = d.pct / d.sm;
+  });
   var svg = document.getElementById('scatter');
   var NS = 'http://www.w3.org/2000/svg';
   var L = 90, R = 960, T = 50, B = 540;
-  var LOG_MIN = Math.log(55), LOG_MAX = Math.log(700);
-  function X(steps){ return R - (Math.log(steps) - LOG_MIN) / (LOG_MAX - LOG_MIN) * (R - L); }
-  function Y(pct){ return B - (pct / 35) * (B - T); }
+  var LOG_MIN = Math.log(4), LOG_MAX = Math.log(80);
+  function X(samplesM){ return R - (Math.log(samplesM) - LOG_MIN) / (LOG_MAX - LOG_MIN) * (R - L); }
+  function Y(rate){ return B - (rate / 2.7) * (B - T); }
   function el(tag, attrs, parent){
     var e = document.createElementNS(NS, tag);
     for (var k in attrs) e.setAttribute(k, attrs[k]);
@@ -372,40 +378,34 @@ var perm = new Uint8Array(512);
     }
     return d;
   }
-  var defs = el('defs', {});
-  var glow = el('filter', {id:'ptGlow', x:'-120%', y:'-120%', width:'340%', height:'340%'}, defs);
-  el('feDropShadow', {dx:0, dy:0, stdDeviation:8, 'flood-color':'#D9A254', 'flood-opacity':0.9}, glow);
-  [5, 10, 15, 20, 25, 30].forEach(function(p){
+  [0.5, 1.0, 1.5, 2.0, 2.5].forEach(function(p){
     el('line', {x1:L, y1:Y(p), x2:R, y2:Y(p), stroke:'#DFC49E', 'stroke-opacity':0.06, 'stroke-width':1});
-    el('text', {x:L-14, y:Y(p)+4, fill:'#8A93A8', 'font-size':13, 'text-anchor':'end', 'font-family':'DM Mono, monospace'}).textContent = p + '%';
+    el('text', {x:L-14, y:Y(p)+4, fill:'#8A93A8', 'font-size':13, 'text-anchor':'end', 'font-family':'DM Mono, monospace'}).textContent = p.toFixed(1);
   });
-  [75, 100, 150, 250, 400, 600].forEach(function(s){
+  [5, 10, 20, 40, 80].forEach(function(s){
     el('line', {x1:X(s), y1:T, x2:X(s), y2:B, stroke:'#DFC49E', 'stroke-opacity':0.045, 'stroke-width':1});
-    el('text', {x:X(s), y:B+26, fill:'#8A93A8', 'font-size':13, 'text-anchor':'middle', 'font-family':'DM Mono, monospace'}).textContent = s + 'K';
+    el('text', {x:X(s), y:B+26, fill:'#8A93A8', 'font-size':13, 'text-anchor':'middle', 'font-family':'DM Mono, monospace'}).textContent = s + 'M';
   });
   el('path', {d:wobblePath(L, B, R, B), stroke:'#DFC49E', 'stroke-width':1.6, fill:'none', 'stroke-opacity':0.5, 'stroke-linecap':'round'});
   el('path', {d:wobblePath(L, B, L, T), stroke:'#DFC49E', 'stroke-width':1.6, fill:'none', 'stroke-opacity':0.5, 'stroke-linecap':'round'});
-  el('text', {x:L, y:B+52, fill:'#9BA1B4', 'font-size':14, 'text-anchor':'start', 'font-family':'DM Mono, monospace'}).textContent = '← training steps';
-  el('text', {x:R, y:B+52, fill:'#9BA1B4', 'font-size':13, 'text-anchor':'end', 'font-family':'DM Mono, monospace'}).textContent = 'bubble area ∝ batch size';
-  el('text', {x:L-58, y:T-18, fill:'#9BA1B4', 'font-size':14, 'text-anchor':'start', 'font-family':'DM Mono, monospace'}).textContent = '↑ composite-unseen success';
+  el('text', {x:L, y:B+52, fill:'#9BA1B4', 'font-size':14, 'text-anchor':'start', 'font-family':'DM Mono, monospace'}).textContent = '← training samples (steps × batch)';
+  el('text', {x:L-58, y:T-18, fill:'#9BA1B4', 'font-size':14, 'text-anchor':'start', 'font-family':'DM Mono, monospace'}).textContent = '↑ generalization rate · pp per 1M samples';
   var groups = [];
   DATA.forEach(function(d, i){
     var gp = el('g', {'class':'pt', opacity:0, style:'transition:opacity .8s ease ' + (d.hero ? 1.3 : 0.15 + i * 0.08) + 's'});
-    var x = X(d.steps), y = Y(d.pct);
-    var rb = bubbleR(d.batch);
+    var x = X(d.sm), y = Y(d.rate);
     if (d.hero){
-      el('circle', {cx:x, cy:y, r:rb + 9, fill:'none', stroke:'#D9A254', 'stroke-width':2, opacity:0.55}, gp);
-      el('circle', {cx:x, cy:y, r:rb, fill:'#C96F45', filter:'url(#ptGlow)'}, gp);
+      el('circle', {cx:x, cy:y, r:10, fill:'#C96F45'}, gp);
       var hl = el('g', {'class':'heroLbl', opacity:1}, gp);
-      el('text', {x:x-38, y:y-4, fill:'#F2EDE4', 'font-size':17, 'text-anchor':'end', 'font-family':'DM Mono, monospace'}, hl).textContent = 'The Minimalist';
-      el('text', {x:x-38, y:y+16, fill:'#DFC49E', 'font-size':13, 'text-anchor':'end', 'font-family':'DM Mono, monospace'}, hl).textContent = '13.0% · 82K steps · batch 64';
+      el('text', {x:x-24, y:y-4, fill:'#F2EDE4', 'font-size':17, 'text-anchor':'end', 'font-family':'DM Mono, monospace'}, hl).textContent = 'The Minimalist';
+      el('text', {x:x-24, y:y+16, fill:'#DFC49E', 'font-size':13, 'text-anchor':'end', 'font-family':'DM Mono, monospace'}, hl).textContent = '2.48 pp/M · 13.0% · 5.2M samples';
     } else {
-      el('circle', {cx:x, cy:y, r:rb, fill:'#5A6273', 'fill-opacity':0.82}, gp);
+      el('circle', {cx:x, cy:y, r:6.5, fill:'#5A6273', 'fill-opacity':0.82}, gp);
       var lb = el('g', {'class':'lbl'}, gp);
       var anchor = x > 700 ? 'end' : 'start';
-      var lx = x > 700 ? x - rb - 8 : x + rb + 8;
+      var lx = x > 700 ? x - 14 : x + 14;
       el('text', {x:lx, y:y-3, fill:'#C9CEDC', 'font-size':13, 'text-anchor':anchor, 'font-family':'DM Mono, monospace'}, lb).textContent = d.name;
-      el('text', {x:lx, y:y+13, fill:'#8A93A8', 'font-size':12, 'text-anchor':anchor, 'font-family':'DM Mono, monospace'}, lb).textContent = d.pct.toFixed(1) + '% · ' + d.steps + 'K' + (d.batch ? ' · batch ' + d.batch : '');
+      el('text', {x:lx, y:y+13, fill:'#8A93A8', 'font-size':12, 'text-anchor':anchor, 'font-family':'DM Mono, monospace'}, lb).textContent = d.rate.toFixed(2) + ' pp/M · ' + d.pct.toFixed(1) + '% · ' + d.sm.toFixed(1) + 'M samples';
     }
     gp.addEventListener('pointerdown', function(){ gp.classList.toggle('on'); });
     groups.push(gp);
@@ -422,7 +422,7 @@ var perm = new Uint8Array(512);
     bars.appendChild(row);
     fills.push({el: row.querySelector('.bar-fill'), w: (d.pct / 32.1) * 100});
     var tr = document.createElement('tr');
-    tr.innerHTML = '<td>' + d.name + '</td><td>' + d.pct.toFixed(1) + '</td><td>' + (d.steps * 1000).toLocaleString('en-US') + '</td><td>' + d.batch + '</td>';
+    tr.innerHTML = '<td>' + d.name + '</td><td>' + d.pct.toFixed(1) + '</td><td>' + (d.steps * 1000).toLocaleString('en-US') + '</td><td>' + d.batch + '</td><td>' + d.sm.toFixed(1) + '</td><td>' + d.rate.toFixed(2) + '</td>';
     srT.appendChild(tr);
   });
   function reveal(){
