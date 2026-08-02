@@ -45,6 +45,27 @@
     font-family:var(--fm);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--sand)}
   .p1-ctl input{width:112px;accent-color:var(--amber);margin:0}
   .p1-ctl input:focus-visible{outline:2px solid var(--amber);outline-offset:3px}
+  #hexTemp{-webkit-appearance:none;appearance:none;height:6px;border-radius:99px;
+    background:linear-gradient(90deg,#5A7BC4,#8A93A8,#DFC49E,#D9A254,#C96F45)}
+  #hexTemp::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:14px;height:14px;border-radius:50%;
+    background:var(--ground-light);border:2px solid var(--ground-dark);cursor:pointer}
+  #hexTemp::-moz-range-thumb{width:12px;height:12px;border-radius:50%;
+    background:var(--ground-light);border:2px solid var(--ground-dark);cursor:pointer}
+  #hexTemp::-moz-range-track{height:6px;border-radius:99px;
+    background:linear-gradient(90deg,#5A7BC4,#8A93A8,#DFC49E,#D9A254,#C96F45)}
+  .p1-note{position:absolute;z-index:6;max-width:370px;padding:20px 22px;border-radius:14px;
+    background:rgba(43,30,46,.38);
+    -webkit-backdrop-filter:blur(20px) saturate(160%);backdrop-filter:blur(20px) saturate(160%);
+    box-shadow:inset 0 1px 0 rgba(242,237,228,.28), 0 10px 34px rgba(5,6,15,.3);
+    opacity:0;transform:translateY(10px);transition:opacity .45s ease,transform .45s ease;pointer-events:none}
+  .p1-note.show{opacity:1;transform:translateY(0)}
+  .p1-note h2{margin:0 0 10px;font-family:var(--fm);font-weight:500;font-size:.85rem;letter-spacing:.14em;text-transform:uppercase;color:#fff}
+  .p1-note p{margin:0;font-family:var(--fm);font-size:.72rem;letter-spacing:.02em;line-height:1.8;color:rgba(255,255,255,.92)}
+  #note1{left:26px;top:96px}
+  #note2{right:26px;top:96px}
+  @media(max-width:700px){.p1-note{left:16px !important;right:16px !important;max-width:none}
+    #note2{top:auto;bottom:24%}}
+  @media (prefers-reduced-motion: reduce){.p1-note{transition:none}}
 
   #p4{background:var(--ground-dark);padding:14svh 6vw 12svh;display:flex;flex-direction:column;align-items:center}
   .p4-head{max-width:860px;width:100%;text-align:left}
@@ -88,7 +109,15 @@
   <canvas id="marble" aria-hidden="true"></canvas>
   <div class="p1-ctl">
     <label>Size<input id="hexSize" type="range" min="12" max="40" step="1" aria-label="Hexagon size"></label>
-    <label>Speed<input id="hexSpeed" type="range" min="1" max="12" step="1" value="5" aria-label="Digit change speed"></label>
+    <label>Temp<input id="hexTemp" type="range" min="-100" max="100" step="1" value="0" aria-label="Color temperature"></label>
+  </div>
+  <div class="p1-note" id="note1">
+    <h2>Event-based</h2>
+    <p>Our world is messy and nature figured out the best way to understand it is via changes. That is how The Minimalist sees and understands the world.</p>
+  </div>
+  <div class="p1-note" id="note2">
+    <h2>Continual learning</h2>
+    <p>The next breakthrough in physical AI is not stuffing data down a hyper-scaled transformer. It is by learning how the most efficient computer in existence learns &mdash; a.k.a. biological brains.</p>
   </div>
 </section>
 
@@ -160,7 +189,7 @@ var perm = new Uint8Array(512);
   var DIGITS = '0123456789';
   var dpr, W, H, cell, cols, rows, energy, hexS, rowH, hexPts;
   var px = -9999, py = -9999, lastPointer = -9999;
-  var cellOverride = 0, churnMs = 80;
+  var cellOverride = 0, churnMs = 80, temp = 0, naturalTemp = 0, natSet = false;
 
   function resize(){
     dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -185,12 +214,23 @@ var perm = new Uint8Array(512);
   resize();
   window.addEventListener('resize', resize);
 
+  var note1 = document.getElementById('note1');
+  var note2 = document.getElementById('note2');
+  var HOTS = [{fx: 0.37, fy: 0.50, note: note1}, {fx: 0.63, fy: 0.50, note: note2}];
+  function updateNotes(){
+    var rr = cell * 3.4;
+    HOTS.forEach(function(h){
+      var dx = px - h.fx * W, dy = py - h.fy * H;
+      h.note.classList.toggle('show', dx * dx + dy * dy < rr * rr);
+    });
+  }
   panel.addEventListener('pointermove', function(e){
     var r = panel.getBoundingClientRect();
     px = e.clientX - r.left; py = e.clientY - r.top;
     lastPointer = performance.now();
+    updateNotes();
   });
-  panel.addEventListener('pointerleave', function(){ px = py = -9999; });
+  panel.addEventListener('pointerleave', function(){ px = py = -9999; updateNotes(); });
 
   function frame(now){
     if (!RM) requestAnimationFrame(frame);
@@ -209,6 +249,13 @@ var perm = new Uint8Array(512);
     else { sh = vw / gridAR; sy0 = (vh2 - sh) / 2; }
     sctx.drawImage(video, sx0, sy0, sw, sh, 0, 0, cols, rows);
     var data = sctx.getImageData(0, 0, cols, rows).data;
+    if (!natSet){
+      var rs = 0, bs = 0, np = cols * rows;
+      for (var q = 0; q < np; q++){ rs += data[q * 4]; bs += data[q * 4 + 2]; }
+      naturalTemp = Math.max(-60, Math.min(60, Math.round((rs - bs) / np * 1.8)));
+      tempIn.value = naturalTemp;
+      natSet = true;
+    }
     var t = now / 1000;
     var idle = now - lastPointer > 3000;
     var fx = px, fy = py;
@@ -219,6 +266,10 @@ var perm = new Uint8Array(512);
     var R = 180;
     var bucket = Math.floor(now / churnMs);
     var decay = Math.exp(-16.7 / 600);
+    var hotR2 = Math.pow(cell * 3.2, 2);
+    var pulse = 0.26 + 0.11 * Math.sin(now / 450);
+    var h1x = HOTS[0].fx * W, h1y = HOTS[0].fy * H;
+    var h2x = HOTS[1].fx * W, h2y = HOTS[1].fy * H;
     for (var j = 0; j < rows; j++){
       var y = j * rowH + hexS;
       var rowOff = (j & 1) ? cell / 2 : 0;
@@ -226,6 +277,11 @@ var perm = new Uint8Array(512);
         var x = i * cell + rowOff + cell / 2;
         var o = (j * cols + i) * 4;
         var r0 = data[o], g0 = data[o + 1], b0 = data[o + 2];
+        if (temp !== 0){
+          r0 = Math.max(0, Math.min(255, r0 + temp * 55)) | 0;
+          g0 = Math.max(0, Math.min(255, g0 + temp * 12)) | 0;
+          b0 = Math.max(0, Math.min(255, b0 - temp * 55)) | 0;
+        }
         var lum = (0.2126 * r0 + 0.7152 * g0 + 0.0722 * b0) / 255;
         var k = j * cols + i;
         var dx = x - fx, dy = y - fy;
@@ -235,6 +291,8 @@ var perm = new Uint8Array(512);
         if (target > e) e = target;
         energy[k] = e;
         if (RM) e = 0.5;
+        var q1x = x - h1x, q1y = y - h1y, q2x = x - h2x, q2y = y - h2y;
+        if (q1x * q1x + q1y * q1y < hotR2 || q2x * q2x + q2y * q2y < hotR2) e = Math.max(e, pulse);
         var under = Math.min(1, 0.42 + e * 0.5);
         ctx.fillStyle = 'rgba(' + r0 + ',' + g0 + ',' + b0 + ',' + under.toFixed(3) + ')';
         ctx.beginPath();
@@ -252,15 +310,16 @@ var perm = new Uint8Array(512);
     }
   }
   var sizeIn = document.getElementById('hexSize');
-  var speedIn = document.getElementById('hexSpeed');
   sizeIn.value = cell;
   sizeIn.addEventListener('input', function(){
     cellOverride = +sizeIn.value;
     resize();
     if (RM) requestAnimationFrame(frame);
   });
-  speedIn.addEventListener('input', function(){
-    churnMs = Math.round(400 / +speedIn.value);
+  var tempIn = document.getElementById('hexTemp');
+  tempIn.addEventListener('input', function(){
+    temp = (+tempIn.value - naturalTemp) / 100;
+    if (RM) requestAnimationFrame(frame);
   });
 
   gate(panel, 'p1');
