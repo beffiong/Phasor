@@ -95,7 +95,7 @@
 <section class="panel full" id="p4" aria-label="Results">
   <div class="p4-head">
     <h1 class="p4-title">More from less.</h1>
-    <p class="p4-sub">11% zero-shot success on unseen composite tasks &mdash; in 72K training steps.</p>
+    <p class="p4-sub">13% zero-shot success on unseen composite tasks &mdash; in 82K training steps.</p>
   </div>
   <div id="scatterWrap">
     <svg id="scatter" viewBox="0 0 1000 620" role="img" aria-labelledby="scTitle">
@@ -108,7 +108,7 @@
     Per the leaderboard&rsquo;s own note, training configurations differ across architectures and step counts are not directly comparable.</p>
   <table class="sr-only">
     <caption>Composite-Unseen success rate and training steps by policy</caption>
-    <thead><tr><th>Policy</th><th>Composite-Unseen %</th><th>Training steps</th></tr></thead>
+    <thead><tr><th>Policy</th><th>Composite-Unseen %</th><th>Training steps</th><th>Batch size</th></tr></thead>
     <tbody id="srTable"></tbody>
   </table>
 </section>
@@ -273,23 +273,25 @@ var perm = new Uint8Array(512);
 ========================================================= */
 (function(){
   var DATA = [
-    {name:'Xiaomi-Robotics-1', pct:32.1, steps:120},
-    {name:'The Minimalist', pct:11.0, steps:72, hero:true},
-    {name:'WorldDreamer', pct:9.0, steps:375},
-    {name:'RLDX-1', pct:8.5, steps:250},
-    {name:'ABot-M0.6', pct:7.9, steps:120},
-    {name:'ABot-M0.5', pct:3.3, steps:100},
-    {name:'GigaWorld-Policy 0.1', pct:2.9, steps:600},
-    {name:'GR00T N1.5', pct:2.7, steps:120},
-    {name:'GR00T N1.6', pct:1.7, steps:120},
-    {name:'Diffusion Policy', pct:1.3, steps:250},
-    {name:'π0.5', pct:1.2, steps:75},
-    {name:'π0', pct:1.1, steps:75}
+    {name:'Xiaomi-Robotics-1', pct:32.1, steps:120, batch:512},
+    {name:'The Minimalist', pct:13.0, steps:82, batch:64, hero:true},
+    {name:'WorldDreamer', pct:9.0, steps:375, batch:20},
+    {name:'RLDX-1', pct:8.5, steps:250, batch:192},
+    {name:'ABot-M0.6', pct:7.9, steps:120, batch:256},
+    {name:'ABot-M0.5', pct:3.3, steps:100, batch:64},
+    {name:'GigaWorld-Policy 0.1', pct:2.9, steps:600, batch:64},
+    {name:'GR00T N1.5', pct:2.7, steps:120, batch:128},
+    {name:'GR00T N1.6', pct:1.7, steps:120, batch:128},
+    {name:'Diffusion Policy', pct:1.3, steps:250, batch:192},
+    {name:'π0.5', pct:1.2, steps:75, batch:64},
+    {name:'π0', pct:1.1, steps:75, batch:64}
   ];
+  function bubbleR(batch){ return 4 + 0.55 * Math.sqrt(batch); }
   var svg = document.getElementById('scatter');
   var NS = 'http://www.w3.org/2000/svg';
   var L = 90, R = 960, T = 50, B = 540;
-  function X(steps){ return L + (steps / 640) * (R - L); }
+  var LOG_MIN = Math.log(55), LOG_MAX = Math.log(700);
+  function X(steps){ return R - (Math.log(steps) - LOG_MIN) / (LOG_MAX - LOG_MIN) * (R - L); }
   function Y(pct){ return B - (pct / 35) * (B - T); }
   function el(tag, attrs, parent){
     var e = document.createElementNS(NS, tag);
@@ -314,31 +316,33 @@ var perm = new Uint8Array(512);
     el('line', {x1:L, y1:Y(p), x2:R, y2:Y(p), stroke:'#DFC49E', 'stroke-opacity':0.06, 'stroke-width':1});
     el('text', {x:L-14, y:Y(p)+4, fill:'#8A93A8', 'font-size':13, 'text-anchor':'end', 'font-family':'DM Mono, monospace'}).textContent = p + '%';
   });
-  [100, 200, 300, 400, 500, 600].forEach(function(s){
+  [75, 100, 150, 250, 400, 600].forEach(function(s){
     el('line', {x1:X(s), y1:T, x2:X(s), y2:B, stroke:'#DFC49E', 'stroke-opacity':0.045, 'stroke-width':1});
     el('text', {x:X(s), y:B+26, fill:'#8A93A8', 'font-size':13, 'text-anchor':'middle', 'font-family':'DM Mono, monospace'}).textContent = s + 'K';
   });
   el('path', {d:wobblePath(L, B, R, B), stroke:'#DFC49E', 'stroke-width':1.6, fill:'none', 'stroke-opacity':0.5, 'stroke-linecap':'round'});
   el('path', {d:wobblePath(L, B, L, T), stroke:'#DFC49E', 'stroke-width':1.6, fill:'none', 'stroke-opacity':0.5, 'stroke-linecap':'round'});
-  el('text', {x:R, y:B+52, fill:'#9BA1B4', 'font-size':14, 'text-anchor':'end', 'font-family':'DM Mono, monospace'}).textContent = 'training steps →';
+  el('text', {x:L, y:B+52, fill:'#9BA1B4', 'font-size':14, 'text-anchor':'start', 'font-family':'DM Mono, monospace'}).textContent = '← training steps';
+  el('text', {x:R, y:B+52, fill:'#9BA1B4', 'font-size':13, 'text-anchor':'end', 'font-family':'DM Mono, monospace'}).textContent = 'bubble area ∝ batch size';
   el('text', {x:L-58, y:T-18, fill:'#9BA1B4', 'font-size':14, 'text-anchor':'start', 'font-family':'DM Mono, monospace'}).textContent = '↑ composite-unseen success';
   var groups = [];
   DATA.forEach(function(d, i){
     var gp = el('g', {'class':'pt', opacity:0, style:'transition:opacity .8s ease ' + (d.hero ? 1.3 : 0.15 + i * 0.08) + 's'});
     var x = X(d.steps), y = Y(d.pct);
+    var rb = bubbleR(d.batch);
     if (d.hero){
-      el('circle', {cx:x, cy:y, r:26, fill:'none', stroke:'#D9A254', 'stroke-width':2, opacity:0.55}, gp);
-      el('circle', {cx:x, cy:y, r:15, fill:'#C96F45', filter:'url(#ptGlow)'}, gp);
+      el('circle', {cx:x, cy:y, r:rb + 9, fill:'none', stroke:'#D9A254', 'stroke-width':2, opacity:0.55}, gp);
+      el('circle', {cx:x, cy:y, r:rb, fill:'#C96F45', filter:'url(#ptGlow)'}, gp);
       var hl = el('g', {'class':'heroLbl', opacity:1}, gp);
-      el('text', {x:x+38, y:y-4, fill:'#F2EDE4', 'font-size':17, 'font-family':'DM Mono, monospace'}, hl).textContent = 'The Minimalist';
-      el('text', {x:x+38, y:y+16, fill:'#DFC49E', 'font-size':13, 'font-family':'DM Mono, monospace'}, hl).textContent = '11.0% · 72K steps';
+      el('text', {x:x-38, y:y-4, fill:'#F2EDE4', 'font-size':17, 'text-anchor':'end', 'font-family':'DM Mono, monospace'}, hl).textContent = 'The Minimalist';
+      el('text', {x:x-38, y:y+16, fill:'#DFC49E', 'font-size':13, 'text-anchor':'end', 'font-family':'DM Mono, monospace'}, hl).textContent = '13.0% · 82K steps · batch 64';
     } else {
-      el('circle', {cx:x, cy:y, r:6.5, fill:'#5A6273'}, gp);
+      el('circle', {cx:x, cy:y, r:rb, fill:'#5A6273', 'fill-opacity':0.82}, gp);
       var lb = el('g', {'class':'lbl'}, gp);
       var anchor = x > 700 ? 'end' : 'start';
-      var lx = x > 700 ? x - 14 : x + 14;
+      var lx = x > 700 ? x - rb - 8 : x + rb + 8;
       el('text', {x:lx, y:y-3, fill:'#C9CEDC', 'font-size':13, 'text-anchor':anchor, 'font-family':'DM Mono, monospace'}, lb).textContent = d.name;
-      el('text', {x:lx, y:y+13, fill:'#8A93A8', 'font-size':12, 'text-anchor':anchor, 'font-family':'DM Mono, monospace'}, lb).textContent = d.pct.toFixed(1) + '% · ' + d.steps + 'K';
+      el('text', {x:lx, y:y+13, fill:'#8A93A8', 'font-size':12, 'text-anchor':anchor, 'font-family':'DM Mono, monospace'}, lb).textContent = d.pct.toFixed(1) + '% · ' + d.steps + 'K' + (d.batch ? ' · batch ' + d.batch : '');
     }
     gp.addEventListener('pointerdown', function(){ gp.classList.toggle('on'); });
     groups.push(gp);
@@ -355,7 +359,7 @@ var perm = new Uint8Array(512);
     bars.appendChild(row);
     fills.push({el: row.querySelector('.bar-fill'), w: (d.pct / 32.1) * 100});
     var tr = document.createElement('tr');
-    tr.innerHTML = '<td>' + d.name + '</td><td>' + d.pct.toFixed(1) + '</td><td>' + (d.steps * 1000).toLocaleString('en-US') + '</td>';
+    tr.innerHTML = '<td>' + d.name + '</td><td>' + d.pct.toFixed(1) + '</td><td>' + (d.steps * 1000).toLocaleString('en-US') + '</td><td>' + d.batch + '</td>';
     srT.appendChild(tr);
   });
   function reveal(){
